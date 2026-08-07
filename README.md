@@ -1,26 +1,52 @@
 # PF-Sintering
 
-Python implementation of the phase-field sintering model currently developed in MATLAB.
+Python implementation of the phase-field sintering model originally developed from the MATLAB v64 code base.
 
 ## Current branch
 
-Development is on `python-v64-port`. The first target is the v64 particle-on-substrate model and the short-contact activation-stress campaign.
+Development is on `python-v64-port`. The current target is the particle-on-substrate model and the short-contact activation-stress campaign.
 
 The implementation currently includes the conserved Cahn-Hilliard solid field `f`, structural order parameters, anisotropic capillarity in the CH evolution, explicit substrate Ostwald transfer, integrated-hazard sink activation, rigid-body densification/advection, dynamic GB excess energy, diagnostics, frame output, and restartable HDF5 checkpoints.
 
-The particle-on-substrate path is the current production target. A three-particle initializer is present, but the complete two-GB kinetics and two-sink bookkeeping still need to be ported before that topology should be treated as production-ready. The MATLAB and Python random streams are intentionally not required to match event-for-event.
+The particle-on-substrate path is the current production target. A three-particle initializer is present, but the complete two-GB kinetics and two-sink bookkeeping still need to be completed before that topology should be treated as production-ready.
+
+## Physics contract
+
+The Python model is not required to reproduce MATLAB numerically. MATLAB is provenance and a diagnostic reference; correctness is defined by the physical decomposition below.
+
+- `f` is the conserved solid-mass field. CH and RBM should conserve its integral to numerical tolerance.
+- CH changes solid geometry but does not change integrated grain ownership.
+- Structural `eta_i` relaxation is numerical/structural regularization only. It must not produce secular grain dissolution.
+- Explicit Ostwald transfer is the intended secular grain-volume redistribution mechanism in a no-event run.
+- RBM translates/deforms grain ownership but should not spuriously change the integrated amount of a grain.
+- Hazard events alter geometry only through their explicitly defined event mechanics.
+
+To enforce this separation, the current production integrator uses a mass-preserving constrained `eta` projection after CH, structural relaxation, and RBM. The projection enforces `eta_i >= 0` and `sum(eta_i) <= f` while redistributing locally clipped grain ownership into available solid capacity rather than discarding it.
+
+The operator ledger `scripts/diagnose_v2_operator_ledger.py` is the primary regression diagnostic. In a no-event run, the expected result is:
+
+```text
+post_ch_constrained      ~ 0 net grain-volume change
+ostwald                  ~= prescribed Ostwald rate
+ac_raw + constrained     ~ 0 net grain-volume change
+rbm_raw + constrained    ~ 0 net grain-volume change
+NON-OSTWALD NET          ~ 0
+```
 
 ## Install
 
+From the shared working root used in development:
+
 ```bash
-python -m venv .venv
+cd /Volumes/Data/Data/PF-sintering
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
+python -m pip install -e ./PF-Sintering pytest
 ```
 
 ## Small development runs
 
-The default `dev` preset deliberately uses a much smaller particle/grid problem and a short time window. It is for implementation tests and is **not** a replacement physical calibration for v64.
+The default `dev` preset deliberately uses a much smaller particle/grid problem and a short time window. It is useful for implementation tests and is **not** a replacement physical calibration for v64.
 
 ```bash
 pf-sintering --preset dev --time-ms 0.1 --no-event-prints
@@ -66,7 +92,7 @@ pf-sintering --preset dev \
 
 ## Full v64 dimensional preset
 
-The uploaded MATLAB v64 dimensional defaults are available without making them the development default:
+The v64 dimensional defaults remain available as a physical-scale preset:
 
 ```bash
 pf-sintering --preset v64 \
@@ -82,10 +108,10 @@ Any geometry flag can override an individual v64 preset value.
 
 ## Activation-stress sweep
 
-The MATLAB short-contact sweep has a Python launcher:
+The short-contact sweep has a Python launcher:
 
 ```bash
-python scripts/run_short_activation_sweep.py \
+python PF-Sintering/scripts/run_short_activation_sweep.py \
   --preset dev \
   --sigmas-mpa 0.1 75 150 \
   --time-ms 0.2
@@ -94,7 +120,7 @@ python scripts/run_short_activation_sweep.py \
 A deliberately small sweep can be launched with:
 
 ```bash
-python scripts/run_short_activation_sweep.py \
+python PF-Sintering/scripts/run_short_activation_sweep.py \
   --preset dev \
   --nx 96 --ny 128 --dx-nm 5 --r2-nm 80 \
   --sigmas-mpa 0.1 75 150 \
@@ -113,10 +139,13 @@ Each run writes:
 
 `latest_restart.txt` points to the newest restart state.
 
+Fresh runs fail closed if a final output with the same tag already exists unless `--overwrite` is explicitly requested.
+
 ## Tests
 
 ```bash
-pytest -q
+cd /Volumes/Data/Data/PF-sintering
+python -m pytest ./PF-Sintering/tests -q
 ```
 
-The initial smoke suite checks configurable grid sizing, field initialization, the 9-point Laplacian, and completion of a tiny integration run.
+The current suite checks configurable grid sizing, field initialization, the 9-point Laplacian, corrected low-level kernel wiring, completion of a tiny integration run, and the mass-preserving structural-projection contract.
