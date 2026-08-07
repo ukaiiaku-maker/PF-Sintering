@@ -32,6 +32,13 @@ class ModelConfig:
     # the previously qualified baseline behavior in both cases).
     eta_mobility_scale: float = 1.0
     reservoir_neck_unprotected: bool = False
+    # Independent rate-competition controls (diagnostic-only; default preserves
+    # baseline behavior). coarsening_rate_scale multiplies the Ostwald/reservoir
+    # transfer rate (1/tau_ripening); surface_mobility_scale multiplies the
+    # free-surface/CH mobility M_f *independently of eta_mobility_scale's M_eta*
+    # (M_eta is anchored to the unscaled M_f so the two controls don't couple).
+    coarsening_rate_scale: float = 1.0
+    surface_mobility_scale: float = 1.0
 
 @dataclass
 class Params:
@@ -87,7 +94,10 @@ def build_params(c:ModelConfig)->Params:
     p=Params(nx,ny,dx,r1,r2,r3,rx,ry,c.geometry,ar,c.contact_orientation,wall,ov,c.temperature,c.theta_mis_deg,c.sigma_target,W)
     p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
-    p.M_f=(20e-9)**4/(p.tau_target*p.k_f); p.M_eta=p.M_f/p.dx**2*.01*c.eta_mobility_scale; p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
+    M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
+    p.M_f=M_f_base*c.surface_mobility_scale; p.M_eta=M_f_base/p.dx**2*.01*c.eta_mobility_scale
+    p.tau_ripening=20./c.coarsening_rate_scale
+    p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
     p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.psi_measure=c.psi_measure; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
     p.reservoir_neck_unprotected=c.reservoir_neck_unprotected
     if p.use_aniso_surface:

@@ -9,6 +9,47 @@ from pf_sintering.model import (
 )
 
 
+def test_surface_mobility_scale_is_independent_and_multiplicative():
+    p1 = build_params(ModelConfig(preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6))
+    p3 = build_params(ModelConfig(preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6, surface_mobility_scale=3.0))
+    assert np.isclose(p3.M_f, 3.0 * p1.M_f)
+    # M_eta must not inherit the surface-mobility scaling (anchored to the
+    # unscaled M_f_base so the two rate controls stay decoupled).
+    assert np.isclose(p3.M_eta, p1.M_eta)
+    # tau_ripening (Ostwald rate) must be independent of the surface-rate control.
+    assert p3.tau_ripening == p1.tau_ripening
+
+
+def test_surface_mobility_scale_and_eta_mobility_scale_are_mutually_independent():
+    p1 = build_params(ModelConfig(preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6))
+    p_both = build_params(ModelConfig(
+        preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6,
+        surface_mobility_scale=3.0, eta_mobility_scale=2.0,
+    ))
+    assert np.isclose(p_both.M_f, 3.0 * p1.M_f)
+    assert np.isclose(p_both.M_eta, 2.0 * p1.M_eta)
+
+
+def test_coarsening_rate_scale_is_independent_and_inversely_scales_tau_ripening():
+    p1 = build_params(ModelConfig(preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6))
+    p3 = build_params(ModelConfig(preset="dev", nx=96, ny=128, dx=5e-9, r2=80e-9, t_total=1e-6, coarsening_rate_scale=3.0))
+    assert np.isclose(p3.tau_ripening, p1.tau_ripening / 3.0)
+    # Must not affect either mobility.
+    assert p3.M_f == p1.M_f
+    assert p3.M_eta == p1.M_eta
+
+
+def test_baseline_rate_scales_default_to_one_and_preserve_prior_behavior():
+    p_default = build_params(ModelConfig(preset="dev", nx=64, ny=64, t_total=1e-6))
+    p_explicit = build_params(ModelConfig(
+        preset="dev", nx=64, ny=64, t_total=1e-6,
+        coarsening_rate_scale=1.0, surface_mobility_scale=1.0,
+    ))
+    assert p_default.tau_ripening == p_explicit.tau_ripening
+    assert p_default.M_f == p_explicit.M_f
+    assert p_default.M_eta == p_explicit.M_eta
+
+
 def test_eta_mobility_scale_is_independent_and_multiplicative():
     p1 = build_params(ModelConfig(preset="dev", nx=64, ny=64, t_total=1e-6))
     p_half = build_params(ModelConfig(preset="dev", nx=64, ny=64, t_total=1e-6, eta_mobility_scale=0.5))
