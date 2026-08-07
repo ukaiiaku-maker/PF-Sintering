@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import csv
 import json
-from pathlib import Path
 
 import numpy as np
 from scipy.signal import convolve2d
@@ -18,16 +17,14 @@ from .model import (
     ostwald_substrate,
     rbm,
 )
+from .structural_projection import eta_masses, project_eta_mass_preserving
 
 
+# ---------------------------------------------------------------------------
+# Legacy projection helpers retained for regression comparison only.
+# Production integration below uses project_eta_mass_preserving.
+# ---------------------------------------------------------------------------
 def selective_reproject_eta_to_f(f, eta1, eta2, eta3, params):
-    """Match MATLAB reproject_eta_to_f in its default repair-only mode.
-
-    This operation is deliberately *not* a global eta<=f or sum(eta)<=f
-    projection.  It removes labels only in true void and repairs solid pixels
-    that have nearly lost all grain ownership.  The hard consistency repair is
-    a separate post-Allen-Cahn operation.
-    """
     fb = np.clip(f, 0.0, 1.0)
     e1 = np.maximum(eta1, 0.0).copy()
     e2 = np.maximum(eta2, 0.0).copy()
@@ -43,7 +40,6 @@ def selective_reproject_eta_to_f(f, eta1, eta2, eta3, params):
     repair = (fb > 0.02) & (esum < 0.02)
     if np.any(repair):
         kernel = np.ones((3, 3), dtype=float) / 9.0
-        # MATLAB conv2(..., 'same') uses zero padding outside the domain.
         w1 = convolve2d(e1 + 1e-16, kernel, mode="same", boundary="fill")
         w2 = convolve2d(e2 + 1e-16, kernel, mode="same", boundary="fill")
         if use_eta3:
@@ -59,7 +55,6 @@ def selective_reproject_eta_to_f(f, eta1, eta2, eta3, params):
 
 
 def hard_eta_consistency(f, eta1, eta2, eta3, params):
-    """Match the hard consistency repair at the end of MATLAB evolve_eta."""
     fb = np.clip(f, 0.0, 1.0)
     e1 = np.clip(eta1, 0.0, fb)
     e2 = np.clip(eta2, 0.0, fb)
@@ -77,7 +72,14 @@ def hard_eta_consistency(f, eta1, eta2, eta3, params):
 
 
 class SinteringModel(_BaseSinteringModel):
-    """v64-ordered integrator using the existing low-level Python kernels."""
+    """Physics-decomposed integrator.
+
+    Numerical structural regularization is constrained to preserve integrated
+    grain ownership.  Explicit Ostwald transfer is therefore the only secular
+    grain-volume-change mechanism in a no-event run.  RBM is also projected
+    back to its pre-translation grain masses so transport truncation cannot act
+    as an artificial dissolution channel.
+    """
 
     def run(self):
         p = self.p
@@ -89,33 +91,44 @@ class SinteringModel(_BaseSinteringModel):
             print(
                 f"grid={p.Nx}x{p.Ny} dx={p.dx*1e9:.2f} nm "
                 f"R2={p.R2*1e9:.1f} nm Rx/Ry={p.Rx*1e9:.1f}/{p.Ry*1e9:.1f} nm\n"
-                f"dt={p.dt:.3e}s Nt={p.Nt} target={p.sigma_target/1e6:g} MPa"
+                f"dt={p.dt:.3e}s Nt={p.Nt} target={p.sigma_target/1e6:g} MPa "
+                f"eta_projection=mass_preserving"
             )
 
         for t in range(self.step0, p.Nt + 1):
             last = t
 
-            # 1. Conservative CH evolution of f.
+            # 1. Conservative CH evolution changes f, not grain ownership.
+            # Reconcile eta with the new solid geometry without changing the
+            # integrated amount of any grain.
+            ch_targets = eta_masses(self.e1, self.e2, self.e3, p.use_eta3)
             self.f = evolve_f(self.f, self.e1, self.e2, self.e3, self.s, Sink(), p)
-
-            # MATLAB v64: selective repair only after CH.  Do not globally
-            # force eta_i<=f here, because the temporary eta/f mismatch carries
-            # boundary-motion memory into the subsequent relaxation.
-            self.e1, self.e2, self.e3 = selective_reproject_eta_to_f(
-                self.f, self.e1, self.e2, self.e3, p
+            self.e1, self.e2, self.e3 = project_eta_mass_preserving(
+                self.f,
+                self.e1,
+                self.e2,
+                self.e3,
+                p,
+                target_masses=ch_targets,
             )
 
-            # 2. Explicit Ostwald transfer.  No immediate reprojection.
+            # 2. Explicit Ostwald transfer is a physical grain-volume-change
+            # mechanism and is intentionally NOT volume-corrected afterward.
             if p.geometry == "substrate":
                 self.f, self.e1, self.e2, self.e3 = ostwald_substrate(
                     self.f, self.e1, self.e2, self.e3, p
                 )
 
-            # 3. AC smoothing, followed by the hard consistency repair that is
-            # part of MATLAB evolve_eta.
+            # 3. Structural relaxation smooths eta but must be mass-neutral.
+            ac_targets = eta_masses(self.e1, self.e2, self.e3, p.use_eta3)
             self.e1, self.e2, self.e3 = evolve_eta(self.e1, self.e2, self.e3, p)
-            self.e1, self.e2, self.e3 = hard_eta_consistency(
-                self.f, self.e1, self.e2, self.e3, p
+            self.e1, self.e2, self.e3 = project_eta_mass_preserving(
+                self.f,
+                self.e1,
+                self.e2,
+                self.e3,
+                p,
+                target_masses=ac_targets,
             )
 
             # 4. Stress and integrated hazard.
@@ -137,13 +150,20 @@ class SinteringModel(_BaseSinteringModel):
                             f"sigma={self.st.sigma/1e6:.1f} MPa"
                         )
 
-            # 5. RBM, then the same selective eta-to-f repair used by MATLAB.
+            # 5. RBM changes position/shape but not grain amount.  Correct any
+            # transport-discretization drift without discarding grain ownership.
             if self.s.active:
+                rbm_targets = eta_masses(self.e1, self.e2, self.e3, p.use_eta3)
                 self.f, self.e1, self.e2, self.e3, _ = rbm(
                     self.f, self.e1, self.e2, self.e3, self.s, p
                 )
-                self.e1, self.e2, self.e3 = selective_reproject_eta_to_f(
-                    self.f, self.e1, self.e2, self.e3, p
+                self.e1, self.e2, self.e3 = project_eta_mass_preserving(
+                    self.f,
+                    self.e1,
+                    self.e2,
+                    self.e3,
+                    p,
+                    target_masses=rbm_targets,
                 )
 
             if t == 1 or t % p.diag_every == 0:
@@ -178,7 +198,7 @@ class SinteringModel(_BaseSinteringModel):
                 if self.c.status_prints:
                     print(
                         f"t={t*p.dt*1e3:.3f} ms sigma={self.st.sigma/1e6:.1f} MPa "
-                        f"V2/V20={self.e2.sum()*p.dx**2/p.V2_initial:.4f} "
+                        f"V2/V20={self.e2.sum()*p.dx**2/p.V2_initial:.6f} "
                         f"Vs/Vs0={self.f.sum()*p.dx**2/p.V_solid_initial:.8f} "
                         f"H={self.s.hazard:.3g}/{self.s.threshold:.3g} "
                         f"active={int(self.s.active)}"
@@ -215,6 +235,7 @@ class SinteringModel(_BaseSinteringModel):
             strain_gb1=self.s.cumulative_strain,
             V2_ratio=float(self.e2.sum() * p.dx**2 / p.V2_initial),
             Vsolid_ratio=float(self.f.sum() * p.dx**2 / p.V_solid_initial),
+            eta_projection="mass_preserving",
             final_file=str(final),
         )
         (
