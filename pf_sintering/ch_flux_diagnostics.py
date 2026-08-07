@@ -131,12 +131,19 @@ def surface_flux_near_tj(f, Jx, Jy, tj_xy, p, band_widths_in_W=(1.0, 3.0)):
     if len(band) < 3:
         return None
 
-    # Local tangent via finite difference along the ordered contour subset
-    # (points are already contour-ordered within each skimage ring); fall
-    # back to PCA direction if the subset isn't contiguous enough.
+    # Local tangent via the principal direction of the local contour-point
+    # cloud, oriented AWAY from the TJ (into the bulk of that branch) --
+    # the same convention tj_force._branch_dir uses, so that a positive
+    # J_tangent below means flux directed away from the TJ (out of the neck)
+    # and negative means flux directed toward the TJ (into the neck). Raw
+    # SVD alone has an arbitrary +/- sign and would make J_tangent's sign
+    # meaningless from call to call.
     centered = band - band.mean(0)
     _, _, vh = np.linalg.svd(centered, full_matrices=False)
     tangent = vh[0]
+    away = band.mean(0) - np.asarray(tj_xy)
+    if np.dot(tangent, away) < 0:
+        tangent = -tangent
     normal = np.array([-tangent[1], tangent[0]])
 
     ci = np.clip(np.round(band[:, 0] / p.dx - 1).astype(int), 0, p.Nx - 1)

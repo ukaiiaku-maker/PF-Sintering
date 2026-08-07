@@ -41,3 +41,30 @@ def test_surface_flux_near_tj_returns_finite_components():
     assert math.isfinite(res["J_tangent"])
     assert math.isfinite(res["J_normal"])
     assert res["n_points"] >= 3
+
+
+def test_surface_flux_tangent_points_away_from_tj():
+    # Sign convention: tangent must be oriented away from the TJ (into the
+    # bulk of that branch), matching tj_force._branch_dir's convention, so
+    # J_tangent's sign is physically meaningful (positive = flux leaving the
+    # neck) rather than an arbitrary SVD sign.
+    p, f, e1, e2, e3 = _geometry()
+    s = Sink(threshold=1.0)
+    _, diag = evolve_f_diagnostic(f, e1, e2, e3, s, p)
+    tjs = locate_neck_tjs(f, e1, e2, p)
+    assert tjs is not None
+    for name in ("tj_top", "tj_bottom"):
+        res = surface_flux_near_tj(f, diag.Jx, diag.Jy, tjs[name], p)
+        assert res is not None
+        tangent = np.array(res["tangent"])
+        # Re-derive the band centroid the same way surface_flux_near_tj does
+        # and confirm the tangent has a non-negative component away from TJ.
+        from skimage.measure import find_contours
+        pts = []
+        for rc in find_contours(f, 0.5):
+            pts.append(np.c_[(rc[:, 1] + 1) * p.dx, (rc[:, 0] + 1) * p.dx])
+        P = np.vstack(pts)
+        d = np.hypot(P[:, 0] - tjs[name][0], P[:, 1] - tjs[name][1])
+        band = P[(d >= 1.0 * p.interface_width) & (d <= 3.0 * p.interface_width)]
+        away = band.mean(0) - np.asarray(tjs[name])
+        assert np.dot(tangent, away) >= -1e-12
