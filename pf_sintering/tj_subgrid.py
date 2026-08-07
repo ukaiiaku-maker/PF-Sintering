@@ -258,11 +258,23 @@ def locate_tj_subgrid_single(f, e1, e2, p, seed_xy, search_radius, merge_tol_fra
 def locate_neck_tjs_subgrid(f, e1, e2, p, search_radius_widths=3.0):
     """Wraps the unmodified locate_neck_tjs() for a local seed, then locates
     both TJs as continuous 2D level-set intersections. Returns None if the
-    legacy locator itself fails (same failure mode as before)."""
+    legacy locator itself fails (same failure mode as before).
+
+    The search radius is capped at a fraction of the legacy locator's own
+    `neck_height` (top-to-bottom TJ separation), matching the same
+    adaptive-radius convention `tj_force._radii_for_tj` already uses for its
+    circle-crossing search -- found necessary empirically: for a narrower
+    neck (e.g. the 5nm-overlap baseline geometry), a fixed
+    `search_radius_widths * interface_width` can exceed half the TJ
+    separation, so each TJ's local neighborhood picks up a spurious second
+    candidate belonging to the *other* TJ and both correctly (but
+    unhelpfully) report "ambiguous" rather than resolving either.
+    """
     legacy = locate_neck_tjs(f, e1, e2, p)
     if legacy is None:
         return None
-    radius = search_radius_widths * p.interface_width
+    radius = min(search_radius_widths * p.interface_width, 0.4 * legacy["neck_height"])
+    radius = max(radius, 0.5 * p.interface_width)
     top = locate_tj_subgrid_single(f, e1, e2, p, legacy["tj_top"], radius)
     bottom = locate_tj_subgrid_single(f, e1, e2, p, legacy["tj_bottom"], radius)
     if top.resolved:
