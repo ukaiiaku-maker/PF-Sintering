@@ -3,7 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .model import ModelConfig, SinteringModel
+from .model import ModelConfig
+from .runner import SinteringModel
 
 NM = 1e-9
 MPA = 1e6
@@ -40,6 +41,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--output-dir", type=Path, default=Path("runs/dev"))
     p.add_argument("--out-tag", default="dev")
     p.add_argument("--restart", type=Path)
+    p.add_argument("--overwrite", action="store_true", help="Allow a fresh run to replace an existing final output")
     p.add_argument("--quiet", action="store_true")
     p.add_argument("--no-event-prints", action="store_true")
     p.add_argument("--no-checkpoint", action="store_true")
@@ -73,8 +75,17 @@ def config_from_args(a: argparse.Namespace) -> ModelConfig:
 
 
 def main() -> None:
-    args = parser().parse_args()
+    ap = parser()
+    args = ap.parse_args()
     cfg = config_from_args(args)
+
+    final = cfg.output_dir / f"sintering_{cfg.out_tag}_final.h5"
+    if args.restart is None and final.exists() and not args.overwrite:
+        ap.error(
+            f"refusing to overwrite existing final output: {final}\n"
+            "Use a distinct --output-dir/--out-tag for a new case, or pass --overwrite intentionally."
+        )
+
     summary = SinteringModel(cfg).run()
     if not args.quiet:
         print("\nRun complete")
