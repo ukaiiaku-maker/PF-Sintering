@@ -103,12 +103,19 @@ def ostwald_substrate(f, e1, e2, e3, p):
     if not math.isfinite(col):
         col = p.substrate_wall_frac * p.Nx
 
-    CC, RR = np.meshgrid(np.arange(1, p.Nx + 1), np.arange(1, p.Ny + 1))
-    ex_c = max(5, round(2.0 * p.interface_width / p.dx))
-    ex_r = max(5, round(3.0 * p.interface_width / p.dx))
-    incl = 1.0 - np.exp(
-        -0.5 * (((CC - col) / ex_c) ** 2 + ((RR - (cr + 1)) / ex_r) ** 2)
-    )
+    if getattr(p, "reservoir_neck_unprotected", False):
+        # H1 diagnostic control: the reservoir sets only the net grain-volume
+        # loss/gain rate below; it does not exclude the neck/contact region as
+        # a source or sink. Where the surface recedes is then determined
+        # entirely by the surf*e2 / surf*e1 interface weighting.
+        incl = 1.0
+    else:
+        CC, RR = np.meshgrid(np.arange(1, p.Nx + 1), np.arange(1, p.Ny + 1))
+        ex_c = max(5, round(2.0 * p.interface_width / p.dx))
+        ex_r = max(5, round(3.0 * p.interface_width / p.dx))
+        incl = 1.0 - np.exp(
+            -0.5 * (((CC - col) / ex_c) ** 2 + ((RR - (cr + 1)) / ex_r) ** 2)
+        )
 
     src = convolve2d(surf * e2 * incl, ker, mode="same", boundary="fill")
     snk = convolve2d(surf * e1 * incl, ker, mode="same", boundary="fill")

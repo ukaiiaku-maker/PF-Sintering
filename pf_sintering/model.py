@@ -28,6 +28,10 @@ class ModelConfig:
     output_dir: Path = Path("runs/dev"); out_tag: str = "dev"; restart_file: Path | None = None
     live_plot: bool = False
     use_aniso_surface: bool = True; psi_measure: bool = True
+    # Independent H1/H2 mechanism controls (diagnostic-only; default preserves
+    # the previously qualified baseline behavior in both cases).
+    eta_mobility_scale: float = 1.0
+    reservoir_neck_unprotected: bool = False
 
 @dataclass
 class Params:
@@ -43,6 +47,7 @@ class Params:
     gamma_gb_ref:float=1.; gamma_gb_floor:float=.05; gamma_gb_ceil:float=1.95; G_shear:float=150e9; nu_poisson:float=.23
     V_solid_initial:float=0.; V1_initial:float=0.; V2_initial:float=0.; V3_initial:float=0.; V2_gone_frac:float=.05
     use_eta3:bool=False; use_aniso_surface:bool=True; psi_measure:bool=True; aniso_delta:float=.15; theta_grain:np.ndarray=field(default_factory=lambda:np.zeros(3))
+    reservoir_neck_unprotected:bool=False
     lut_psi:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_a:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_ap:np.ndarray=field(default_factory=lambda:np.zeros(0))
 
 @dataclass
@@ -53,6 +58,13 @@ class Sink:
 @dataclass
 class Stress:
     sigma:float=0.; x_neck:float=math.nan; kappa:float=0.; gb_col:float=math.nan; exists:bool=False; GS:float=0.; gamma_gb_eff:float=math.nan
+    # Diagnostic-only decomposition of sigma (does not affect any dynamics; sigma above
+    # remains the single value consumed by hazard_step). Added for the Milestone-1
+    # directional diagnostic so the individual physical contributions to the local
+    # neck/triple-junction stress can be inspected: sigma == sigma_lt + sigma_curv
+    # (sigma_lt already includes the Cahn-Hoffman correction when anisotropy is active).
+    sigma_lt:float=math.nan; sigma_curv:float=math.nan; psi:float=math.nan; psi_eq:float=math.nan
+    Fx_cahn_hoffman:float=math.nan
 
 
 def _preset(name):
@@ -75,8 +87,9 @@ def build_params(c:ModelConfig)->Params:
     p=Params(nx,ny,dx,r1,r2,r3,rx,ry,c.geometry,ar,c.contact_orientation,wall,ov,c.temperature,c.theta_mis_deg,c.sigma_target,W)
     p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
-    p.M_f=(20e-9)**4/(p.tau_target*p.k_f); p.M_eta=p.M_f/p.dx**2*.01; p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
+    p.M_f=(20e-9)**4/(p.tau_target*p.k_f); p.M_eta=p.M_f/p.dx**2*.01*c.eta_mobility_scale; p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
     p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.psi_measure=c.psi_measure; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
+    p.reservoir_neck_unprotected=c.reservoir_neck_unprotected
     if p.use_aniso_surface:
         psi=np.linspace(0,math.pi/2,4096); d=p.aniso_delta; a=1-d*np.cos(4*psi); ap=4*d*np.sin(4*psi)
         if d>1/15:
@@ -141,7 +154,10 @@ def overlap_col(line):
     if m<=0:return 0,math.nan
     i=int(np.argmax(a));lo=max(0,i-8);hi=min(a.size,i+9);w=a[lo:hi]**2;c=np.arange(lo,hi)+1;return m,float((c*w).sum()/(w.sum()+1e-30))
 def ostwald_substrate(f,e1,e2,e3,p):
-    V=float(e2.sum());fb=np.clip(f,0,1);surf=16*fb*fb*(1-fb)**2;ker=np.ones((3,3))/9;cr=p.Ny//2;_,col=overlap_col(e1[cr]*e2[cr]);col=p.substrate_wall_frac*p.Nx if not math.isfinite(col) else col;CC,RR=np.meshgrid(np.arange(1,p.Nx+1),np.arange(1,p.Ny+1));incl=1-np.exp(-.5*(((CC-col)/max(5,round(2*p.interface_width/p.dx)))**2+((RR-(cr+1))/max(5,round(3*p.interface_width/p.dx)))**2));src=convolve2d(surf*e2*incl,ker,mode="same",boundary="symm");snk=convolve2d(surf*e1*incl,ker,mode="same",boundary="symm");a,b=float(src.sum()),float(snk.sum())
+    V=float(e2.sum());fb=np.clip(f,0,1);surf=16*fb*fb*(1-fb)**2;ker=np.ones((3,3))/9;cr=p.Ny//2;_,col=overlap_col(e1[cr]*e2[cr]);col=p.substrate_wall_frac*p.Nx if not math.isfinite(col) else col
+    if getattr(p,"reservoir_neck_unprotected",False):incl=1.0
+    else:CC,RR=np.meshgrid(np.arange(1,p.Nx+1),np.arange(1,p.Ny+1));incl=1-np.exp(-.5*(((CC-col)/max(5,round(2*p.interface_width/p.dx)))**2+((RR-(cr+1))/max(5,round(3*p.interface_width/p.dx)))**2))
+    src=convolve2d(surf*e2*incl,ker,mode="same",boundary="symm");snk=convolve2d(surf*e1*incl,ker,mode="same",boundary="symm");a,b=float(src.sum()),float(snk.sum())
     if a<1e-15 or b<1e-15:return f,e1,e2,e3
     tr=min(V*p.dt/p.tau_ripening,.002*V);rem=np.minimum(src/a*tr,.9*e2);act=float(rem.sum());add=snk/(b+1e-30)*act;cap=np.maximum(0,np.minimum(1-f,1-e1));md=float(np.minimum(add,cap).sum());sf=min(1,md/(act+1e-30));rem*=sf;add*=sf;e2-=rem;f-=rem;add=np.minimum(add,np.maximum(0,np.minimum(1-f,1-e1)));e1+=add;f+=add;return f,e1,e2,e3
 
@@ -204,14 +220,15 @@ def compute_stress(f,e1,e2,e3,s,p):
         nc=int(np.clip(round(col)-1,0,p.Nx-1));solid=np.flatnonzero(f[:,nc]>.5);x=.5*(solid[-1]-solid[0])*p.dx if len(solid)>1 else math.nan;cx=math.nan
     if not math.isfinite(x) or x<=0:return Stress(GS=p.GS1),True,"neck unresolved"
     g=effective_gamma(s,p);psi_eq=2*math.acos(np.clip(g/(2*p.gamma_s),-0.999,0.999));psi,flanks=measure_dihedral(f,col,p) if p.psi_measure else (math.nan,[]);psi=psi if math.isfinite(psi) else psi_eq;k=curvature(f,col,p)
-    sigma_lt=2*p.gamma_s*math.sin(psi/2)/x
+    sigma_lt=2*p.gamma_s*math.sin(psi/2)/x; Fx_ch=math.nan
     if p.use_aniso_surface and flanks:
         Fx=0.;nfl=0
         for tj,v1,v2 in flanks:
             for v in (v1,v2):
                 n1=np.array([-v[1],v[0]]);n2=-n1;n=_vapor_normal(f,tj,n1,n2,p);th=math.atan2(n[1],n[0]);th0=p.theta_grain[0] if v[0]<0 else p.theta_grain[1];gam,gp=_aniso_gamma(th,th0,p);F=gam*v+gp*n;Fx+=abs(F[0]);nfl+=1
-        if nfl>=2:sigma_lt=Fx/(2*x)
-    st=Stress(sigma_lt+p.gamma_s*k,x,k,col,True,p.GS1,g)
+        if nfl>=2:sigma_lt=Fx/(2*x);Fx_ch=Fx
+    sigma_curv=p.gamma_s*k
+    st=Stress(sigma_lt+sigma_curv,x,k,col,True,p.GS1,g,sigma_lt=sigma_lt,sigma_curv=sigma_curv,psi=psi,psi_eq=psi_eq,Fx_cahn_hoffman=Fx_ch)
     if p.geometry=="substrate" and math.isfinite(cx) and cx<(p.substrate_wall_frac-.5)*p.Nx*p.dx-2*p.interface_width:return st,True,"particle burrowed into substrate"
     return st,False,""
 def hazard_step(s,st,p,dt,rng):
