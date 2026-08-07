@@ -42,7 +42,7 @@ class Params:
     tau_xi:float=0.; lambda_xi:float=0.; m_xi:float=2.; chi_g:float=8.; delta_gb:float=1e-9; tau_g_load:float=2.; tau_g_drain:float=.05
     gamma_gb_ref:float=1.; gamma_gb_floor:float=.05; gamma_gb_ceil:float=1.95; G_shear:float=150e9; nu_poisson:float=.23
     V_solid_initial:float=0.; V1_initial:float=0.; V2_initial:float=0.; V3_initial:float=0.; V2_gone_frac:float=.05
-    use_eta3:bool=False; use_aniso_surface:bool=True; aniso_delta:float=.15; theta_grain:np.ndarray=field(default_factory=lambda:np.zeros(3))
+    use_eta3:bool=False; use_aniso_surface:bool=True; psi_measure:bool=True; aniso_delta:float=.15; theta_grain:np.ndarray=field(default_factory=lambda:np.zeros(3))
     lut_psi:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_a:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_ap:np.ndarray=field(default_factory=lambda:np.zeros(0))
 
 @dataclass
@@ -76,7 +76,7 @@ def build_params(c:ModelConfig)->Params:
     p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     p.M_f=(20e-9)**4/(p.tau_target*p.k_f); p.M_eta=p.M_f/p.dx**2*.01; p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
-    p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
+    p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.psi_measure=c.psi_measure; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
     if p.use_aniso_surface:
         psi=np.linspace(0,math.pi/2,4096); d=p.aniso_delta; a=1-d*np.cos(4*psi); ap=4*d*np.sin(4*psi)
         if d>1/15:
@@ -113,7 +113,13 @@ def initialize_fields(p):
 
 def effective_gamma(s,p): return min(max(p.gamma_gb_ref+max(0,s.g_ex),p.gamma_gb_floor),p.gamma_gb_ceil)
 def reproject(f,*etas):
-    fb=np.clip(f,0,1); out=[np.clip(e,0,fb) for e in etas]; sm=sum(out); m=sm>fb+1e-12
+    fb=np.clip(f,0,1); out=[np.clip(e,0,fb) for e in etas]; sm=sum(out); void=fb<=.005
+    for e in out:e[void]=0
+    repair=(fb>.02)&(sm<.02)
+    if np.any(repair):
+        ker=np.ones((3,3))/9; ww=[convolve2d(e+1e-16,ker,mode="same",boundary="symm") for e in out]; ws=sum(ww)+1e-30
+        for e,w in zip(out,ww):e[repair]=fb[repair]*w[repair]/ws[repair]
+    sm=sum(out); m=sm>fb+1e-12
     if np.any(m):
         sc=fb[m]/sm[m]
         for e in out:e[m]*=sc
@@ -158,6 +164,38 @@ def curvature(f,col,p):
         u,v=(x-x0)/sc,(y-y0)/sc;A=np.c_[2*u,2*v,np.ones_like(u)];q=np.linalg.lstsq(A,u*u+v*v,rcond=None)[0];R2=q[2]+q[0]**2+q[1]**2
         if R2>0:ks.append(1/(math.sqrt(R2)*sc))
     return min(float(np.mean(ks)) if ks else 0.,1/p.interface_width)
+def _contour_points(f,p):
+    q=[]
+    for rc in find_contours(f,.5):q.append(np.c_[(rc[:,1]+1)*p.dx,(rc[:,0]+1)*p.dx])
+    return np.vstack(q) if q else np.empty((0,2))
+def _branch_dir(B,tj):
+    C=B-B.mean(0);_,_,vh=np.linalg.svd(C,full_matrices=False);v=vh[0];away=B.mean(0)-tj
+    if np.dot(v,away)<0:v=-v
+    return v/(np.linalg.norm(v)+1e-30)
+def measure_dihedral(f,col,p):
+    nc=int(round(col))-1
+    if nc<1 or nc>=p.Nx-1:return math.nan,[]
+    solid=np.flatnonzero(f[:,nc]>.5)
+    if len(solid)<2 or solid[0]==0 or solid[-1]==p.Ny-1:return math.nan,[]
+    pts=_contour_points(f,p); out=[]; angs=[]
+    for tj in (np.array([(nc+1)*p.dx,(solid[-1]+1)*p.dx]),np.array([(nc+1)*p.dx,(solid[0]+1)*p.dx])):
+        d=np.hypot(pts[:,0]-tj[0],pts[:,1]-tj[1]);P=pts[(d>=1.5*p.interface_width)&(d<=4*p.interface_width)]
+        if len(P)<6:continue
+        a=np.arctan2(P[:,1]-tj[1],P[:,0]-tj[0]);idx=np.argsort(a);aa=a[idx];g=np.diff(np.r_[aa,aa[0]+2*math.pi]);ig=int(np.argmax(g));order=np.r_[idx[ig+1:],idx[:ig+1]];ar=np.mod(a[order]-a[order[0]]+2*math.pi,2*math.pi);gg=np.diff(ar)
+        if len(gg)==0:continue
+        cut=int(np.argmax(gg))+1
+        if gg[cut-1]<math.radians(15):continue
+        B1,B2=P[order[:cut]],P[order[cut:]]
+        if len(B1)<3 or len(B2)<3:continue
+        v1,v2=_branch_dir(B1,tj),_branch_dir(B2,tj);angs.append(math.acos(float(np.clip(np.dot(v1,v2),-1,1))));out.append((tj,v1,v2))
+    return (float(np.mean(angs)),out) if angs else (math.nan,[])
+def _aniso_gamma(theta,theta0,p):
+    ps=(theta-theta0)%(math.pi/2);a=float(np.interp(ps,p.lut_psi,p.lut_a));ap=float(np.interp(ps,p.lut_psi,p.lut_ap));return p.gamma_s*a,p.gamma_s*ap
+def _vapor_normal(f,tj,n1,n2,p):
+    vals=[]
+    for n in (n1,n2):
+        x=tj[0]+2*p.interface_width*n[0];y=tj[1]+2*p.interface_width*n[1];ci=int(np.clip(round(x/p.dx)-1,0,p.Nx-1));ri=int(np.clip(round(y/p.dx)-1,0,p.Ny-1));vals.append(f[ri,ci])
+    return n1 if vals[0]<=vals[1] else n2
 def compute_stress(f,e1,e2,e3,s,p):
     cr=p.Ny//2;ov,col=overlap_col(e1[cr]*e2[cr]);
     if ov<1e-3:return Stress(GS=p.GS1),True,"GB absent"
@@ -165,7 +203,15 @@ def compute_stress(f,e1,e2,e3,s,p):
     else:
         nc=int(np.clip(round(col)-1,0,p.Nx-1));solid=np.flatnonzero(f[:,nc]>.5);x=.5*(solid[-1]-solid[0])*p.dx if len(solid)>1 else math.nan;cx=math.nan
     if not math.isfinite(x) or x<=0:return Stress(GS=p.GS1),True,"neck unresolved"
-    g=effective_gamma(s,p);psi=2*math.acos(np.clip(g/(2*p.gamma_s),-0.999,0.999));k=curvature(f,col,p);st=Stress(2*p.gamma_s*math.sin(psi/2)/x+p.gamma_s*k,x,k,col,True,p.GS1,g)
+    g=effective_gamma(s,p);psi_eq=2*math.acos(np.clip(g/(2*p.gamma_s),-0.999,0.999));psi,flanks=measure_dihedral(f,col,p) if p.psi_measure else (math.nan,[]);psi=psi if math.isfinite(psi) else psi_eq;k=curvature(f,col,p)
+    sigma_lt=2*p.gamma_s*math.sin(psi/2)/x
+    if p.use_aniso_surface and flanks:
+        Fx=0.;nfl=0
+        for tj,v1,v2 in flanks:
+            for v in (v1,v2):
+                n1=np.array([-v[1],v[0]]);n2=-n1;n=_vapor_normal(f,tj,n1,n2,p);th=math.atan2(n[1],n[0]);th0=p.theta_grain[0] if v[0]<0 else p.theta_grain[1];gam,gp=_aniso_gamma(th,th0,p);F=gam*v+gp*n;Fx+=abs(F[0]);nfl+=1
+        if nfl>=2:sigma_lt=Fx/(2*x)
+    st=Stress(sigma_lt+p.gamma_s*k,x,k,col,True,p.GS1,g)
     if p.geometry=="substrate" and math.isfinite(cx) and cx<(p.substrate_wall_frac-.5)*p.Nx*p.dx-2*p.interface_width:return st,True,"particle burrowed into substrate"
     return st,False,""
 def hazard_step(s,st,p,dt,rng):
@@ -191,8 +237,16 @@ def rbm(f,e1,e2,e3,s,p):
         vr=.5*(vx+np.roll(vx,-1,1));fr=np.maximum(vr,0)*f+np.minimum(vr,0)*np.roll(f,-1,1);f=f-ds*(fr-np.roll(fr,1,1))/p.dx
         for e in (e1,e2,e3):
             fw=(np.roll(e,-1,1)-e)/p.dx;bw=(e-np.roll(e,1,1))/p.dx;e-=ds*vx*np.where(vx>=0,bw,fw);np.clip(e,0,1,out=e)
-        ex=np.maximum(0,f-1);f=np.clip(f,0,1);surf=16*f*f*(1-f)**2;ss=surf.sum();
-        if ex.sum()>0 and ss>0:f+=surf/ss*ex.sum()
+        ex=np.maximum(0,f-1);f=np.clip(f,0,1);exsum=float(ex.sum());surf=16*f*f*(1-f)**2
+        if exsum>0:
+            cr=p.Ny//2;_,gc=overlap_col(e1[cr]*e2[cr]);w=np.zeros_like(f)
+            if math.isfinite(gc):
+                nc=int(np.clip(round(gc)-1,0,p.Nx-1));solid=np.flatnonzero(f[:,nc]>.5);sig=max(3,2*p.interface_width/p.dx);CC,RR=np.meshgrid(np.arange(p.Nx),np.arange(p.Ny))
+                if len(solid)>=2:
+                    for rr in (solid[0],solid[-1]):w+=np.exp(-.5*(((CC-nc)/sig)**2+((RR-rr)/sig)**2))
+            dep=surf*w;ss=float(dep.sum())
+            if ss<=1e-30:dep=surf;ss=float(dep.sum())
+            if ss>1e-30:f+=dep/ss*exsum
     d=max(0,b-center(e2,p));s.current_disp+=d;s.cumulative_disp+=d;s.cumulative_strain=s.cumulative_disp/p.GS1
     if s.current_disp>=p.b:s.active=False;s.n_d=0;s.phi=0;s.current_disp=0;s.climbs+=1;s.hazard=0;return f,e1,e2,e3,True
     return f,e1,e2,e3,False
