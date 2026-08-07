@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Diagnose which v64 operator changes the eta2-defined grain-2 volume.
 
-This is deliberately a diagnostic wrapper around the production kernels.  It
-changes no physics.  The reported ledger decomposes the net change in sum(eta2)
+This is deliberately a diagnostic wrapper around the production kernels. It
+changes no physics. The reported ledger decomposes the net change in sum(eta2)
 into:
 
   selective post-CH eta repair
@@ -45,17 +45,34 @@ MS = 1e-3
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Per-operator eta2/V2 ledger")
     p.add_argument("--preset", choices=["dev", "v64"], default="dev")
-    p.add_argument("--nx", type=int, default=96)
-    p.add_argument("--ny", type=int, default=128)
-    p.add_argument("--dx-nm", type=float, default=5.0)
-    p.add_argument("--r2-nm", type=float, default=80.0)
+    # Geometry arguments default to None so the selected preset remains
+    # authoritative unless the user explicitly overrides a value.
+    p.add_argument("--nx", type=int)
+    p.add_argument("--ny", type=int)
+    p.add_argument("--dx-nm", type=float)
+    p.add_argument("--r1-nm", type=float)
+    p.add_argument("--r2-nm", type=float)
+    p.add_argument("--r3-nm", type=float)
+    p.add_argument("--interface-cells", type=float, default=4.0)
     p.add_argument("--aspect-ratio", type=float, default=2.0)
-    p.add_argument("--contact-orientation", choices=["short_plane", "long_plane"], default="short_plane")
+    p.add_argument(
+        "--contact-orientation",
+        choices=["short_plane", "long_plane"],
+        default="short_plane",
+    )
     p.add_argument("--sigma-target-mpa", type=float, default=75.0)
     p.add_argument("--time-ms", type=float, default=10.0)
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--no-hazard-rbm", action="store_true", help="Disable hazard/RBM to isolate CH/Ostwald/AC")
+    p.add_argument(
+        "--no-hazard-rbm",
+        action="store_true",
+        help="Disable hazard/RBM to isolate CH/Ostwald/AC",
+    )
     return p
+
+
+def _nm_or_none(value: float | None) -> float | None:
+    return None if value is None else value * NM
 
 
 def v2(e2: np.ndarray) -> float:
@@ -69,8 +86,11 @@ def main() -> None:
         geometry="substrate",
         nx=a.nx,
         ny=a.ny,
-        dx=a.dx_nm * NM,
-        r2=a.r2_nm * NM,
+        dx=_nm_or_none(a.dx_nm),
+        r1=_nm_or_none(a.r1_nm),
+        r2=_nm_or_none(a.r2_nm),
+        r3=_nm_or_none(a.r3_nm),
+        interface_cells=a.interface_cells,
         aspect_ratio=a.aspect_ratio,
         contact_orientation=a.contact_orientation,
         sigma_target=a.sigma_target_mpa * MPA,
@@ -160,7 +180,13 @@ def main() -> None:
     theoretical_ostwald = math.exp(-(p.Nt * p.dt) / p.tau_ripening) - 1.0
 
     print("\n=== eta2 / V2 OPERATOR LEDGER ===")
+    print(f"preset:               {a.preset}")
     print(f"grid:                 {p.Nx} x {p.Ny}")
+    print(f"dx:                   {p.dx*1e9:.6f} nm")
+    print(f"R1/R2/R3:             {p.R1*1e9:.3f} / {p.R2*1e9:.3f} / {p.R3*1e9:.3f} nm")
+    print(f"interface width W:    {p.interface_width*1e9:.3f} nm")
+    print(f"R2/dx:                {p.R2/p.dx:.3f} cells")
+    print(f"W/R2:                 {p.interface_width/p.R2:.6f}")
     print(f"dt:                   {p.dt:.9e} s")
     print(f"steps:                {p.Nt}")
     print(f"physical time:         {p.Nt*p.dt*1e3:.6f} ms")
