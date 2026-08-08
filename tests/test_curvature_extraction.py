@@ -20,10 +20,10 @@ def _flat_grid(dx=1e-9, W=20e-9, Nx=400, Ny=200):
     return p, x, y
 
 
-def test_flat_interface_kappa_A_is_zero():
+def test_flat_interface_kappa_mu_effective_is_zero():
     # A planar interface is the exact 1D equilibrium profile: mu vanishes
-    # identically (both bulk and gradient terms cancel), so kappa_A must be
-    # exactly zero regardless of window position.
+    # identically (both bulk and gradient terms cancel), so
+    # kappa_mu_effective must be exactly zero regardless of window position.
     p, x, y = _flat_grid()
     X, Y = np.meshgrid(x, y)
     xc = x[len(x) // 2]
@@ -34,13 +34,14 @@ def test_flat_interface_kappa_A_is_zero():
     tj_xy = (xc, y.mean())
     wc = window_curvature(f, e1, e2, e3, s, p, tj_xy, np.array([0.0, 1.0]), 0.0, 3 * p.interface_width, mu_field=mu)
     assert wc.resolved
-    assert abs(wc.kappa_A) < 1e-6 / p.interface_width  # zero to numerical roundoff
+    assert abs(wc.kappa_mu_effective) < 1e-6 / p.interface_width  # zero to numerical roundoff
 
 
-def test_circle_curvature_methods_A_and_B_match_analytic_kappa():
-    # Method A (mu/(1.5*gamma_s), see module docstring for the 1.5 factor's
-    # derivation) and Method B (geometric Kasa fit) must both recover the
-    # known 1/R curvature of a synthetic circular interface, independently.
+def test_circle_curvature_kappa_mu_effective_and_kappa_geom_match_analytic_kappa():
+    # kappa_mu_effective (mu/(1.5*gamma_s), see module docstring for the 1.5
+    # factor's derivation, single-phase-only validation) and kappa_geom
+    # (geometric Kasa fit) must both recover the known 1/R curvature of a
+    # synthetic circular interface, independently.
     p, x, y = _flat_grid(dx=1e-9, W=20e-9, Nx=400, Ny=200)
     X, Y = np.meshgrid(x, y)
     e1 = e2 = e3 = np.zeros_like(X)
@@ -57,8 +58,8 @@ def test_circle_curvature_methods_A_and_B_match_analytic_kappa():
                                0.0, 2 * p.interface_width, mu_field=mu)
         assert wc.resolved
         kappa_exact = 1.0 / R
-        assert math.isclose(wc.kappa_A, kappa_exact, rel_tol=0.01)
-        assert math.isclose(wc.kappa_B, kappa_exact, rel_tol=0.01)
+        assert math.isclose(wc.kappa_mu_effective, kappa_exact, rel_tol=0.01)
+        assert math.isclose(wc.kappa_geom, kappa_exact, rel_tol=0.01)
 
 
 def test_window_curvature_unresolved_when_too_few_contour_points():

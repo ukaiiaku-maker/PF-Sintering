@@ -1,14 +1,31 @@
 """EXPERIMENTAL / DIAGNOSTIC ONLY -- not wired into production physics.
 
-Milestone 12B Sections 11-12: two independent curvature-extraction methods,
-reported as averages over FIXED PHYSICAL arclength windows (not fixed cell
-counts, not single TJ pixels), for comparing donor/receiver capillary state
-across grid resolutions.
+Milestone 12B Sections 11-12 / Milestone 13 Section 9: two independent
+surface-shape diagnostics, reported as averages over FIXED PHYSICAL
+arclength windows (not fixed cell counts, not single TJ pixels), for
+comparing donor/receiver capillary state across grid resolutions.
 
-Method A (diffuse-interface / production thermodynamics): the local
-isotropic chemical potential `mu = mu_isotropic(...)` (bulk + gradient,
-`ch_exact_energy.py`) sampled along the f=0.5 contour and averaged over the
-window, converted to a curvature via `kappa_A = mu / (1.5*gamma_s)`.
+**Milestone 13 Section 9 naming correction**: the diffuse-interface
+quantity below was originally called "kappa_A" and treated as a curvature.
+That is only correct for a clean single-phase isotropic interface (verified
+on synthetic circles, see below) -- in the actual two-grain bicrystal,
+`mu_isotropic` also contains the eta-f coupling term (`Wc*eta2*(1-fb)`
+inside `mu0`), so what this quantity actually measures is the local value
+of the FULL transport chemical potential `mu`, rescaled into curvature
+units by the flat-interface proportionality constant; it is not a
+validated geometric curvature once eta-f coupling is present. It is
+therefore named `kappa_mu_effective` (an effective/mu-derived curvature
+proxy), never called "curvature" outright, and the geometric quantity is
+renamed `kappa_geom` for a clear, symmetric distinction. `mu_mean` (the
+actual transport potential, Section 13/14 of Milestone 12B) is preserved
+unchanged and remains the quantity to trust for transport-direction
+reasoning -- do not substitute `kappa_mu_effective` for it.
+
+kappa_mu_effective (diffuse-interface / production thermodynamics): the
+local isotropic chemical potential `mu = mu_isotropic(...)` (bulk +
+gradient, `ch_exact_energy.py`) sampled along the f=0.5 contour and
+averaged over the window, rescaled via `kappa_mu_effective = mu /
+(1.5*gamma_s)`.
 
 The 1.5 factor (NOT production's `sigma_curv = gamma_s*kappa` mechanical
 convention, which is an independent, separately-normalized quantity) comes
@@ -17,25 +34,29 @@ substituting the planar equilibrium profile f(r)=0.5(1-tanh((r-R)/W)) into
 mu = W_f*f(1-f)(1-2f) - k_f*(f''(r)+f'(r)/r) (2D radial Laplacian), the
 bracketed planar part [W_f*f(1-f)(1-2f) - k_f*f''] vanishes identically (the
 defining ODE of the planar profile), leaving mu(R) = -k_f*f'(R)/R =
--k_f*(-1/(2W))/R = k_f/(2WR) = 1.5*gamma_s/R -- i.e. mu = 1.5*gamma_s*kappa,
-not gamma_s*kappa. Verified numerically to <0.03% on synthetic circular
-interfaces (R=300/500/800nm, W=20nm) against the exact analytic kappa=1/R,
-with independent agreement from Method B's geometric fit at the same
-window (see tests/test_curvature_extraction.py). Valid to leading order in
-W/interface radius; degrades inside a strongly perturbed diffuse core (e.g.
-very close to a TJ), which is exactly why the far/near-TJ window split is
-reported separately rather than a single blended number.
+-k_f*(-1/(2W))/R = k_f/(2WR) = 1.5*gamma_s/R -- i.e. mu = 1.5*gamma_s*kappa
+for a CLEAN single-phase interface (eta identically 0), not gamma_s*kappa.
+Verified numerically to <0.03% on synthetic circular interfaces (R=300/
+500/800nm, W=20nm, no eta) against the exact analytic kappa=1/R, with
+independent agreement from kappa_geom's fit at the same window (see
+tests/test_curvature_extraction.py). In the bicrystal case (nonzero eta),
+this factor-of-1.5 relation is NOT re-derived/re-validated here -- treat
+kappa_mu_effective as a mu-derived diagnostic proxy, not a claim of
+geometric curvature. Also degrades inside a strongly perturbed diffuse
+core (e.g. very close to a TJ), which is exactly why the far/near-TJ
+window split is reported separately rather than a single blended number.
 
-Method B (geometric contour curvature): direct Kasa circle fit
+kappa_geom (geometric contour curvature): direct Kasa circle fit
 (`signed_curvature.signed_curvature_at`'s core, reused here) to the actual
 f=0.5 contour points falling within an explicit arclength window, walked
-from a TJ along a given branch direction (reusing
-`ch_crossover_diagnostics.trace_branch_profile`'s contour-walk). Makes no
-reference to mu at all -- a purely geometric cross-check on Method A.
+from a TJ along a given branch direction. Makes no reference to mu at all
+-- this is the quantity to use for actual physical curvature, in the
+bicrystal case as much as the single-phase case, since it is purely
+geometric and unaffected by eta-f coupling.
 
-Both methods share the same window definition (arclength interval [s_lo,
-s_hi] measured in physical length units from the TJ along a branch), so
-their outputs are directly comparable at any grid spacing.
+Both quantities share the same window definition (arclength interval
+[s_lo, s_hi] measured in physical length units from the TJ along a
+branch), so their outputs are directly comparable at any grid spacing.
 """
 
 from __future__ import annotations
@@ -159,8 +180,8 @@ class WindowCurvature:
     n_points: int = 0
     s_lo: float = math.nan
     s_hi: float = math.nan
-    kappa_A: float = math.nan       # Method A: mean(mu)/gamma_s over the window
-    kappa_B: float = math.nan       # Method B: single Kasa fit over the window
+    kappa_mu_effective: float = math.nan       # mu(window)/(1.5*gamma_s) -- mu-derived proxy, NOT validated as curvature in the bicrystal case (Section 9)
+    kappa_geom: float = math.nan       # geometric Kasa fit over the window -- the actual curvature
     mu_mean: float = math.nan
 
 
@@ -181,14 +202,14 @@ def window_curvature(f, e1, e2, e3, s, p, tj_xy, branch_dir, s_lo, s_hi, mu_fiel
         mu_field = mu_isotropic(f, e1, e2, e3, s, p)
     mu_win = _sample_bilinear(mu_field, win_pts[:, 0], win_pts[:, 1], p)
     out.mu_mean = float(np.mean(mu_win))
-    out.kappa_A = out.mu_mean / (1.5 * p.gamma_s)
-    out.kappa_B = _kasa_fit_curvature(win_pts, f, p)
-    out.resolved = math.isfinite(out.kappa_A) and math.isfinite(out.kappa_B)
+    out.kappa_mu_effective = out.mu_mean / (1.5 * p.gamma_s)
+    out.kappa_geom = _kasa_fit_curvature(win_pts, f, p)
+    out.resolved = math.isfinite(out.kappa_mu_effective) and math.isfinite(out.kappa_geom)
     return out
 
 
 def branch_window_report(f, e1, e2, e3, s, p, tj_xy, branch_dir, window_width_factors=(2.0, 5.0)):
-    """Report kappa_A/kappa_B in consecutive windows [0,2W], [2W,5W]
+    """Report kappa_mu_effective/kappa_geom in consecutive windows [0,2W], [2W,5W]
     (Section 11's near-TJ / far categories) along one branch from a TJ.
     Windows are wider than the literal "~1W/2W/3W" suggestion because a
     window must contain enough raw f=0.5 contour points for a well-posed
@@ -252,12 +273,12 @@ def branch_mu_J_profile(f, mu_field, Jx, Jy, p, tj_xy, branch_dir, max_arclength
 
 def delta_kappa_donor_receiver(windows_donor, windows_receiver, window_idx=-1):
     """Delta kappa = <kappa_donor_region> - <kappa_receiver_region>
-    (Section 12) using kappa_A (production thermodynamics) at the requested
+    (Section 12) using kappa_mu_effective (production thermodynamics) at the requested
     window index (default: the last/far window of each branch report)."""
     wd = windows_donor[window_idx if window_idx >= 0 else max(windows_donor)]
     wr = windows_receiver[window_idx if window_idx >= 0 else max(windows_receiver)]
     if not (wd.resolved and wr.resolved):
         return math.nan, math.nan
-    dkappa = wd.kappa_A - wr.kappa_A
+    dkappa = wd.kappa_mu_effective - wr.kappa_mu_effective
     dmu = wd.mu_mean - wr.mu_mean
     return dkappa, dmu

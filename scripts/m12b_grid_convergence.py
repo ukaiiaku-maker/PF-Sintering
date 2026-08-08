@@ -167,7 +167,12 @@ def classify_branches(f, p, tj_xy, v1, v2, wall_mean, probe_len=None):
 def curvature_snapshot(f, e1, e2, e3, s, p, wall_mean):
     """Section 11-12: Delta-kappa / Delta-mu between particle and substrate
     regions at both TJs, in the far window ([2W,3W]) and near-TJ window
-    ([0,1W]), via curvature_extraction.branch_window_report."""
+    ([0,1W]), via curvature_extraction.branch_window_report.
+
+    Milestone 13 Section 9: output keys renamed from the ambiguous
+    "kappa"/"kappa_..._B" pair to explicit kappa_mu_effective_*/kappa_geom_*
+    -- the former is a mu-derived proxy (not a validated curvature in the
+    bicrystal case), the latter is the actual geometric curvature."""
     rep = compute_neck_tj_forces(f, e1, e2, e3, s, p)
     out = {}
     for label, tj in (("top", rep.top), ("bottom", rep.bottom)):
@@ -180,14 +185,14 @@ def curvature_snapshot(f, e1, e2, e3, s, p, wall_mean):
         near_p, far_p = w_particle[0], w_particle[max(w_particle)]
         near_s, far_s = w_substrate[0], w_substrate[max(w_substrate)]
         out[label] = dict(
-            kappa_particle_near_TJ=near_p.kappa_A, kappa_particle_far=far_p.kappa_A,
-            kappa_substrate_near_TJ=near_s.kappa_A, kappa_substrate_far=far_s.kappa_A,
-            kappa_particle_near_TJ_B=near_p.kappa_B, kappa_particle_far_B=far_p.kappa_B,
-            kappa_substrate_near_TJ_B=near_s.kappa_B, kappa_substrate_far_B=far_s.kappa_B,
+            kappa_mu_effective_particle_near_TJ=near_p.kappa_mu_effective, kappa_mu_effective_particle_far=far_p.kappa_mu_effective,
+            kappa_mu_effective_substrate_near_TJ=near_s.kappa_mu_effective, kappa_mu_effective_substrate_far=far_s.kappa_mu_effective,
+            kappa_geom_particle_near_TJ=near_p.kappa_geom, kappa_geom_particle_far=far_p.kappa_geom,
+            kappa_geom_substrate_near_TJ=near_s.kappa_geom, kappa_geom_substrate_far=far_s.kappa_geom,
             mu_particle_far=far_p.mu_mean, mu_substrate_far=far_s.mu_mean,
-            delta_kappa_far=(far_p.kappa_A - far_s.kappa_A) if (far_p.resolved and far_s.resolved) else math.nan,
+            delta_kappa_mu_effective_far=(far_p.kappa_mu_effective - far_s.kappa_mu_effective) if (far_p.resolved and far_s.resolved) else math.nan,
             delta_mu_far=(far_p.mu_mean - far_s.mu_mean) if (far_p.resolved and far_s.resolved) else math.nan,
-            delta_kappa_near=(near_p.kappa_A - near_s.kappa_A) if (near_p.resolved and near_s.resolved) else math.nan,
+            delta_kappa_mu_effective_near=(near_p.kappa_mu_effective - near_s.kappa_mu_effective) if (near_p.resolved and near_s.resolved) else math.nan,
         )
     return out
 
