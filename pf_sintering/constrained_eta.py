@@ -286,8 +286,26 @@ def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=F
     for e in grains:
         old_sum += e
     has_mass = old_sum > 1e-30
+    # model.reproject treats fb<=0.005 as "void" and forces eta=0 there
+    # unconditionally (regardless of f); f_weighted_ownership_volumes's own
+    # w_i=e_i/(sum+eps) convention likewise reads ~0 ownership whenever eta
+    # is ~0, however small f is. An earlier version of this rescale instead
+    # assigned an even fb/N split at every has_mass=False point (including
+    # deep in the diffuse tail where f is a few 1e-3 but eta was correctly
+    # zeroed by reproject) -- inconsistent with that convention, and large
+    # enough in practice (over half the grid at dx=5nm, since reproject's
+    # void band is wide) to dominate particle_volume_rate_decomposition's
+    # eta-migration bucket with a pure bookkeeping artifact having nothing
+    # to do with eta kinetics (confirmed: with M_eta=0, where NO eta motion
+    # is physically possible, the old version still reported eta-migration
+    # ~50x LARGER than the genuine transport signal). Fixed by only
+    # invoking the equal-split fallback in reproject's own "repair" band
+    # (fb>0.02, matching its np.any(repair) branch) -- void points keep
+    # eta=0 exactly, consistent with reproject/V_i's own convention.
+    void = fb <= 0.005
     scale = np.where(has_mass, fb / np.where(has_mass, old_sum, 1.0), 0.0)
-    rescaled = [np.where(has_mass, e * scale, np.where(fb > 1e-30, fb / N, 0.0)) for e in grains]
+    fallback = np.where((~void) & (fb > 0.02), fb / N, 0.0)
+    rescaled = [np.where(has_mass, e * scale, fallback) for e in grains]
     f_tracking_correction = float(sum(np.sum(np.abs(rescaled[i] - grains[i])) for i in range(N)))
 
     Wc = local_wc(fb, *(rescaled + [np.zeros_like(fb)] * (3 - N)), s, p)
