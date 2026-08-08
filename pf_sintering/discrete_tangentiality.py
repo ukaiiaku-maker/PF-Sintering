@@ -46,7 +46,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .bc_ops import _shift, face_average
+from .bc_ops import _shift, face_average, face_gradient_x, face_gradient_y
 from .surface_transport import interface_normal
 
 
@@ -65,13 +65,11 @@ def cell_tangentiality(f, Jx, Jy, p, bc_x, bc_y, eps_n=None):
 
 def _face_normal_and_flux_x(f, Jx, Jy, dx, bc_x, bc_y):
     """MAC-consistent normal and flux vector at each cell's '+x' face
-    (between cell (r,c) and (r,c+1))."""
-    f_right = _shift(f, -1, axis=1, bc=bc_x)
-    gx_face = (f_right - f) / dx
-    f_up = _shift(f, 1, axis=0, bc=bc_y)
-    f_down = _shift(f, -1, axis=0, bc=bc_y)
-    gy_cell = (f_down - f_up) / (2 * dx)
-    gy_face = 0.5 * (gy_cell + _shift(gy_cell, -1, axis=1, bc=bc_x))
+    (between cell (r,c) and (r,c+1)), via the SAME `bc_ops.face_gradient_x`
+    primitive Milestone 13D's face-projected flux construction uses --
+    guarantees this diagnostic and the authoritative flux agree on what
+    "the face normal" means (Milestone 13D Section 2)."""
+    gx_face, gy_face = face_gradient_x(f, dx, bc_x=bc_x, bc_y=bc_y)
     gmag = np.hypot(gx_face, gy_face)
     nx = np.divide(gx_face, gmag, out=np.zeros_like(gmag), where=gmag > 0)
     ny = np.divide(gy_face, gmag, out=np.zeros_like(gmag), where=gmag > 0)
@@ -83,12 +81,7 @@ def _face_normal_and_flux_x(f, Jx, Jy, dx, bc_x, bc_y):
 
 def _face_normal_and_flux_y(f, Jx, Jy, dx, bc_x, bc_y):
     """MAC-consistent normal and flux vector at each cell's '+y' face."""
-    f_up = _shift(f, -1, axis=0, bc=bc_y)
-    gy_face = (f_up - f) / dx
-    f_right = _shift(f, 1, axis=1, bc=bc_x)
-    f_left = _shift(f, -1, axis=1, bc=bc_x)
-    gx_cell = (f_left - f_right) / (2 * dx)
-    gx_face = 0.5 * (gx_cell + _shift(gx_cell, -1, axis=0, bc=bc_y))
+    gx_face, gy_face = face_gradient_y(f, dx, bc_x=bc_x, bc_y=bc_y)
     gmag = np.hypot(gx_face, gy_face)
     nx = np.divide(gx_face, gmag, out=np.zeros_like(gmag), where=gmag > 0)
     ny = np.divide(gy_face, gmag, out=np.zeros_like(gmag), where=gmag > 0)

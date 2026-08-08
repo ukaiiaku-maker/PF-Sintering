@@ -41,7 +41,7 @@ import math
 
 import numpy as np
 
-from .bc_ops import face_average, flux_divergence, grad_bc
+from .bc_ops import face_average, face_gradient_x, face_gradient_y, flux_divergence, grad_bc
 
 SECH8_INTEGRAL = 32.0 / 35.0  # integral_{-inf}^{inf} sech^8(u) du
 
@@ -124,6 +124,83 @@ def dissipation_density(Mxx, Mxy, Myy, mu, dx, bc_x, bc_y):
     return Mxx * gx_mu * gx_mu + 2.0 * Mxy * gx_mu * gy_mu + Myy * gy_mu * gy_mu
 
 
+def _face_projected_mobility_and_flux(f, mu, dx, W, M_s, bc_x, bc_y, eps_n, axis):
+    """Milestone 13D Sections 2-5: construct `n`, `P_t`, `grad(mu)` ALL AT
+    the SAME face (the '+axis' face of each cell -- axis=1 for x-faces,
+    axis=0 for y-faces) via `bc_ops.face_gradient_x/y`, then project
+    THERE -- not interpolated from cell-centered values (Section 2's
+    design principle). `q` is evaluated at the face-averaged `f` (Section
+    5: "evaluate/interpolate q at the face consistently", not re-derived
+    or dx/curvature-dependent). Returns the FULL flux vector at that face
+    family (both components -- the "own" component is what the
+    conservative update uses; the other is diagnostic-only, needed to
+    check `J_face . n_face`) plus the face mobility tensor and `grad(mu)`
+    components (needed for the face-local energy-dissipation audit,
+    Section 8)."""
+    face_gradient = face_gradient_x if axis == 1 else face_gradient_y
+    gx_f, gy_f = face_gradient(f, dx, bc_x=bc_x, bc_y=bc_y)
+    gmag = np.sqrt(gx_f * gx_f + gy_f * gy_f + eps_n * eps_n)
+    nx, ny = gx_f / gmag, gy_f / gmag
+
+    f_face = face_average(f, axis=axis, bc=(bc_x if axis == 1 else bc_y))
+    q_face = interface_localization_q(f_face, W)
+
+    gx_mu, gy_mu = face_gradient(mu, dx, bc_x=bc_x, bc_y=bc_y)
+
+    Pxx = 1.0 - nx * nx
+    Pxy = -nx * ny
+    Pyy = 1.0 - ny * ny
+    coef = M_s * q_face
+    Mxx, Mxy, Myy = coef * Pxx, coef * Pxy, coef * Pyy
+
+    Jx = -(Mxx * gx_mu + Mxy * gy_mu)
+    Jy = -(Mxy * gx_mu + Myy * gy_mu)
+    return dict(Jx=Jx, Jy=Jy, Mxx=Mxx, Mxy=Mxy, Myy=Myy, nx=nx, ny=ny, gx_mu=gx_mu, gy_mu=gy_mu, q_face=q_face)
+
+
+def surface_flux_face_projected(f, mu, dx, W, M_s, bc_x, bc_y, eps_n=None):
+    """Milestone 13D Section 6: the face flux the conservative update uses
+    IS the locally-projected flux -- not a cell-centered flux interpolated
+    onto faces after the fact. `Jx_face` (the x-COMPONENT of the flux
+    vector constructed AT x-faces) and `Jy_face` (the y-component
+    constructed AT y-faces) are the two the divergence needs; `xface`/
+    `yface` carry the full per-face-family vectors and mobility tensors
+    for the tangentiality and energy-dissipation diagnostics."""
+    if eps_n is None:
+        eps_n = 1e-6 / W
+    xface = _face_projected_mobility_and_flux(f, mu, dx, W, M_s, bc_x, bc_y, eps_n, axis=1)
+    yface = _face_projected_mobility_and_flux(f, mu, dx, W, M_s, bc_x, bc_y, eps_n, axis=0)
+    return dict(Jx_face=xface["Jx"], Jy_face=yface["Jy"], xface=xface, yface=yface)
+
+
+def face_projected_tangentiality(fp):
+    """Milestone 13D Section 9: J_face . n_face at each face family,
+    computed directly from surface_flux_face_projected's own vectors (no
+    interpolation needed at all, unlike discrete_tangentiality.
+    face_tangentiality's legacy-mode diagnostic) -- both the flux and the
+    normal it is dotted against were constructed at the identical face."""
+    xf, yf = fp["xface"], fp["yface"]
+    dot_x = xf["Jx"] * xf["nx"] + xf["Jy"] * xf["ny"]
+    mag_x = np.hypot(xf["Jx"], xf["Jy"])
+    dot_y = yf["Jx"] * yf["nx"] + yf["Jy"] * yf["ny"]
+    mag_y = np.hypot(yf["Jx"], yf["Jy"])
+    ratio_x = np.divide(np.abs(dot_x), mag_x, out=np.full_like(mag_x, np.nan), where=mag_x > 0)
+    ratio_y = np.divide(np.abs(dot_y), mag_y, out=np.full_like(mag_y, np.nan), where=mag_y > 0)
+    return dict(dot_x=dot_x, mag_x=mag_x, ratio_x=ratio_x, dot_y=dot_y, mag_y=mag_y, ratio_y=ratio_y)
+
+
+def dissipation_density_face_projected(fp):
+    """Face-local D_CH density at each face family (Milestone 13D Section
+    8), using that face's own PSD mobility tensor and grad(mu) -- the
+    face-local analogue of dissipation_density, needed because the legacy
+    cell-centered D_density no longer corresponds to what the
+    face-projected update actually integrates."""
+    xf, yf = fp["xface"], fp["yface"]
+    Dx = xf["Mxx"] * xf["gx_mu"] ** 2 + 2.0 * xf["Mxy"] * xf["gx_mu"] * xf["gy_mu"] + xf["Myy"] * xf["gy_mu"] ** 2
+    Dy = yf["Mxx"] * yf["gx_mu"] ** 2 + 2.0 * yf["Mxy"] * yf["gx_mu"] * yf["gy_mu"] + yf["Myy"] * yf["gy_mu"] ** 2
+    return Dx, Dy
+
+
 def surface_flux_divergence_conservative(Jx_cell, Jy_cell, dx, bc_x, bc_y):
     """Interpolates the cell-centered flux to faces (simple average) and
     applies bc_ops.flux_divergence, whose exact telescoping-sum mass
@@ -136,14 +213,36 @@ def surface_flux_divergence_conservative(Jx_cell, Jy_cell, dx, bc_x, bc_y):
     return flux_divergence(Jx_face, Jy_face, dx, bc_x=bc_x, bc_y=bc_y)
 
 
-def surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None):
+def surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None,
+                               face_flux_mode="cell_average_legacy"):
     """One full conservative step of df/dt = -div(J), J = -M_s*q(f)*P_t.grad(mu_f).
-    Returns (f_new, diagnostics dict with Jx/Jy/M components/D_CH density)."""
+
+    Milestone 13D Section 7: `face_flux_mode` selects between the ORIGINAL
+    ("cell_average_legacy", still the default -- UNCHANGED code path, not
+    touched by Milestone 13D) and the new "face_projected" construction
+    (Section 2: n/P_t/grad(mu) built directly AT each face, not
+    interpolated from cell centers -- see `surface_flux_face_projected`).
+    The two modes' diagnostics dicts differ in shape (legacy returns
+    cell-centered Jx/Jy/Mxx/Mxy/Myy/D_density; face_projected returns
+    face-centered Jx_face/Jy_face plus the full per-face-family `xface`/
+    `yface` vectors and `D_density_x`/`D_density_y`) -- callers must check
+    `face_flux_mode` before assuming a particular key's shape."""
     if eps_n is None:
         eps_n = 1e-6 / W
-    Mxx, Mxy, Myy = surface_mobility_tensor(f, dx, W, M_s, bc_x, bc_y, eps_n)
-    Jx, Jy = surface_flux(mu, Mxx, Mxy, Myy, dx, bc_x, bc_y)
-    div = surface_flux_divergence_conservative(Jx, Jy, dx, bc_x, bc_y)
-    f_new = f - dt * div
-    D_density = dissipation_density(Mxx, Mxy, Myy, mu, dx, bc_x, bc_y)
-    return f_new, dict(Jx=Jx, Jy=Jy, Mxx=Mxx, Mxy=Mxy, Myy=Myy, div=div, D_density=D_density)
+    if face_flux_mode == "cell_average_legacy":
+        Mxx, Mxy, Myy = surface_mobility_tensor(f, dx, W, M_s, bc_x, bc_y, eps_n)
+        Jx, Jy = surface_flux(mu, Mxx, Mxy, Myy, dx, bc_x, bc_y)
+        div = surface_flux_divergence_conservative(Jx, Jy, dx, bc_x, bc_y)
+        f_new = f - dt * div
+        D_density = dissipation_density(Mxx, Mxy, Myy, mu, dx, bc_x, bc_y)
+        return f_new, dict(Jx=Jx, Jy=Jy, Mxx=Mxx, Mxy=Mxy, Myy=Myy, div=div, D_density=D_density)
+    elif face_flux_mode == "face_projected":
+        fp = surface_flux_face_projected(f, mu, dx, W, M_s, bc_x, bc_y, eps_n)
+        div = flux_divergence(fp["Jx_face"], fp["Jy_face"], dx, bc_x=bc_x, bc_y=bc_y)
+        f_new = f - dt * div
+        D_density_x, D_density_y = dissipation_density_face_projected(fp)
+        return f_new, dict(Jx_face=fp["Jx_face"], Jy_face=fp["Jy_face"],
+                            xface=fp["xface"], yface=fp["yface"], div=div,
+                            D_density_x=D_density_x, D_density_y=D_density_y)
+    else:
+        raise ValueError(f"unknown face_flux_mode {face_flux_mode!r}")

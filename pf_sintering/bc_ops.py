@@ -115,6 +115,47 @@ def div_bc(vx, vy, dx, bc_x=_PERIODIC, bc_y="reflecting"):
     return dvx + dvy
 
 
+def face_gradient_x(a, dx, bc_x=_PERIODIC, bc_y="reflecting"):
+    """Milestone 13D Section 3: consistent second-order staggered gradient
+    of scalar field `a` AT the '+x' face of each cell (between cell
+    (r,c) and (r,c+1)) -- both components evaluated at the SAME face
+    location, so a caller can build a genuinely face-local normal/
+    projector/flux there (Section 2's "construct at the same face" design
+    principle) instead of interpolating a cell-centered quantity onto it.
+
+    Normal (x) derivative: the true one-sided difference across the face
+    itself (exact for that face's own location, matching `face_flux_x`'s
+    own `(a[i+1]-a[i])/dx` convention).
+    Tangential (y) derivative: each of the two neighboring cells' own
+    centered y-derivative (the SAME formula `grad_bc` uses), averaged
+    onto the face -- a standard corner-averaged MAC-grid construction.
+
+    Used identically by `discrete_tangentiality.py` (Milestone 13C's
+    diagnostic) and `surface_transport.py`'s face-projected flux
+    (Milestone 13D) -- the same primitive underlies both, which is what
+    guarantees the flux the conservative update uses and the flux the
+    tangentiality diagnostic measures are the same object."""
+    a_right = _shift(a, -1, axis=1, bc=bc_x)
+    gx_face = (a_right - a) / dx
+    a_up = _shift(a, 1, axis=0, bc=bc_y)
+    a_down = _shift(a, -1, axis=0, bc=bc_y)
+    gy_cell = (a_down - a_up) / (2 * dx)
+    gy_face = 0.5 * (gy_cell + _shift(gy_cell, -1, axis=1, bc=bc_x))
+    return gx_face, gy_face
+
+
+def face_gradient_y(a, dx, bc_x=_PERIODIC, bc_y="reflecting"):
+    """Same as `face_gradient_x`, at the '+y' face of each cell (between
+    cell (r,c) and (r+1,c))."""
+    a_up = _shift(a, -1, axis=0, bc=bc_y)
+    gy_face = (a_up - a) / dx
+    a_right = _shift(a, 1, axis=1, bc=bc_x)
+    a_left = _shift(a, -1, axis=1, bc=bc_x)
+    gx_cell = (a_left - a_right) / (2 * dx)
+    gx_face = 0.5 * (gx_cell + _shift(gx_cell, -1, axis=0, bc=bc_y))
+    return gx_face, gy_face
+
+
 def face_flux_x(M, mu, dx, bc_x=_PERIODIC):
     """Face-centered x-flux J[i,j] = flux on the RIGHT face of cell
     (i,j), mobility face-averaged (periodic-style construction; the actual
