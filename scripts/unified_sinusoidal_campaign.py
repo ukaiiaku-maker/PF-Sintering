@@ -116,7 +116,7 @@ def run_unified_campaign(label, p, f, e1, e2, e3, args, sample_every):
     for step in range(1, args.steps + 1):
         mu = mu_isotropic(f, e1, e2, e3, s, p)
         f_new, diag = surface_divergence_update(f, mu, p.dx, p.dt, p.interface_width, M_s, bc_x=BC_X, bc_y=BC_Y)
-        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f_new, p, bc_x=BC_X, bc_y=BC_Y)
+        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f_new, s, p, bc_x=BC_X, bc_y=BC_Y)
 
         if step % sample_every == 0 or step == args.steps:
             sub_before = compute_subgrid_contact(f, e1, e2, p)

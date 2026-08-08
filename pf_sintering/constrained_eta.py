@@ -1,6 +1,6 @@
 """EXPERIMENTAL / DIAGNOSTIC ONLY -- not wired into production physics.
 
-Milestone 12 Commit 3: constrained variational structural (grain-ownership)
+Milestone 12/12B: constrained variational structural (grain-ownership)
 kinetics.
 
 `structural_projection.project_eta_mass_preserving` rigidly holds each
@@ -11,31 +11,49 @@ mass, and the physically relevant local constraint (inspected directly
 from `model.py`) is `sum_i eta_i = f` pointwise, not `integral(eta_i) =
 const` per grain.
 
-`model.evolve_eta` already implements `d(eta_i)/dt = M_eta*k_eta*lap9(eta_i)`
-for each `eta_i` independently -- the gradient-flow of the EXISTING
-structural free energy `G = (k_eta/2) * sum_i integral |grad(eta_i)|^2 dV`
-(sign-verified: `g_i = delta G/delta eta_i = -k_eta*lap(eta_i)`, and
-`d(eta_i)/dt = -M_eta*g_i = +M_eta*k_eta*lap9(eta_i)` exactly matches).
-This module does not invent a new free energy; it uses the SAME `g_i` but
-projects out the component that would violate `sum_i eta_i = f`:
+**Milestone 12B correction**: Milestone 12's `g_i = -k_eta*lap(eta_i)`
+(matching `model.evolve_eta`'s own gradient-only kinetics) is
+**INCOMPLETE**. Inspecting `model.evolve_f`'s actual chemical potential
+(`mu0 = W_f*f(1-f)(1-2f) - Wc*eta2*(1-fb)`, `eta2 = sum_i clip(eta_i,0,fb)^2`,
+`Wc = 36*gl(local)/W`) shows the intended free energy contains an
+eta-f BULK COUPLING term beyond the pure gradient term:
+
+    F = integral [ (W_f/2)*f^2*(1-f)^2 + Wc*eta2*(f^2/2 - f)
+                   + (k_eta/2)*sum_i |grad(eta_i)|^2 ] dV
+
+(the bulk term's `f`-derivative reproduces `mu0` exactly -- Milestone 8's
+`ch_exact_energy.py` derivation, reused verbatim here). Since
+`eta2 = sum_i eta_i^2`, this term ALSO has a nonzero derivative with
+respect to each `eta_i` individually (`d(eta2)/d(eta_i) = 2*eta_i`, no
+cross-coupling to eta_j, i != j, since eta2 is a sum of squares, not a
+product):
+
+    g_i = delta F/delta eta_i = -k_eta*lap(eta_i) + 2*Wc*eta_i*(f^2/2 - f)
+
+Production `model.evolve_eta` (`d(eta_i)/dt = M_eta*k_eta*lap9(eta_i)`)
+implements only the FIRST term -- Outcome E2 of the Milestone 12B
+handoff's Section 5 decision tree ("additional eta-dependent terms are
+part of the intended F... implement the COMPLETE g_i... do not preserve
+the old incomplete eta evolution merely for parity"). Verified via the
+same finite-difference directional-derivative test Milestone 8 used for
+`ch_exact_energy.py`: `[F(eta_i+eps*q)-F(eta_i-eps*q)]/(2*eps)` vs.
+`dx^2*sum(g_i*q)`, using `-0.5*k_eta*eta_i*lap9(eta_i)` (not a naive
+`|grad|^2` central-difference sum, for the same `lap9`-self-adjointness
+reason `ch_exact_energy.py` documents) for the gradient term -- machine
+precision agreement (`rel_err ~1e-12`, `tests/test_constrained_eta.py`).
+
+Constrained update at fixed `f`:
 
     d(eta_i)/dt = -L_i * (g_i - lambda)
 
 with `L_i = M_eta` for every active grain (equal mobility -- the only case
-the current model provides, since `M_eta` is a single shared parameter) and
-`lambda = mean_i(g_i)` over the active grains at each point. This is an
-EXACT algebraic identity, not an approximation: `sum_i d(eta_i)/dt =
--M_eta*(sum_i g_i - n*lambda) = 0` for `lambda = (1/n)*sum_i g_i`, so if
-`sum_i eta_i = f` holds at the start of a step, the variational update
-alone preserves it to the order of the time discretization -- BEFORE any
-correction. A local, minimally-corrective projection (the EXISTING
-`model.reproject`, already pointwise/local and not integral-preserving --
-reused unmodified, not reimplemented) then corrects any residual numerical
-constraint violation (negativity, `sum > f`, discretization drift). Both
-deltas (variational vs. projection) are tracked and returned separately
-(Milestone 12 Sections 14-15: the projection correction must stay small
-relative to the variational change, never become a hidden coarsening
-driver in its own right).
+the current model provides) and `lambda = mean_i(g_i)` over the active
+grains at each point -- an EXACT algebraic identity (`sum_i d(eta_i)/dt
+= 0`), unaffected by which `g_i` is used. A local, minimally-corrective
+projection (the EXISTING `model.reproject`, unmodified) then corrects any
+residual numerical constraint violation; both deltas are tracked and
+returned separately (variational vs. projection must stay a minor
+correction, never a hidden coarsening driver in its own right).
 """
 
 from __future__ import annotations
@@ -43,27 +61,49 @@ from __future__ import annotations
 import numpy as np
 
 from .bc_ops import lap9_bc
-from .model import reproject
+from .model import effective_gamma, reproject
 
 
-def structural_thermodynamic_force(eta_i, dx, k_eta, bc_x="periodic", bc_y="reflecting"):
-    """g_i = delta G/delta eta_i = -k_eta*lap(eta_i) for the existing
-    production structural (gradient-only) free energy -- see module
-    docstring for the sign derivation matching model.evolve_eta exactly."""
-    return -k_eta * lap9_bc(eta_i, dx, bc_x=bc_x, bc_y=bc_y)
+def local_wc(f, e1, e2, e3, s, p):
+    """Wc(local) = 36*gl/W, the SAME local-effective-gamma construction
+    model.evolve_f uses for its eta-f coupling term (gl = gamma_gb_ref
+    away from a GB, effective_gamma(s,p) where e1*e2>1e-20 -- reproduced
+    here exactly, not re-derived, to guarantee identical Wc in both
+    contexts)."""
+    fb = np.clip(f, 0.0, 1.0)
+    es = [np.clip(e, 0.0, fb) for e in (e1, e2, e3)]
+    pair = np.maximum(0.0, es[0] * es[1])
+    gl = np.full_like(f, p.gamma_gb_ref)
+    mask = pair > 1e-20
+    if np.any(mask):
+        gl[mask] = effective_gamma(s, p)
+    return 36.0 * gl / p.interface_width
 
 
-def constrained_variational_eta_update(e1, e2, e3, f, p, dt=None, use_eta3=False,
+def structural_thermodynamic_force(eta_i, f, Wc, dx, k_eta, bc_x="periodic", bc_y="reflecting"):
+    """g_i = delta F/delta eta_i = -k_eta*lap(eta_i) + 2*Wc*eta_i*(f^2/2-f)
+    -- the COMPLETE derivative (Milestone 12B Section 5; see module
+    docstring), not just the gradient term Milestone 12 used."""
+    grad_term = -k_eta * lap9_bc(eta_i, dx, bc_x=bc_x, bc_y=bc_y)
+    coupling_term = 2.0 * Wc * eta_i * (0.5 * f * f - f)
+    return grad_term + coupling_term
+
+
+def constrained_variational_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=False,
                                         bc_x="periodic", bc_y="reflecting"):
     """One constrained-Allen-Cahn step for the active eta fields (equal
-    mobility L_i=M_eta), followed by model.reproject's existing local
-    positivity/simplex correction. Returns (e1_new, e2_new, e3_new, diag)
-    with the variational and projection deltas tracked separately."""
+    mobility L_i=M_eta), using the COMPLETE structural_thermodynamic_force,
+    followed by model.reproject's existing local positivity/simplex
+    correction. `s` (Sink) is required now (local_wc needs it for
+    effective_gamma, matching model.evolve_f's own signature). Returns
+    (e1_new, e2_new, e3_new, diag) with the variational and projection
+    deltas tracked separately."""
     dt = dt if dt is not None else p.dt
-    g1 = structural_thermodynamic_force(e1, p.dx, p.k_eta, bc_x, bc_y)
-    g2 = structural_thermodynamic_force(e2, p.dx, p.k_eta, bc_x, bc_y)
+    Wc = local_wc(f, e1, e2, e3, s, p)
+    g1 = structural_thermodynamic_force(e1, f, Wc, p.dx, p.k_eta, bc_x, bc_y)
+    g2 = structural_thermodynamic_force(e2, f, Wc, p.dx, p.k_eta, bc_x, bc_y)
     if use_eta3:
-        g3 = structural_thermodynamic_force(e3, p.dx, p.k_eta, bc_x, bc_y)
+        g3 = structural_thermodynamic_force(e3, f, Wc, p.dx, p.k_eta, bc_x, bc_y)
         lam = (g1 + g2 + g3) / 3.0
     else:
         g3 = np.zeros_like(e1)

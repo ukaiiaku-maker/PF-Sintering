@@ -124,7 +124,7 @@ def two_region_benchmark(args):
         mu = mu_isotropic(f, e1, e2, e3, s, p)
         f, diag = surface_divergence_update(f, mu, p.dx, p.dt, p.interface_width, M_s,
                                              bc_x="reflecting", bc_y="periodic")
-        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f, p, bc_x="reflecting", bc_y="periodic")
+        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f, s, p, bc_x="reflecting", bc_y="periodic")
         var_change_total += ediag["variational_change"]
         proj_change_total += ediag["projection_change"]
         if step % sample_every == 0:
