@@ -69,7 +69,13 @@ def run(dx_nm, args, t_mid):
     e1, e2, e3 = reproject(f, e1, e2, e3)
     s = Sink(threshold=math.inf)
     M_s = m_s_ref(p.M_f, p.interface_width)
-    wall_mean = (p.substrate_wall_frac - 0.5) * p.Nx * p.dx
+    # Milestone 13 Section 8 fix: this file's coordinate arrays are all the
+    # UNCENTERED convention (x=(arange(1,Nx+1))*dx); the correct wall
+    # position there is wall_frac*Nx*dx, not (wall_frac-0.5)*Nx*dx (which
+    # is model.initialize_fields' CENTERED-coordinate formula) -- see
+    # scripts/m12b_grid_convergence.py's run_campaign for the full
+    # explanation of how this bug was found.
+    wall_mean = p.substrate_wall_frac * p.Nx * p.dx
 
     n_mid = round(t_mid / p.dt)
     for _ in range(n_mid):

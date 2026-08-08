@@ -213,7 +213,19 @@ def run_campaign(dx_nm, args, t_end, sample_every_steps=20, curvature_every_samp
     print(f"\n=== State-A unified campaign, dx={dx_nm}nm, t_end={t_end:.4e}s ===")
     p, f, e1, e2, e3 = build_state_a(args, dx_nm)
     if wall_mean is None:
-        wall_mean = (p.substrate_wall_frac - 0.5) * p.Nx * p.dx
+        # Milestone 13 Section 8 fix: (wall_frac-0.5)*Nx*dx is the wall
+        # position in model.initialize_fields' CENTERED coordinate system
+        # (x=(arange(1,Nx+1)-Nx/2)*dx); every diagnostic tool in this file
+        # (tj_force, tj_subgrid, curvature_extraction, flux_closure) uses
+        # the UNCENTERED convention (x=(arange(1,Nx+1))*dx) instead, where
+        # the correct wall position is wall_frac*Nx*dx (no -0.5 shift). The
+        # old formula was off by Nx*dx/2 (~300nm at dx=5nm, Nx=126) -- with
+        # only a RELATIVE particle-vs-substrate branch comparison
+        # (classify_branches) this constant offset canceled out and never
+        # surfaced, but it broke any ABSOLUTE-threshold classifier (e.g.
+        # flux_closure.neck_boundary_face_flux_balance), which is how it
+        # was caught.
+        wall_mean = p.substrate_wall_frac * p.Nx * p.dx
     s = Sink(threshold=math.inf)
     M_s = m_s_ref(p.M_f, p.interface_width)
     n_steps = round(t_end / p.dt)
