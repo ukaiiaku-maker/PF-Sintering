@@ -78,16 +78,22 @@ def full_state_sample(f, e1, e2, e3, s, st, p, step, time_s, v20, wall_x0_val):
     return row
 
 
-def _step_once(f, e1, e2, e3, s, p):
+def _step_once(f, e1, e2, e3, s, p, ostwald_fn=ostwald_substrate):
     """One full production-ordering physical step (CH -> mass-preserving
     projection -> Ostwald -> structural relaxation -> mass-preserving
     projection), sink/RBM off. Identical operator sequence and order to
-    operator_ledger.run_ledger_step_v3 / rate_competition.run_sinkoff_trajectory."""
+    operator_ledger.run_ledger_step_v3 / rate_competition.run_sinkoff_trajectory.
+
+    `ostwald_fn` defaults to the production `ostwald_substrate`; Milestone 8's
+    O0/O1/O2 mechanism-isolation study (ostwald_diagnostics.py) passes
+    `ostwald_removal_only` / `ostwald_addition_only` instead -- diagnostic
+    substitution only, the default preserves production behavior exactly."""
     ch_targets = eta_masses(e1, e2, e3, p.use_eta3)
     f = evolve_f(f, e1, e2, e3, s, Sink(), p)
     e1, e2, e3 = project_eta_mass_preserving(f, e1, e2, e3, p, target_masses=ch_targets)
 
-    f, e1, e2, e3 = ostwald_substrate(f, e1, e2, e3, p)
+    step_out = ostwald_fn(f, e1, e2, e3, p)
+    f, e1, e2, e3 = step_out[0], step_out[1], step_out[2], step_out[3]
 
     ac_targets = eta_masses(e1, e2, e3, p.use_eta3)
     e1, e2, e3 = evolve_eta(e1, e2, e3, p)
@@ -95,11 +101,12 @@ def _step_once(f, e1, e2, e3, s, p):
     return f, e1, e2, e3
 
 
-def run_single_trajectory(p, f0, e1_0, e2_0, e3_0, n_steps):
+def run_single_trajectory(p, f0, e1_0, e2_0, e3_0, n_steps, ostwald_fn=ostwald_substrate):
     """Run one trajectory (any coarsening_rate_scale) for exactly n_steps,
     sampled every step (including step 0, the given initial state). Used
     both for the compact coarsening-rate series (Section 9) and for
-    timestep-sensitivity checks (Section 13)."""
+    timestep-sensitivity checks (Section 13). `ostwald_fn` -- see
+    `_step_once`; default preserves production behavior exactly."""
     f, e1, e2, e3 = (a.copy() for a in (f0, e1_0, e2_0, e3_0))
     s = Sink(threshold=math.inf)
     wall_x0_val = wall_x0(p)
@@ -111,7 +118,7 @@ def run_single_trajectory(p, f0, e1_0, e2_0, e3_0, n_steps):
         return rows, True, reason
 
     for step in range(1, n_steps + 1):
-        f, e1, e2, e3 = _step_once(f, e1, e2, e3, s, p)
+        f, e1, e2, e3 = _step_once(f, e1, e2, e3, s, p, ostwald_fn=ostwald_fn)
         st, stop, reason = compute_stress(f, e1, e2, e3, s, p)
         rows.append(full_state_sample(f, e1, e2, e3, s, st, p, step, step * p.dt, v20, wall_x0_val))
         if stop:

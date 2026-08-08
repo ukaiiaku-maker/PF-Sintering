@@ -39,6 +39,28 @@ class ModelConfig:
     # (M_eta is anchored to the unscaled M_f so the two controls don't couple).
     coarsening_rate_scale: float = 1.0
     surface_mobility_scale: float = 1.0
+    # Milestone 8 diagnostic-only grid-refinement controls (default None/False
+    # preserves current production behavior exactly -- see
+    # MILESTONE_8_FIXED_PHYSICS_PAIRED_OPERATOR_AUDIT.md Sections 2-4).
+    # interface_width_override: when set, the physical diffuse-interface width
+    # W is this fixed value (meters) instead of interface_cells*dx, so mesh
+    # refinement (changing dx) no longer also changes the physical
+    # regularization length scale.
+    interface_width_override: float | None = None
+    # eta_diffusivity_fixed_physical: when True, M_eta is constructed WITHOUT
+    # the production formula's extra /dx**2 factor (M_eta = M_f_base * 0.01 *
+    # eta_mobility_scale instead of M_f_base/dx**2 * 0.01 * eta_mobility_scale).
+    # Audit finding: M_eta*k_eta (the physical structural-relaxation
+    # diffusivity that multiplies lap9, which already internally normalizes
+    # by dx**2 to approximate the continuum Laplacian) scales as 1/dx**2 in
+    # the production formula -- confirmed both algebraically and by direct
+    # numerical test (evolve_eta's rate on a fixed-physical-wavelength eta
+    # perturbation quadruples each time dx halves, even though lap9 itself
+    # converges to the same continuum Laplacian value at every resolution).
+    # This flag removes that extra, unwarranted dx-dependence so M_eta*k_eta
+    # is the same fixed physical diffusivity regardless of dx (exactly,
+    # whenever interface_width_override also holds W fixed).
+    eta_diffusivity_fixed_physical: bool = False
 
 @dataclass
 class Params:
@@ -90,12 +112,14 @@ def build_params(c:ModelConfig)->Params:
     rx,ry=(r2*math.sqrt(ar),r2/math.sqrt(ar)) if c.contact_orientation=="short_plane" else (r2/math.sqrt(ar),r2*math.sqrt(ar))
     margin=round(c.domain_margin_r2*r2/dx); wall_room=round(.30*(2*rx+margin*dx)/dx)
     nx=c.nx or max(64,2*round((wall_room+round(2*rx/dx)+margin)/2)); ny=c.ny or max(64,2*round((round(2*ry/dx)+margin)/2))
-    wall=c.substrate_wall_frac if c.substrate_wall_frac is not None else max(.18,wall_room/nx+.02); ov=c.initial_overlap or 5*dx; W=c.interface_cells*dx
+    wall=c.substrate_wall_frac if c.substrate_wall_frac is not None else max(.18,wall_room/nx+.02); ov=c.initial_overlap or 5*dx
+    W=c.interface_width_override if c.interface_width_override is not None else c.interface_cells*dx
     p=Params(nx,ny,dx,r1,r2,r3,rx,ry,c.geometry,ar,c.contact_orientation,wall,ov,c.temperature,c.theta_mis_deg,c.sigma_target,W)
     p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
-    p.M_f=M_f_base*c.surface_mobility_scale; p.M_eta=M_f_base/p.dx**2*.01*c.eta_mobility_scale
+    p.M_f=M_f_base*c.surface_mobility_scale
+    p.M_eta=(M_f_base*.01*c.eta_mobility_scale) if c.eta_diffusivity_fixed_physical else (M_f_base/p.dx**2*.01*c.eta_mobility_scale)
     # coarsening_rate_scale=0 means "coarsening exactly off" (Milestone 7
     # differential-coarsening control C0): tau_ripening=inf makes
     # ostwald_substrate's tr=min(V*dt/tau_ripening,.002*V) exactly 0.0, an
