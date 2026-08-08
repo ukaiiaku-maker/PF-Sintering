@@ -127,9 +127,27 @@ def cartesian_total_boundary_flux(Jx, Jy, mask, p, bc_x, bc_y):
     boundary-face inflow by bc_ops.flux_divergence's discrete divergence
     theorem) -- Section 6's "B" quantity, using the TOTAL only (no
     positional particle/substrate split, per Section 2's explicit
-    instruction not to use that split as the physical branch decomposition)."""
+    instruction not to use that split as the physical branch decomposition).
+    `Jx`, `Jy` are CELL-CENTERED (as `surface_flux` returns); this
+    interpolates them to faces via `face_average` first, matching the
+    legacy `cell_average_legacy` transport mode's own construction exactly.
+    For Milestone 13D's `face_projected` mode, whose flux is ALREADY
+    face-resident, use `cartesian_total_boundary_flux_from_faces` instead
+    -- re-averaging an already-face-centered flux through `face_average`
+    again does not reproduce the same divergence that mode's own update
+    actually used."""
     Jx_face = face_average(Jx, axis=1, bc=bc_x)
     Jy_face = face_average(Jy, axis=0, bc=bc_y)
+    neg_div = -flux_divergence(Jx_face, Jy_face, p.dx, bc_x=bc_x, bc_y=bc_y)
+    return float(np.sum(neg_div[mask])) * p.dx * p.dx
+
+
+def cartesian_total_boundary_flux_from_faces(Jx_face, Jy_face, mask, p, bc_x, bc_y):
+    """Milestone 13D: same exact divergence-theorem quantity as
+    `cartesian_total_boundary_flux`, but for a flux that is ALREADY
+    face-centered (e.g. `surface_flux_face_projected`'s `Jx_face`/
+    `Jy_face`) -- no re-interpolation, since that would not reproduce the
+    same divergence the face-projected conservative update itself used."""
     neg_div = -flux_divergence(Jx_face, Jy_face, p.dx, bc_x=bc_x, bc_y=bc_y)
     return float(np.sum(neg_div[mask])) * p.dx * p.dx
 
