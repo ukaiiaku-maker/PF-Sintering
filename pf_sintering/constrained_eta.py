@@ -42,6 +42,20 @@ same finite-difference directional-derivative test Milestone 8 used for
 reason `ch_exact_energy.py` documents) for the gradient term -- machine
 precision agreement (`rel_err ~1e-12`, `tests/test_constrained_eta.py`).
 
+**Milestone 13 Section 12 precision note**: "COMPLETE" above means `g_i`
+is the exact structural derivative of the specific free energy `F` that
+can be inferred by inspecting `model.evolve_f`'s existing Python chemical
+potential plus an eta-gradient energy term matching `model.evolve_eta`'s
+existing gradient kinetics -- i.e. complete *relative to what the current
+production code already implicitly assumes for `mu0`*. It is NOT a claim
+that this `F` is the final, physically complete multi-order-parameter
+grain-growth free energy in any broader sense (e.g. it has no explicit
+eta_i-eta_j cross term for i!=j beyond what `Wc`'s local-GB-detection
+implicitly encodes, and its GB-energy/mobility calibration has not been
+independently validated against experiment or a more complete
+multi-phase-field formulation). That broader model-completeness question
+is out of scope here and left for separate review.
+
 Constrained update at fixed `f`:
 
     d(eta_i)/dt = -L_i * (g_i - lambda)
