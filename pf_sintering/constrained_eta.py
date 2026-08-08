@@ -90,15 +90,42 @@ def structural_thermodynamic_force(eta_i, f, Wc, dx, k_eta, bc_x="periodic", bc_
 
 
 def constrained_variational_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=False,
-                                        bc_x="periodic", bc_y="reflecting"):
-    """One constrained-Allen-Cahn step for the active eta fields (equal
-    mobility L_i=M_eta), using the COMPLETE structural_thermodynamic_force,
-    followed by model.reproject's existing local positivity/simplex
-    correction. `s` (Sink) is required now (local_wc needs it for
-    effective_gamma, matching model.evolve_f's own signature). Returns
-    (e1_new, e2_new, e3_new, diag) with the variational and projection
-    deltas tracked separately."""
+                                        bc_x="periodic", bc_y="reflecting", n_substeps=1):
+    """One constrained-Allen-Cahn step (at fixed f) for the active eta
+    fields (equal mobility L_i=M_eta), using the COMPLETE
+    structural_thermodynamic_force, followed by model.reproject's existing
+    local positivity/simplex correction. `s` (Sink) is required now
+    (local_wc needs it for effective_gamma, matching model.evolve_f's own
+    signature). Returns (e1_new, e2_new, e3_new, diag) with the variational
+    and projection deltas tracked separately (summed over substeps).
+
+    Milestone 12B Section 7: the bulk coupling term 2*Wc*eta_i*(f^2/2-f) is
+    a genuine spinodal-type driving force (uneven ownership is energetically
+    favored at fixed Wc, f -- the standard multi-order-parameter grain-growth
+    mechanism) and is therefore unconditionally unstable under forward-Euler
+    at any fixed dt: the linearized bulk dynamics is d(eta_i)/dt =
+    +M_eta*Wc*(eta_i-mean(eta)), an exponentially growing mode with no
+    stable dt. `n_substeps>1` runs n_substeps forward-Euler+reproject cycles
+    of dt/n_substeps each (fixed f throughout) instead of one cycle of dt --
+    this does not remove the instability but shrinks the per-step overshoot
+    that reproject must correct, which is the mechanism by which projection
+    reliance is reduced (see MILESTONE_12B report Section 5)."""
     dt = dt if dt is not None else p.dt
+    if n_substeps > 1:
+        dt_sub = dt / n_substeps
+        var_total = proj_total = 0.0
+        diag = None
+        for _ in range(n_substeps):
+            e1, e2, e3, diag = constrained_variational_eta_update(
+                e1, e2, e3, f, s, p, dt=dt_sub, use_eta3=use_eta3, bc_x=bc_x, bc_y=bc_y, n_substeps=1)
+            var_total += diag["variational_change"]
+            proj_total += diag["projection_change"]
+        diag = dict(diag)
+        diag["variational_change"] = var_total
+        diag["projection_change"] = proj_total
+        diag["projection_fraction"] = proj_total / (var_total + 1e-300)
+        return e1, e2, e3, diag
+
     Wc = local_wc(f, e1, e2, e3, s, p)
     g1 = structural_thermodynamic_force(e1, f, Wc, p.dx, p.k_eta, bc_x, bc_y)
     g2 = structural_thermodynamic_force(e2, f, Wc, p.dx, p.k_eta, bc_x, bc_y)

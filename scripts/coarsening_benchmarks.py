@@ -86,7 +86,7 @@ def bump_benchmark(args):
                 bump_lost=bool(bump1 < bump0), far_gained=bool(far1 > far0))
 
 
-def two_region_benchmark(args):
+def two_region_benchmark(args, eta_substeps=1):
     print("\n=== Benchmark 20: two-region connected coarsening (Gate D) ===")
     # Reuse the EXISTING, already-validated flat-substrate initializer
     # (genuine GB between a low-curvature broad body (grain 1) and a
@@ -124,7 +124,8 @@ def two_region_benchmark(args):
         mu = mu_isotropic(f, e1, e2, e3, s, p)
         f, diag = surface_divergence_update(f, mu, p.dx, p.dt, p.interface_width, M_s,
                                              bc_x="reflecting", bc_y="periodic")
-        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f, s, p, bc_x="reflecting", bc_y="periodic")
+        e1, e2, e3, ediag = constrained_variational_eta_update(e1, e2, e3, f, s, p, bc_x="reflecting", bc_y="periodic",
+                                                                n_substeps=eta_substeps)
         var_change_total += ediag["variational_change"]
         proj_change_total += ediag["projection_change"]
         if step % sample_every == 0:
@@ -165,12 +166,13 @@ def main():
     ap.add_argument("--gate-d-r2-nm", type=float, default=80.0)
     ap.add_argument("--bump-steps", type=int, default=4000)
     ap.add_argument("--two-region-steps", type=int, default=4000)
+    ap.add_argument("--eta-substeps", type=int, default=1)
     ap.add_argument("--out", type=str, default="runs/coarsening_benchmarks.json")
     args = ap.parse_args()
 
     out = dict(args=vars(args))
     out["bump"] = bump_benchmark(args)
-    out["two_region"] = two_region_benchmark(args)
+    out["two_region"] = two_region_benchmark(args, eta_substeps=args.eta_substeps)
 
     with open(args.out, "w") as fh:
         json.dump(out, fh, default=str)
