@@ -179,10 +179,30 @@ def run(dx_nm, args, target_times, face_flux_mode="cell_average_legacy"):
         if face_flux_mode == "face_projected":
             fp = surface_flux_face_projected(f, mu, p.dx, p.interface_width, M_s, BC_X, BC_Y)
             tang = face_projected_tangentiality(fp)
+            face_of = {"x": fp["xface"], "y": fp["yface"]}
             for axis, ratio_key, mag_key in (("x", "ratio_x", "mag_x"), ("y", "ratio_y", "mag_y")):
                 ratio, mag = tang[ratio_key], tang[mag_key]
-                floor = 1e-6 * np.nanmax(mag)
-                valid = np.isfinite(ratio) & (mag > floor)
+                # Milestone 13E Section 9: J.n/|J| blows up to an O(1) ratio
+                # wherever the RAW (unregularized) |grad f| at that face is
+                # weak compared to eps_n -- i.e. off the interface entirely
+                # (e.g. the reflecting-wall tail deep in bulk, f~1-1e-5),
+                # where n_face = grad(f)/sqrt(|grad f|^2+eps_n^2) is no
+                # longer a meaningful unit normal and the tangential
+                # projection P=I-n n^T stops suppressing J.n (1-|n|^2 is
+                # O(1), not ~eps_n^2/|grad f|^2 << 1). The face's OWN
+                # q_face (already returned by surface_flux_face_projected,
+                # the authoritative interface-localization weight at that
+                # exact face) is what distinguishes real interface faces
+                # (q_face ~ its own max, ratio ~1e-7) from these physically
+                # off-interface faces (q_face << its max, ratio ~1e-2) --
+                # both the mag-floor (roundoff) and this q_face-floor
+                # (interface presence) are needed to report an authoritative
+                # tangentiality statistic, matching the near-roundoff values
+                # seen on manufactured/particle-contact face_projected runs.
+                q_face = face_of[axis]["q_face"]
+                mag_floor = 1e-6 * np.nanmax(mag)
+                q_floor = 1e-3 * np.nanmax(q_face)
+                valid = np.isfinite(ratio) & (mag > mag_floor) & (q_face > q_floor)
                 row[f"tang_{axis}_rms"] = float(np.sqrt(np.mean(ratio[valid] ** 2))) if np.any(valid) else math.nan
                 row[f"tang_{axis}_max"] = float(np.max(ratio[valid])) if np.any(valid) else math.nan
         return row

@@ -312,3 +312,30 @@ def surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None,
                             D_density_x=D_density_x, D_density_y=D_density_y)
     else:
         raise ValueError(f"unknown face_flux_mode {face_flux_mode!r}")
+
+
+def variational_surface_diffusion_step(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None,
+                                        face_flux_mode="face_projected"):
+    """Milestone 13E Section 12: canonical transport-law entry point for the
+    `variational_surface_diffusion` mode (Milestone 12's opt-in unified
+    conserved-coarsening mode, distinct from `legacy_ostwald`; never wired
+    into `model.py`'s production stepper -- it lives in this milestone-track
+    module and the campaign scripts that call it directly).
+
+    `face_projected` is the DEFAULT here -- promoted after this milestone's
+    exact discrete chain-rule/dissipation closure (`Fdot_chain = -D_h` to
+    machine precision, `(F_n-F_{n+1})/dt -> D_h` as dt->0), the corrected
+    authoritative tangentiality diagnostic (roundoff-level on both the
+    isolated-substrate and particle-contact benchmarks), and grid-consistent
+    `dM_neck/dt` sign at dx=5, 2.5, 1.25nm (MILESTONE_13E report Section 9).
+    `cell_average_legacy` stays available via explicit `face_flux_mode=`.
+
+    `surface_divergence_update`'s OWN default is deliberately left
+    UNCHANGED (still `cell_average_legacy`) -- it is shared low-level
+    infrastructure called by ~15 pre-13D/13E milestone scripts and tests
+    that assume that default and its cell-centered `Jx`/`Jy` diagnostic
+    shape; flipping it would silently alter those unrelated regression
+    baselines. This wrapper is the only place `face_projected` is now the
+    default."""
+    return surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=eps_n,
+                                      face_flux_mode=face_flux_mode)

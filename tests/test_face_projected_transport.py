@@ -14,6 +14,7 @@ from pf_sintering.surface_transport import (
     surface_flux,
     surface_flux_face_projected,
     surface_mobility_tensor,
+    variational_surface_diffusion_step,
 )
 
 BC_X, BC_Y = "reflecting", "periodic"
@@ -262,3 +263,36 @@ def test_exact_dissipation_converges_to_unity_ratio_as_dt_to_zero():
         ratios.append((F0 - F1) / dt / D_h)
     assert ratios[-1] > 0.999
     assert abs(ratios[-1] - 1.0) < abs(ratios[0] - 1.0)  # monotonically improving toward 1
+
+
+def test_variational_surface_diffusion_step_defaults_to_face_projected():
+    # Milestone 13E Section 12 (promotion gate): the NEW canonical wrapper
+    # defaults to face_projected (diag carries Jx_face, not the legacy
+    # cell-centered Jx) ...
+    p = _circle_params(dx=2e-9, Nx=60, Ny=60)
+    f, mu = _circle_state(p)
+    M_s = m_s_ref(p.M_f, p.interface_width)
+
+    f_new_default, diag_default = variational_surface_diffusion_step(
+        f, mu, p.dx, p.dt, p.interface_width, M_s, BC_X, BC_Y)
+    f_new_explicit, diag_explicit = surface_divergence_update(
+        f, mu, p.dx, p.dt, p.interface_width, M_s, bc_x=BC_X, bc_y=BC_Y,
+        face_flux_mode="face_projected")
+
+    assert "Jx_face" in diag_default and "Jx" not in diag_default
+    assert np.array_equal(f_new_default, f_new_explicit)
+    assert np.array_equal(diag_default["Jx_face"], diag_explicit["Jx_face"])
+
+    # ... while surface_divergence_update's OWN bare default is UNCHANGED
+    # (still cell_average_legacy, still cell-centered Jx/Jy) -- flipping
+    # that shared default would silently alter ~15 pre-13D/13E milestone
+    # scripts/tests that call it without face_flux_mode.
+    f_legacy, diag_legacy = surface_divergence_update(f, mu, p.dx, p.dt, p.interface_width, M_s,
+                                                        bc_x=BC_X, bc_y=BC_Y)
+    assert "Jx" in diag_legacy and "Jx_face" not in diag_legacy
+
+    # cell_average_legacy stays explicitly reachable through the new wrapper too.
+    f_wrap_legacy, diag_wrap_legacy = variational_surface_diffusion_step(
+        f, mu, p.dx, p.dt, p.interface_width, M_s, BC_X, BC_Y, face_flux_mode="cell_average_legacy")
+    assert np.array_equal(f_wrap_legacy, f_legacy)
+    assert "Jx" in diag_wrap_legacy and "Jx_face" not in diag_wrap_legacy
