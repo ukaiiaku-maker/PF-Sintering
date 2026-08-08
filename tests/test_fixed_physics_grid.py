@@ -1,6 +1,8 @@
 import math
 
-from pf_sintering.model import ModelConfig, build_params
+import numpy as np
+
+from pf_sintering.model import ModelConfig, build_params, lap9
 
 
 def _cfg(dx_nm, **overrides):
@@ -61,3 +63,37 @@ def test_fixed_w_and_fixed_eta_diffusivity_also_leave_m_f_k_f_dx_independent():
     p5 = build_params(_cfg(5.0, interface_width_override=20e-9, eta_diffusivity_fixed_physical=True))
     p25 = build_params(_cfg(2.5, interface_width_override=20e-9, eta_diffusivity_fixed_physical=True))
     assert math.isclose(p5.M_f * p5.k_f, p25.M_f * p25.k_f, rel_tol=1e-12)
+
+
+def test_eta_diffusivity_fixed_physical_preserves_qualified_dx5_baseline_rate():
+    # Milestone 9 Section 2 correction: eta_diffusivity_fixed_physical must
+    # PRESERVE the qualified dx=5nm/W=20nm baseline's actual M_eta*k_eta
+    # (~6.395676e-17 at eta_mobility_scale=1), not merely strip the /dx**2
+    # factor to an unrelated, much smaller value (Milestone 8's bug: that
+    # gave ~1.599e-33, a ~4e16 reduction that effectively turned structural
+    # relaxation off).
+    p_baseline = build_params(_cfg(5.0))  # production default, dx=5nm, W=20nm
+    baseline_D_eta = p_baseline.M_eta * p_baseline.k_eta
+
+    for dx_nm in (5.0, 2.5, 1.25):
+        p = build_params(_cfg(dx_nm, interface_width_override=20e-9, eta_diffusivity_fixed_physical=True))
+        assert math.isclose(p.M_eta * p.k_eta, baseline_D_eta, rel_tol=1e-9)
+
+
+def test_eta_diffusivity_fixed_physical_gives_equal_rate_on_same_physical_field():
+    # Direct empirical test (as explicitly required): the SAME physical
+    # eta perturbation (fixed wavelength, fixed domain extent) must evolve
+    # at the SAME d(eta)/dt under evolve_eta's update at dx=5nm and dx=2.5nm
+    # once eta_diffusivity_fixed_physical=True and W is held fixed.
+    lambda_phys = 100e-9
+    Lx_phys = 600e-9
+    rates = []
+    for dx_nm in (5.0, 2.5):
+        p = build_params(_cfg(dx_nm, interface_width_override=20e-9, eta_diffusivity_fixed_physical=True))
+        Nx = round(Lx_phys / p.dx)
+        x = (np.arange(1, Nx + 1)) * p.dx
+        e = 0.5 + 0.1 * np.cos(2 * np.pi * x / lambda_phys)
+        e2d = np.tile(e, (8, 1))
+        rate = p.M_eta * p.k_eta * lap9(e2d, p.dx)
+        rates.append(np.max(np.abs(rate[4])))
+    assert math.isclose(rates[0], rates[1], rel_tol=0.02)  # lap9 discretization error only

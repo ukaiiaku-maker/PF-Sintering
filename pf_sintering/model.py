@@ -47,19 +47,21 @@ class ModelConfig:
     # refinement (changing dx) no longer also changes the physical
     # regularization length scale.
     interface_width_override: float | None = None
-    # eta_diffusivity_fixed_physical: when True, M_eta is constructed WITHOUT
-    # the production formula's extra /dx**2 factor (M_eta = M_f_base * 0.01 *
-    # eta_mobility_scale instead of M_f_base/dx**2 * 0.01 * eta_mobility_scale).
-    # Audit finding: M_eta*k_eta (the physical structural-relaxation
-    # diffusivity that multiplies lap9, which already internally normalizes
-    # by dx**2 to approximate the continuum Laplacian) scales as 1/dx**2 in
-    # the production formula -- confirmed both algebraically and by direct
-    # numerical test (evolve_eta's rate on a fixed-physical-wavelength eta
-    # perturbation quadruples each time dx halves, even though lap9 itself
-    # converges to the same continuum Laplacian value at every resolution).
-    # This flag removes that extra, unwarranted dx-dependence so M_eta*k_eta
-    # is the same fixed physical diffusivity regardless of dx (exactly,
-    # whenever interface_width_override also holds W fixed).
+    # eta_diffusivity_fixed_physical: when True, M_eta is constructed to
+    # PRESERVE the qualified dx=5nm/W=20nm baseline's physical structural-
+    # relaxation diffusivity D_eta_ref=M_eta*k_eta (_eta_diffusivity_reference)
+    # at every dx/W, via M_eta = D_eta_ref/k_eta -- NOT simply stripped of its
+    # /dx**2 factor (Milestone 8's diagnostic did that, which changed the
+    # represented physical rate by ~16 orders of magnitude relative to the
+    # baseline; corrected in Milestone 9 Section 2). Audit finding: M_eta*k_eta
+    # (the physical structural-relaxation diffusivity that multiplies lap9,
+    # which already internally normalizes by dx**2 to approximate the
+    # continuum Laplacian) scales as 1/dx**2 in the production formula --
+    # confirmed both algebraically and by direct numerical test (evolve_eta's
+    # rate on a fixed-physical-wavelength eta perturbation quadruples each
+    # time dx halves, even though lap9 itself converges to the same continuum
+    # Laplacian value at every resolution). This flag removes that extra,
+    # unwarranted dx-dependence while preserving the baseline's actual rate.
     eta_diffusivity_fixed_physical: bool = False
 
 @dataclass
@@ -105,6 +107,24 @@ def _gb_energy(theta):
     tc=15.; th=max(theta,1e-6); rs=(th/tc)*(1-math.log(th/tc)) if th<tc else 1.
     return max(rs*(1-.35*math.exp(-((theta-45.)/6.)**2)),.05)
 
+def _eta_diffusivity_reference(c:"ModelConfig")->float:
+    """D_eta_ref = M_eta*k_eta evaluated at the qualified baseline (dx=5nm,
+    physical interface width=20nm -- production's own interface_cells=4
+    reference point), for the SAME theta_mis_deg/eta_mobility_scale as the
+    actual config (gamma_s and tau_target are fixed Params defaults, not
+    configurable, so they are shared automatically). Used by
+    eta_diffusivity_fixed_physical to PRESERVE the original physical eta
+    response rate under mesh/interface-width refinement, rather than -- as
+    Milestone 8's diagnostic did -- simply dropping M_eta's explicit /dx**2
+    factor, which changes the represented physical rate by ~16 orders of
+    magnitude relative to the dx=5nm baseline (Milestone 9 Section 2)."""
+    dx_ref,W_ref,tau_target_ref,gamma_s_ref=5e-9,20e-9,1.,1.
+    gamma_gb_ref_val=_gb_energy(c.theta_mis_deg)
+    k_f_ref=3*gamma_s_ref*W_ref; k_eta_ref=3*gamma_gb_ref_val*W_ref
+    M_f_base_ref=(20e-9)**4/(tau_target_ref*k_f_ref)
+    M_eta_ref=M_f_base_ref/dx_ref**2*.01*c.eta_mobility_scale
+    return M_eta_ref*k_eta_ref
+
 def build_params(c:ModelConfig)->Params:
     b=_preset(c.preset); dx=c.dx or b["dx"]; r1=c.r1 or b["r1"]; r2=c.r2 or b["r2"]; r3=c.r3 or b["r3"]; tt=c.t_total if c.t_total is not None else b["t_total"]
     ar=c.aspect_ratio
@@ -119,7 +139,7 @@ def build_params(c:ModelConfig)->Params:
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
     p.M_f=M_f_base*c.surface_mobility_scale
-    p.M_eta=(M_f_base*.01*c.eta_mobility_scale) if c.eta_diffusivity_fixed_physical else (M_f_base/p.dx**2*.01*c.eta_mobility_scale)
+    p.M_eta=(_eta_diffusivity_reference(c)/p.k_eta) if c.eta_diffusivity_fixed_physical else (M_f_base/p.dx**2*.01*c.eta_mobility_scale)
     # coarsening_rate_scale=0 means "coarsening exactly off" (Milestone 7
     # differential-coarsening control C0): tau_ripening=inf makes
     # ostwald_substrate's tr=min(V*dt/tau_ripening,.002*V) exactly 0.0, an
