@@ -10,7 +10,7 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.measure import find_contours
 
-Geometry = Literal["substrate", "threeparticle"]
+Geometry = Literal["substrate", "threeparticle", "sinusoidal_substrate"]
 Contact = Literal["short_plane", "long_plane"]
 
 @dataclass
@@ -63,6 +63,20 @@ class ModelConfig:
     # Laplacian value at every resolution). This flag removes that extra,
     # unwarranted dx-dependence while preserving the baseline's actual rate.
     eta_diffusivity_fixed_physical: bool = False
+    # Milestone 10: geometry="sinusoidal_substrate" only. Physical quantities
+    # in meters/radians, never tied to dx. sinusoid_wavelength/amplitude
+    # default to a few times R2 / a fraction of the wavelength if left None
+    # (see build_params) -- derived from domain size and resolution, not
+    # chosen to force a sign. The domain height (Ny*dx) is snapped to exactly
+    # one wavelength (see MILESTONE_10 Section 3 periodicity audit: the
+    # active y-boundary is a no-flux/reflecting condition, not a true
+    # periodic wrap, but a reflecting boundary placed exactly at a sinusoid
+    # extremum -- a symmetry plane of an infinite periodic cosine -- is
+    # mathematically equivalent to periodicity for a solution that remains
+    # symmetric about that plane).
+    sinusoid_wavelength: float | None = None
+    sinusoid_amplitude: float | None = None
+    sinusoid_phase: float = 0.0
 
 @dataclass
 class Params:
@@ -79,6 +93,7 @@ class Params:
     V_solid_initial:float=0.; V1_initial:float=0.; V2_initial:float=0.; V3_initial:float=0.; V2_gone_frac:float=.05
     use_eta3:bool=False; use_aniso_surface:bool=True; psi_measure:bool=True; aniso_delta:float=.15; theta_grain:np.ndarray=field(default_factory=lambda:np.zeros(3))
     reservoir_neck_unprotected:bool=False
+    sinusoid_wavelength:float=0.; sinusoid_amplitude:float=0.; sinusoid_phase:float=0.
     lut_psi:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_a:np.ndarray=field(default_factory=lambda:np.zeros(0)); lut_ap:np.ndarray=field(default_factory=lambda:np.zeros(0))
 
 @dataclass
@@ -131,10 +146,23 @@ def build_params(c:ModelConfig)->Params:
     if ar<=0: raise ValueError("aspect_ratio must be >0")
     rx,ry=(r2*math.sqrt(ar),r2/math.sqrt(ar)) if c.contact_orientation=="short_plane" else (r2/math.sqrt(ar),r2*math.sqrt(ar))
     margin=round(c.domain_margin_r2*r2/dx); wall_room=round(.30*(2*rx+margin*dx)/dx)
-    nx=c.nx or max(64,2*round((wall_room+round(2*rx/dx)+margin)/2)); ny=c.ny or max(64,2*round((round(2*ry/dx)+margin)/2))
+    if c.geometry=="sinusoidal_substrate":
+        # Section 3/4: Ny*dx snapped to exactly one physical wavelength (the
+        # reflecting-boundary/periodicity-equivalence trick -- see the
+        # ModelConfig.sinusoid_wavelength docstring); Nx gets extra margin for
+        # the amplitude on top of the usual particle/vapor/bulk-substrate room.
+        wavelength=c.sinusoid_wavelength if c.sinusoid_wavelength is not None else 6.0*r2
+        amplitude=c.sinusoid_amplitude if c.sinusoid_amplitude is not None else 0.05*wavelength
+        ny=c.ny or max(64,round(wavelength/dx))
+        wavelength=ny*dx
+        nx=c.nx or max(64,2*round((wall_room+round(2*rx/dx)+margin+round(amplitude/dx))/2))
+    else:
+        wavelength=0.; amplitude=0.
+        nx=c.nx or max(64,2*round((wall_room+round(2*rx/dx)+margin)/2)); ny=c.ny or max(64,2*round((round(2*ry/dx)+margin)/2))
     wall=c.substrate_wall_frac if c.substrate_wall_frac is not None else max(.18,wall_room/nx+.02); ov=c.initial_overlap or 5*dx
     W=c.interface_width_override if c.interface_width_override is not None else c.interface_cells*dx
     p=Params(nx,ny,dx,r1,r2,r3,rx,ry,c.geometry,ar,c.contact_orientation,wall,ov,c.temperature,c.theta_mis_deg,c.sigma_target,W)
+    p.sinusoid_wavelength=wavelength; p.sinusoid_amplitude=amplitude; p.sinusoid_phase=c.sinusoid_phase
     p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
@@ -181,6 +209,20 @@ def initialize_fields(p):
     x=(np.arange(1,p.Nx+1)-p.Nx/2)*p.dx; y=(np.arange(1,p.Ny+1)-p.Ny/2)*p.dx; X,Y=np.meshgrid(x,y); W=p.interface_width
     if p.geometry=="substrate":
         wall=(p.substrate_wall_frac-.5)*p.Nx*p.dx; e1=.5*(1-np.tanh((X-wall)/W)); cx=wall+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W)); t1=.5*(1-np.tanh((X-wall)/W));t2=.5*(1+np.tanh((X-wall)/W));return np.maximum(e1,e2),e1*t1,e2*t2,np.zeros_like(X)
+    if p.geometry=="sinusoidal_substrate":
+        # Section 1/2: the substrate free surface x_s(Y) oscillates as a
+        # cosine of the CENTERED Y coordinate (Y=0 at the domain's vertical
+        # center row, matching every other geometry's convention); f and e1
+        # share the same x_s(Y) transition (not e1 sinusoidal with f flat).
+        # phase=0 puts a crest (x_s maximal, protruding toward +X/the
+        # particle) at Y=0, where the particle is placed.
+        wall_mean=(p.substrate_wall_frac-.5)*p.Nx*p.dx
+        x_s=wall_mean+p.sinusoid_amplitude*np.cos(2*math.pi*Y/p.sinusoid_wavelength+p.sinusoid_phase)
+        e1=.5*(1-np.tanh((X-x_s)/W))
+        x_crest=wall_mean+p.sinusoid_amplitude*math.cos(p.sinusoid_phase)
+        cx=x_crest+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W))
+        t1=.5*(1-np.tanh((X-x_s)/W)); t2=.5*(1+np.tanh((X-x_s)/W))
+        return np.maximum(e1,e2),e1*t1,e2*t2,np.zeros_like(X)
     c1=-(p.R1+p.R2-p.initial_overlap); c2=0.; c3=p.R2+p.R3-p.initial_overlap; e=[]
     for c,r in ((c1,p.R1),(c2,p.R2),(c3,p.R3)): e.append(.5*(1-np.tanh((np.hypot(X-c,Y)-r)/W)))
     g1=(c1+c2)/2;g2=(c2+c3)/2;t1=.5*(1-np.tanh((X-g1)/W));t2=.5*(1+np.tanh((X-g1)/W))*.5*(1-np.tanh((X-g2)/W));t3=.5*(1+np.tanh((X-g2)/W));return np.maximum.reduce(e),e[0]*t1,e[1]*t2,e[2]*t3
