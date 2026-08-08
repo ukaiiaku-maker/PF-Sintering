@@ -96,7 +96,14 @@ def build_params(c:ModelConfig)->Params:
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
     p.M_f=M_f_base*c.surface_mobility_scale; p.M_eta=M_f_base/p.dx**2*.01*c.eta_mobility_scale
-    p.tau_ripening=20./c.coarsening_rate_scale
+    # coarsening_rate_scale=0 means "coarsening exactly off" (Milestone 7
+    # differential-coarsening control C0): tau_ripening=inf makes
+    # ostwald_substrate's tr=min(V*dt/tau_ripening,.002*V) exactly 0.0, an
+    # exact no-op. Plain float division would instead raise ZeroDivisionError
+    # for this previously-unreached but already-documented edge case (the
+    # scale is described as a general rate multiplier, not >0-only); this is
+    # a parameter-construction guard, not a change to any evolution equation.
+    p.tau_ripening=math.inf if c.coarsening_rate_scale==0 else 20./c.coarsening_rate_scale
     p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
     p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.psi_measure=c.psi_measure; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
     p.reservoir_neck_unprotected=c.reservoir_neck_unprotected
