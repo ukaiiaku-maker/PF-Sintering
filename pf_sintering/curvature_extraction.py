@@ -47,7 +47,7 @@ import numpy as np
 from skimage.measure import find_contours
 
 from .ch_exact_energy import mu_isotropic
-from .tj_force import _sample_bilinear
+from .tj_force import _circle_crossings, _sample_bilinear, _tangent_at
 
 
 def _all_contour_points(f, p):
@@ -57,43 +57,69 @@ def _all_contour_points(f, p):
     return np.vstack(pts) if pts else np.empty((0, 2))
 
 
-def _walk_branch(f, p, tj_xy, branch_dir, max_arclength):
-    """Greedy nearest-neighbor arclength walk along the f=0.5 contour from
-    tj_xy in branch_dir -- identical algorithm to
-    ch_crossover_diagnostics.trace_branch_profile's contour walk, factored
-    out here so Methods A and B use exactly the same point set/ordering.
-    Returns (path Nx2 array, s_cum 1D array) or (None, None) if unresolved."""
-    all_pts = _all_contour_points(f, p)
-    if len(all_pts) == 0:
-        return None, None
-    tj = np.asarray(tj_xy, dtype=float)
-    d_ = np.asarray(branch_dir, dtype=float)
-    rel = all_pts - tj
-    dist = np.linalg.norm(rel, axis=1)
-    proj = rel @ d_
-    cand = all_pts[(dist < max_arclength * 1.5) & (proj > -2 * p.interface_width)]
-    if len(cand) < 5:
-        return None, None
+def _walk_branch(f, p, tj_xy, branch_dir, max_arclength, step=None):
+    """Local circle-marching walk along the f=0.5 contour from tj_xy in
+    branch_dir, using tj_force._circle_crossings/_tangent_at (the same
+    local level-crossing machinery TJ branch detection itself uses) at
+    each step instead of a global nearest-neighbor search.
 
-    remaining = cand.copy()
-    d0 = np.linalg.norm(remaining - tj, axis=1)
-    start_idx = int(np.argmin(d0))
-    path = [remaining[start_idx]]
-    remaining = np.delete(remaining, start_idx, axis=0)
+    A first version of this used ch_crossover_diagnostics.
+    trace_branch_profile's global nearest-unvisited-point walk, factored
+    out verbatim. That algorithm has a real bug uncovered by this module's
+    own use (never surfaced in Milestone 11, which only ever calls it with
+    one branch_dir at a time, never needing two branches to actually
+    diverge): the initial `proj > -2*W` candidate pre-filter cannot
+    distinguish two branches whose directions are less than 90 degrees
+    apart (a common TJ configuration -- confirmed on a real TJ: points on
+    EITHER branch project positively onto the OTHER branch's direction
+    whenever the interior angle between them is acute), so the walk from
+    v_s1 and from v_s2 converged onto the IDENTICAL path, confirmed
+    identical to float precision.
+
+    This version instead only ever looks at a small circle of radius
+    `step` (~1.5*dx) around the CURRENT point, and advances to whichever
+    crossing on that circle is most aligned with the running tangent.
+    Because the search radius is much smaller than the real separation
+    between distinct branches (except within ~step of the TJ itself, where
+    genuine ambiguity is unavoidable), it cannot jump to the wrong branch.
+    Returns (path Nx2 array, s_cum 1D array) or (None, None) if unresolved."""
+    step = step or 1.5 * p.dx
+    tj = np.asarray(tj_xy, dtype=float)
+    tangent = np.asarray(branch_dir, dtype=float)
+    tnorm = np.linalg.norm(tangent)
+    if tnorm < 1e-30:
+        return None, None
+    tangent = tangent / tnorm
+
+    cur = tj.copy()
+    path = [cur.copy()]
     s_cum = [0.0]
-    cur = path[0]
     total_s = 0.0
-    while len(remaining) > 0 and total_s < max_arclength:
-        dd = np.linalg.norm(remaining - cur, axis=1)
-        j = int(np.argmin(dd))
-        step_d = float(dd[j])
-        if step_d > 4 * p.dx:
+    n_max = int(max_arclength / step) + 5
+    for _ in range(n_max):
+        if total_s >= max_arclength:
             break
-        total_s += step_d
-        cur = remaining[j]
-        path.append(cur)
+        angles = _circle_crossings(f, 0.5, cur, step, p)
+        if not angles:
+            break
+        best_xy, best_tangent, best_score = None, None, -2.0
+        for th in angles:
+            xy = np.array([cur[0] + step * math.cos(th), cur[1] + step * math.sin(th)])
+            pos_dir = xy - cur
+            pos_dir = pos_dir / (np.linalg.norm(pos_dir) + 1e-30)
+            score = float(np.dot(pos_dir, tangent))
+            if score > best_score:
+                t_local = _tangent_at(f, xy, cur, p)
+                best_score = score
+                best_xy, best_tangent = xy, t_local
+        if best_xy is None or best_score < 0.3:
+            break
+        total_s += step
+        cur = best_xy
+        tn = np.linalg.norm(best_tangent)
+        tangent = best_tangent / tn if tn > 1e-30 else tangent
+        path.append(cur.copy())
         s_cum.append(total_s)
-        remaining = np.delete(remaining, j, axis=0)
     if len(path) < 3:
         return None, None
     return np.array(path), np.array(s_cum)
@@ -161,10 +187,15 @@ def window_curvature(f, e1, e2, e3, s, p, tj_xy, branch_dir, s_lo, s_hi, mu_fiel
     return out
 
 
-def branch_window_report(f, e1, e2, e3, s, p, tj_xy, branch_dir, window_width_factors=(1.0, 2.0, 3.0)):
-    """Report kappa_A/kappa_B in consecutive windows [0,1W], [1W,2W], [2W,3W]
-    (Section 11's suggested ~1W/2W/3W windows) along one branch from a TJ.
-    Returns a dict keyed by window index (0='near_TJ', ..., last='far')."""
+def branch_window_report(f, e1, e2, e3, s, p, tj_xy, branch_dir, window_width_factors=(2.0, 5.0)):
+    """Report kappa_A/kappa_B in consecutive windows [0,2W], [2W,5W]
+    (Section 11's near-TJ / far categories) along one branch from a TJ.
+    Windows are wider than the literal "~1W/2W/3W" suggestion because a
+    window must contain enough raw f=0.5 contour points for a well-posed
+    Kasa fit (>=6): at the coarsest primary grid (dx=5nm, W=20nm) a 1W
+    window contains only ~5 points (unresolved); 2W/3W-wide windows give
+    >=8 at dx=5nm and proportionally more at finer dx. Returns a dict keyed
+    by window index (0='near_TJ', ..., last='far')."""
     W = p.interface_width
     mu_field = mu_isotropic(f, e1, e2, e3, s, p)
     edges = [0.0] + [w * W for w in window_width_factors]
@@ -173,6 +204,50 @@ def branch_window_report(f, e1, e2, e3, s, p, tj_xy, branch_dir, window_width_fa
         wc = window_curvature(f, e1, e2, e3, s, p, tj_xy, branch_dir, edges[i], edges[i + 1], mu_field=mu_field)
         windows[i] = wc
     return windows
+
+
+def branch_mu_J_profile(f, mu_field, Jx, Jy, p, tj_xy, branch_dir, max_arclength, n_samples=40):
+    """Sections 13-14: mu(s), J_tangent(s), J_normal(s), kappa(s) along a
+    branch from tj_xy, using this module's fixed _walk_branch (see its
+    docstring) rather than ch_crossover_diagnostics.trace_branch_profile
+    (left unmodified -- an existing, in-service Milestone 11 module; its
+    walk uses the same underlying algorithm and is presumed subject to the
+    same branch-ambiguity failure mode near a TJ, since it is only ever
+    exercised with a single branch_dir at a time in production use, but is
+    out of scope to change here). Interpretable orientation: s increases
+    away from the TJ along branch_dir; J_tangent>0 means flux directed
+    AWAY from the TJ along the branch, J_tangent<0 means flux directed
+    TOWARD the TJ."""
+    path, s_cum = _walk_branch(f, p, tj_xy, branch_dir, max_arclength)
+    if path is None or len(path) < 5:
+        return None
+    s_target = np.linspace(0.0, s_cum[-1], n_samples)
+    x_r = np.interp(s_target, s_cum, path[:, 0])
+    y_r = np.interp(s_target, s_cum, path[:, 1])
+
+    tx = np.gradient(x_r, s_target)
+    ty = np.gradient(y_r, s_target)
+    tnorm = np.hypot(tx, ty) + 1e-30
+    tx, ty = tx / tnorm, ty / tnorm
+    nx_, ny_ = -ty, tx
+
+    mu_s = _sample_bilinear(mu_field, x_r, y_r, p)
+    Jx_s = _sample_bilinear(Jx, x_r, y_r, p)
+    Jy_s = _sample_bilinear(Jy, x_r, y_r, p)
+    J_tangent = Jx_s * tx + Jy_s * ty
+    J_normal = Jx_s * nx_ + Jy_s * ny_
+    local_half_window = max(3, len(path) // (2 * max(1, n_samples // 4)))
+    kappa_s = []
+    for st in s_target:
+        i0 = int(np.searchsorted(s_cum, st))
+        lo, hi = max(0, i0 - local_half_window), min(len(path), i0 + local_half_window + 1)
+        kappa_s.append(_kasa_fit_curvature(path[lo:hi], f, p, min_points=3))
+    kappa_s = np.array(kappa_s)
+    dJ_tangent_ds = np.gradient(J_tangent, s_target)
+
+    return dict(s=s_target.tolist(), x=x_r.tolist(), y=y_r.tolist(), mu=mu_s.tolist(),
+                J_tangent=J_tangent.tolist(), J_normal=J_normal.tolist(), kappa=kappa_s.tolist(),
+                dJ_tangent_ds=dJ_tangent_ds.tolist())
 
 
 def delta_kappa_donor_receiver(windows_donor, windows_receiver, window_idx=-1):

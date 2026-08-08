@@ -3,8 +3,10 @@ import math
 import numpy as np
 
 from pf_sintering.ch_exact_energy import mu_isotropic
-from pf_sintering.curvature_extraction import window_curvature
-from pf_sintering.model import ModelConfig, Sink, build_params
+from pf_sintering.curvature_extraction import _walk_branch, branch_mu_J_profile, window_curvature
+from pf_sintering.model import ModelConfig, Sink, build_params, initialize_fields, reproject
+from pf_sintering.surface_transport import m_s_ref, surface_flux, surface_mobility_tensor
+from pf_sintering.tj_force import compute_neck_tj_forces
 
 
 def _flat_grid(dx=1e-9, W=20e-9, Nx=400, Ny=200):
@@ -67,3 +69,52 @@ def test_window_curvature_unresolved_when_too_few_contour_points():
     wc = window_curvature(f, e1, e2, e3, s, p, (x.mean(), y.mean()), np.array([0.0, 1.0]),
                            0.0, 3 * p.interface_width)
     assert not wc.resolved
+
+
+def _sinusoidal_state(dx_nm=5.0):
+    p = build_params(ModelConfig(
+        preset="dev", geometry="sinusoidal_substrate", dx=dx_nm * 1e-9, r2=80e-9, aspect_ratio=2.0,
+        contact_orientation="short_plane", initial_overlap=20e-9, t_total=1e-6, seed=42,
+        sinusoid_wavelength=480e-9, sinusoid_amplitude=24e-9,
+        interface_width_override=20e-9, eta_diffusivity_fixed_physical=True,
+        use_aniso_surface=False, surface_mobility_scale=0.3,
+    ))
+    f, e1, e2, e3 = initialize_fields(p)
+    e1, e2, e3 = reproject(f, e1, e2, e3)
+    return p, f, e1, e2, e3
+
+
+def test_walk_branch_diverges_for_distinct_tj_branches():
+    # Regression test for a real bug found this milestone: an earlier
+    # global-nearest-neighbor version of the branch walk converged onto
+    # the IDENTICAL path for v_s1 and v_s2 (two branches under 90 degrees
+    # apart at a real TJ project positively onto each other's direction,
+    # so a direction-only pre-filter cannot separate them). The
+    # local-circle-marching walk must not have this failure.
+    p, f, e1, e2, e3 = _sinusoidal_state()
+    s = Sink(threshold=math.inf)
+    rep = compute_neck_tj_forces(f, e1, e2, e3, s, p)
+    assert rep.top.resolved
+    path1, _ = _walk_branch(f, p, rep.top.tj_xy, rep.top.v_s1, 1e-7)
+    path2, _ = _walk_branch(f, p, rep.top.tj_xy, rep.top.v_s2, 1e-7)
+    assert path1 is not None and path2 is not None
+    assert len(path1) >= 3 and len(path2) >= 3
+    # paths share only the TJ-adjacent start point; must diverge well before
+    # the end of a 100nm walk
+    assert np.linalg.norm(path1[-1] - path2[-1]) > 5 * p.dx
+
+
+def test_branch_mu_J_profile_resolves_on_real_tj():
+    p, f, e1, e2, e3 = _sinusoidal_state()
+    s = Sink(threshold=math.inf)
+    rep = compute_neck_tj_forces(f, e1, e2, e3, s, p)
+    assert rep.top.resolved
+    mu = mu_isotropic(f, e1, e2, e3, s, p)
+    M_s = m_s_ref(p.M_f, p.interface_width)
+    Mxx, Mxy, Myy = surface_mobility_tensor(f, p.dx, p.interface_width, M_s, "reflecting", "periodic",
+                                             eps_n=1e-6 / p.interface_width)
+    Jx, Jy = surface_flux(mu, Mxx, Mxy, Myy, p.dx, "reflecting", "periodic")
+    prof = branch_mu_J_profile(f, mu, Jx, Jy, p, rep.top.tj_xy, rep.top.v_s1, 100e-9, n_samples=15)
+    assert prof is not None
+    assert len(prof["s"]) == 15
+    assert all(math.isfinite(v) for v in prof["mu"])
