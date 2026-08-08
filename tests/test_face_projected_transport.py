@@ -2,11 +2,13 @@ import math
 
 import numpy as np
 
-from pf_sintering.bc_ops import face_gradient_x, face_gradient_y
+from pf_sintering.bc_ops import face_gradient_x, face_gradient_y, flux_divergence
 from pf_sintering.model import ModelConfig, Sink, build_params
 from pf_sintering.surface_transport import (
     dissipation_density_face_projected,
+    exact_dissipation_face_projected,
     face_projected_tangentiality,
+    fdot_chain_face_projected,
     m_s_ref,
     surface_divergence_update,
     surface_flux,
@@ -162,9 +164,14 @@ def test_energy_descent_face_projected():
                                                   face_flux_mode="face_projected")
         F1 = exact_free_energy_isotropic(f_new, e1, e2, e3, s, p)
         assert F1 <= F0 + 1e-6 * abs(F0)
+        # Milestone 13E: exact_dissipation_face_projected's PER-FACE partial
+        # terms are not individually sign-definite (each is only "half" of
+        # the full 2x2 quadratic form at that face -- see the module
+        # docstring) -- only the GLOBAL sum D_h is guaranteed non-negative
+        # (confirmed via direct <mu,L_h mu> probing, not pointwise PSD-ness).
         Dx, Dy = diag["D_density_x"], diag["D_density_y"]
-        assert np.all(Dx >= -1e-30)
-        assert np.all(Dy >= -1e-30)
+        D_h = (p.dx * p.dx) * (float(np.sum(Dx)) + float(np.sum(Dy)))
+        assert D_h >= -1e-30 * max(abs(D_h), 1.0)
 
 
 def test_legacy_path_unchanged_by_new_mode_default():
@@ -180,3 +187,78 @@ def test_legacy_path_unchanged_by_new_mode_default():
     assert np.array_equal(f_new_default, f_new_explicit)
     assert set(diag_default.keys()) == {"Jx", "Jy", "Mxx", "Mxy", "Myy", "div", "D_density"}
     assert np.array_equal(diag_default["Jx"], diag_explicit["Jx"])
+
+
+def test_fdot_chain_equals_negative_exact_dissipation():
+    # Milestone 13E Sections 3-4: Fdot_chain = dx^2*sum(mu*f_dot), computed
+    # directly from the chain rule using the ACTUAL implemented flux/
+    # divergence, must equal -D_h (exact_dissipation_face_projected's sum)
+    # to machine precision -- an algebraic identity from discrete
+    # summation by parts, not a dt->0 limit.
+    p = _circle_params()
+    f, mu = _circle_state(p)
+    M_s = m_s_ref(p.M_f, p.interface_width)
+    fp = surface_flux_face_projected(f, mu, p.dx, p.interface_width, M_s, BC_X, BC_Y)
+    Fdot_chain, _ = fdot_chain_face_projected(f, mu, p.dx, p.interface_width, M_s, BC_X, BC_Y, fp=fp)
+    Dx, Dy = exact_dissipation_face_projected(fp)
+    D_h = (p.dx * p.dx) * (float(np.sum(Dx)) + float(np.sum(Dy)))
+    assert math.isclose(Fdot_chain, -D_h, rel_tol=1e-9, abs_tol=1e-30)
+
+
+def test_quadratic_form_negative_semidefinite_at_frozen_f():
+    # Milestone 13E Section 6: <mu, L_h mu> <= 0 for diverse mu (smooth,
+    # high-frequency, single-spike) at a fixed f -- the decisive physical
+    # test (only the SYMMETRIC part of L_h enters a quadratic form, so
+    # this is insensitive to -- and does not require -- exact self-
+    # adjointness of L_h itself).
+    p = _circle_params(dx=2e-9, Nx=60, Ny=60)
+    f, _ = _circle_state(p)
+    M_s = m_s_ref(p.M_f, p.interface_width)
+    rng = np.random.default_rng(7)
+    from scipy.ndimage import gaussian_filter
+
+    def L_h(mu):
+        fp = surface_flux_face_projected(f, mu, p.dx, p.interface_width, M_s, BC_X, BC_Y)
+        return -flux_divergence(fp["Jx_face"], fp["Jy_face"], p.dx, bc_x=BC_X, bc_y=BC_Y)
+
+    test_vectors = []
+    for _ in range(20):
+        test_vectors.append(gaussian_filter(rng.normal(size=(p.Ny, p.Nx)), sigma=rng.uniform(1, 6)))
+    test_vectors.append(rng.normal(size=(p.Ny, p.Nx)))  # unsmoothed / high-frequency
+    spike = np.zeros((p.Ny, p.Nx))
+    spike[p.Ny // 2, p.Nx // 2] = 1.0
+    test_vectors.append(spike)  # single-point localized
+
+    for mu in test_vectors:
+        q = (p.dx * p.dx) * float(np.sum(mu * L_h(mu)))
+        assert q <= 1e-30 * max(abs(q), 1.0)
+
+
+def test_exact_dissipation_converges_to_unity_ratio_as_dt_to_zero():
+    # Milestone 13E Section 8: the CORRECTED D_h converges to a ratio of
+    # 1.0 (not the ~0.655 the deprecated dissipation_density_face_projected
+    # gave) as dt->0.
+    from pf_sintering.ch_exact_energy import exact_free_energy_isotropic, mu_isotropic
+    p = _circle_params(dx=2e-9, Nx=100, Ny=100)
+    rng = np.random.default_rng(0)
+    from scipy.ndimage import gaussian_filter
+    f = np.clip(0.5 + 0.2 * gaussian_filter(rng.normal(size=(p.Ny, p.Nx)), sigma=4), 0.02, 0.98)
+    e1 = e2 = e3 = np.zeros_like(f)
+    s = Sink(threshold=math.inf)
+    M_s = m_s_ref(p.M_f, p.interface_width)
+    mu = mu_isotropic(f, e1, e2, e3, s, p)
+
+    fp = surface_flux_face_projected(f, mu, p.dx, p.interface_width, M_s, BC_X, BC_Y)
+    Dx, Dy = exact_dissipation_face_projected(fp)
+    D_h = (p.dx * p.dx) * (float(np.sum(Dx)) + float(np.sum(Dy)))
+
+    F0 = exact_free_energy_isotropic(f, e1, e2, e3, s, p)
+    ratios = []
+    for frac in (1.0, 0.1, 0.01, 0.001):
+        dt = p.dt * frac
+        f_new, _ = surface_divergence_update(f, mu, p.dx, dt, p.interface_width, M_s, BC_X, BC_Y,
+                                              face_flux_mode="face_projected")
+        F1 = exact_free_energy_isotropic(f_new, e1, e2, e3, s, p)
+        ratios.append((F0 - F1) / dt / D_h)
+    assert ratios[-1] > 0.999
+    assert abs(ratios[-1] - 1.0) < abs(ratios[0] - 1.0)  # monotonically improving toward 1

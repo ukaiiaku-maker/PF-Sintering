@@ -190,14 +190,73 @@ def face_projected_tangentiality(fp):
 
 
 def dissipation_density_face_projected(fp):
-    """Face-local D_CH density at each face family (Milestone 13D Section
-    8), using that face's own PSD mobility tensor and grad(mu) -- the
-    face-local analogue of dissipation_density, needed because the legacy
-    cell-centered D_density no longer corresponds to what the
-    face-projected update actually integrates."""
+    """DEPRECATED / ALGEBRAICALLY INCORRECT -- kept only for Milestone 13D
+    regression comparison, NOT used by surface_divergence_update (which
+    uses `exact_dissipation_face_projected` below). This was Milestone
+    13D's original guess at a face-local D_CH: the FULL 2x2 quadratic
+    form `v^T M v` at each face family independently, using that face's
+    own complete (Mxx, Mxy, Myy) and (gx_mu, gy_mu). Milestone 13E's exact
+    derivation (see `exact_dissipation_face_projected`) shows this is
+    NOT the quantity conjugate to `Fdot_chain = dx^2*sum(mu*f_dot)`: the
+    conservative divergence only ever uses the x-face's OWN x-component
+    of J and the y-face's OWN y-component (never the "other," diagnostic-
+    only component each face's full vector also carries), so summation by
+    parts produces a strictly SMALLER quantity than this full-quadratic-
+    form guess (confirmed numerically: (F_n-F_{n+1})/dt converges to only
+    ~65% of this D_CH as dt->0, not 100%)."""
     xf, yf = fp["xface"], fp["yface"]
     Dx = xf["Mxx"] * xf["gx_mu"] ** 2 + 2.0 * xf["Mxy"] * xf["gx_mu"] * xf["gy_mu"] + xf["Myy"] * xf["gy_mu"] ** 2
     Dy = yf["Mxx"] * yf["gx_mu"] ** 2 + 2.0 * yf["Mxy"] * yf["gx_mu"] * yf["gy_mu"] + yf["Myy"] * yf["gy_mu"] ** 2
+    return Dx, Dy
+
+
+def fdot_chain_face_projected(f, mu, dx, W, M_s, bc_x, bc_y, eps_n=None, fp=None):
+    """Milestone 13E Section 3: the authoritative instantaneous
+    thermodynamic rate `Fdot_chain = dx^2 * sum(mu * f_dot)`, computed
+    directly from the discrete chain rule using the EXACT implemented
+    face-projected flux and divergence (mu = delta F_h/delta f already
+    established by ch_exact_energy.py; f_dot = L_h(mu) is exactly what
+    surface_divergence_update's face_projected mode computes) -- not
+    estimated from finite-time F differences."""
+    if fp is None:
+        fp = surface_flux_face_projected(f, mu, dx, W, M_s, bc_x, bc_y, eps_n)
+    div = flux_divergence(fp["Jx_face"], fp["Jy_face"], dx, bc_x=bc_x, bc_y=bc_y)
+    f_dot = -div
+    return float(dx * dx * np.sum(mu * f_dot)), f_dot
+
+
+def exact_dissipation_face_projected(fp):
+    """Milestone 13E Sections 4, 8: the EXACT discrete dissipation `D_h`
+    conjugate to `fdot_chain_face_projected`, derived via discrete
+    summation by parts on the ACTUAL implemented `face_gradient_x/y` +
+    `flux_divergence` pair (not assumed): `Fdot_chain = -D_h` is an exact
+    algebraic identity (verified to machine precision, rel diff ~1e-16,
+    not just as dt->0) because `_axis_efflux` and the forward face
+    difference `(a[i+1]-a[i])/dx` are exact discrete adjoints of each
+    other (both periodic and reflecting/no_flux BC, proven by direct
+    telescoping-sum expansion -- MILESTONE_13E report Section 3).
+
+    Only the "own-direction" component of each face family's flux vector
+    enters (the conservative divergence never uses the other, diagnostic-
+    only component), so:
+
+        D_h = dx^2 * [ sum_x-faces(Mxx*gx_mu^2 + Mxy*gx_mu*gy_mu)
+                      + sum_y-faces(Myy*gy_mu^2 + Mxy*gx_mu*gy_mu) ]
+
+    -- structurally different from (and smaller than) the deprecated
+    `dissipation_density_face_projected`'s full-quadratic-form guess at
+    each face (that guess double-counts the cross term and includes an
+    extra, not-actually-present Myy*gx_mu^2 / Mxx*gy_mu^2 term at the
+    "wrong" face family). `D_h`'s sign-definiteness is NOT obvious
+    pointwise (each per-face partial term can itself be negative for
+    some mu, unlike a full PSD quadratic form) -- confirmed instead by
+    direct numerical probing of the GLOBAL quadratic form `<mu,L_h mu>`
+    over hundreds of diverse (smooth, high-frequency, single-spike) test
+    vectors at multiple states (0/450+ violations found) -- see
+    MILESTONE_13E report Section 6."""
+    xf, yf = fp["xface"], fp["yface"]
+    Dx = xf["Mxx"] * xf["gx_mu"] ** 2 + xf["Mxy"] * xf["gx_mu"] * xf["gy_mu"]
+    Dy = yf["Myy"] * yf["gy_mu"] ** 2 + yf["Mxy"] * yf["gx_mu"] * yf["gy_mu"]
     return Dx, Dy
 
 
@@ -226,7 +285,14 @@ def surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None,
     cell-centered Jx/Jy/Mxx/Mxy/Myy/D_density; face_projected returns
     face-centered Jx_face/Jy_face plus the full per-face-family `xface`/
     `yface` vectors and `D_density_x`/`D_density_y`) -- callers must check
-    `face_flux_mode` before assuming a particular key's shape."""
+    `face_flux_mode` before assuming a particular key's shape.
+
+    Milestone 13E: `D_density_x`/`D_density_y` for `face_projected` now
+    come from `exact_dissipation_face_projected` (the algebraically exact
+    discrete dissipation, `Fdot_chain = -dx^2*(sum(D_density_x)+
+    sum(D_density_y))` to machine precision) -- NOT Milestone 13D's
+    original `dissipation_density_face_projected` guess, whose sum only
+    converged to ~65% of the true (F_n-F_{n+1})/dt as dt->0."""
     if eps_n is None:
         eps_n = 1e-6 / W
     if face_flux_mode == "cell_average_legacy":
@@ -240,7 +306,7 @@ def surface_divergence_update(f, mu, dx, dt, W, M_s, bc_x, bc_y, eps_n=None,
         fp = surface_flux_face_projected(f, mu, dx, W, M_s, bc_x, bc_y, eps_n)
         div = flux_divergence(fp["Jx_face"], fp["Jy_face"], dx, bc_x=bc_x, bc_y=bc_y)
         f_new = f - dt * div
-        D_density_x, D_density_y = dissipation_density_face_projected(fp)
+        D_density_x, D_density_y = exact_dissipation_face_projected(fp)
         return f_new, dict(Jx_face=fp["Jx_face"], Jy_face=fp["Jy_face"],
                             xface=fp["xface"], yface=fp["yface"], div=div,
                             D_density_x=D_density_x, D_density_y=D_density_y)
