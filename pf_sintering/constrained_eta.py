@@ -164,6 +164,148 @@ def constrained_variational_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=Fa
     return e1_proj, e2_proj, e3_proj, diag
 
 
+def tangent_cone_projected_velocity(eta_list, v0_list, active_tol=1e-4):
+    """Milestone 13 Section 10: exact least-squares projection of the
+    unconstrained variational velocity `v0_i` onto the LOCAL TANGENT CONE
+    of the simplex `S_f = {eta_i>=0, sum_i eta_i=f}` at the current point
+    `eta_list`, pointwise over the whole grid, for N=2 or N=3 grains.
+
+    The tangent cone at a point with active set `A = {i: eta_i<=active_tol}`
+    (grains currently at their lower bound) is `T = {v: sum_i v_i=0, v_i>=0
+    for i in A}` -- i.e. a grain already at zero ownership can only stay or
+    grow, never go further negative. Minimizing ||v-v0||^2 over `T` is a
+    small convex QP solved here by the standard active-set method for this
+    exact structure (box-lower-bound + single equality): start with all
+    grains "free", set `v_i = v0_i - mean_free(v0)` (enforces sum=0 over the
+    free set), and if any i in A still has v_i<0, move it to "blocked"
+    (v_i:=0 permanently) and repeat with the reduced free set -- this
+    provably converges in at most N iterations and gives the exact KKT
+    point (verified against a brute-force reference enumeration over all
+    subsets of A, `tests/test_tangent_cone_eta.py`).
+
+    This is the actual constraint built into the kinetic law (Section 10's
+    explicit requirement) -- velocities are computed feasible BEFORE the
+    step is taken, not clipped back afterward.
+
+    `active_tol` default is 1e-4, NOT machine epsilon: the tangent cone is
+    a statement about the INSTANTANEOUS velocity, but a finite dt can carry
+    a point from just inside the boundary (eta_i tiny but >0) to past it
+    within a single step if that point isn't already flagged "active". On
+    the real sharp-interface initial condition (tests/test_tangent_cone_eta
+    and scripts/m13_*), active_tol=1e-12 (an "exactly zero" tolerance)
+    left the required post-step safety clip (constrained_tangent_cone_eta_
+    update's `safety_correction`) at ~71% of the variational step on the
+    very first production step -- not negligible at all. Widening to 1e-4
+    (physically negligible on the O(0.1-1) ownership-fraction scale this
+    model actually resolves) drops the safety correction to ~3e-11 relative
+    (true roundoff) on the same state. This tolerance, not the projection
+    algorithm itself, was the actual fix needed for Section 11's "post-step
+    projection is negligible" requirement."""
+    N = len(eta_list)
+    shape = eta_list[0].shape
+    is_active = [eta <= active_tol for eta in eta_list]
+    blocked = [np.zeros(shape, dtype=bool) for _ in range(N)]
+    v = [v0.copy() for v0 in v0_list]
+
+    for _ in range(N):
+        free = [~b for b in blocked]
+        n_free = np.zeros(shape)
+        for fr in free:
+            n_free += fr
+        n_free_safe = np.maximum(n_free, 1.0)
+        v0_free_sum = np.zeros(shape)
+        for i in range(N):
+            v0_free_sum += np.where(free[i], v0_list[i], 0.0)
+        lam = v0_free_sum / n_free_safe
+
+        v = [np.where(blocked[i], 0.0, v0_list[i] - lam) for i in range(N)]
+
+        newly_blocked = False
+        for i in range(N):
+            violate = is_active[i] & (~blocked[i]) & (v[i] < -1e-15)
+            if np.any(violate):
+                blocked[i] = blocked[i] | violate
+                newly_blocked = True
+        if not newly_blocked:
+            break
+    return v
+
+
+def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=False,
+                                         bc_x="periodic", bc_y="reflecting", active_tol=1e-4):
+    """Milestone 13 Sections 10-11: constrained-gradient-flow eta update
+    using the tangent-cone-projected velocity (tangent_cone_projected_
+    velocity) instead of unconstrained-step-then-model.reproject.
+
+    Two logically separate corrections are applied, tracked separately
+    (Section 11's "prove post-step projection is negligible" requires
+    distinguishing them, since only the second is expected to be small):
+
+    (a) f-tracking rescale: `f` here is the POST-transport-step f (this
+        function is called after the f-substep, exactly like the older
+        constrained_variational_eta_update), so `sum_i eta_i` (== the PRE-
+        step ownership total) generally does not equal the new `f` before
+        any eta kinetics run at all -- this is an operator-splitting
+        artifact of evolving f and eta in separate substeps, not eta
+        physics. Resolved by rescaling eta proportionally so ownership
+        FRACTIONS w_i=eta_i/sum_j(eta_j) are preserved and sum_i eta_i=f
+        exactly, matching the convention f_weighted_ownership_volumes
+        already assumes. This can be a large, physically expected
+        correction (it is literally tracking conserved-f transport) and is
+        NOT the "projection" Milestone 12B's report was concerned about.
+
+    (b) safety-net clip: a finite dt can still push an interior point
+        (eta_i>active_tol at the START of the step) past zero within one
+        step even though the tangent-cone velocity was exact at t=0 of the
+        step (the tangent cone is a statement about the instantaneous
+        velocity, not a finite-step guarantee). Caught here by a final
+        clip+rescale and tracked as `safety_correction` -- expected to be
+        roundoff/negligible for a stability-respecting dt, which is the
+        actual Section 11 claim, verified in tests/test_tangent_cone_eta.py.
+    """
+    dt = dt if dt is not None else p.dt
+    fb = np.clip(f, 0.0, 1.0)
+    grains = [e1, e2, e3] if use_eta3 else [e1, e2]
+    N = len(grains)
+
+    old_sum = np.zeros_like(fb)
+    for e in grains:
+        old_sum += e
+    has_mass = old_sum > 1e-30
+    scale = np.where(has_mass, fb / np.where(has_mass, old_sum, 1.0), 0.0)
+    rescaled = [np.where(has_mass, e * scale, np.where(fb > 1e-30, fb / N, 0.0)) for e in grains]
+    f_tracking_correction = float(sum(np.sum(np.abs(rescaled[i] - grains[i])) for i in range(N)))
+
+    Wc = local_wc(fb, *(rescaled + [np.zeros_like(fb)] * (3 - N)), s, p)
+    g_list = [structural_thermodynamic_force(rescaled[i], fb, Wc, p.dx, p.k_eta, bc_x, bc_y) for i in range(N)]
+    v0_list = [-p.M_eta * g for g in g_list]
+
+    v_list = tangent_cone_projected_velocity(rescaled, v0_list, active_tol=active_tol)
+    stepped = [rescaled[i] + dt * v_list[i] for i in range(N)]
+    variational_change = float(sum(np.sum(np.abs(dt * v_list[i])) for i in range(N)))
+
+    clipped = [np.clip(x, 0.0, None) for x in stepped]
+    final_sum = np.zeros_like(fb)
+    for x in clipped:
+        final_sum += x
+    denom = np.where(final_sum > 1e-30, final_sum, 1.0)
+    rescale2 = np.where(final_sum > 1e-30, fb / denom, 0.0)
+    final = [x * rescale2 for x in clipped]
+    safety_correction = float(sum(np.sum(np.abs(final[i] - stepped[i])) for i in range(N)))
+
+    e1_new, e2_new = final[0], final[1]
+    e3_new = final[2] if use_eta3 else e3
+
+    diag = dict(
+        g1=g_list[0], g2=g_list[1],
+        variational_change=variational_change,
+        f_tracking_correction=f_tracking_correction,
+        safety_correction=safety_correction,
+        safety_fraction=safety_correction / (variational_change + 1e-300),
+    )
+    return e1_new, e2_new, e3_new, diag
+
+
 def f_weighted_ownership_volumes(f, e1, e2, e3, dx, eps=1e-30):
     """Physical grain-volume measure (Milestone 12 Section 16): NOT raw
     integral(eta_i) (not conserved mass), but the f-weighted normalized
