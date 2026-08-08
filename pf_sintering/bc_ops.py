@@ -74,6 +74,15 @@ def _shift(a, shift, axis, bc):
     raise ValueError(f"unknown bc {bc!r}")
 
 
+def face_average(a, axis, bc):
+    """Cell-to-face average: result[i] = 0.5*(a[i]+a[i+1]) along `axis`
+    (the value on the "+axis" face of cell i, same convention flux_divergence
+    expects). Public helper for surface_transport.py's cell-centered-tensor
+    flux, which must be interpolated to faces before flux_divergence can
+    guarantee exact mass conservation (see flux_divergence docstring)."""
+    return 0.5 * (a + _shift(a, -1, axis, bc))
+
+
 def lap9_bc(a, dx, bc_x=_PERIODIC, bc_y="reflecting"):
     """Same 9-point compact/rotated Laplacian stencil as model.lap9,
     generalized to per-axis BC. Reduces to model.lap9 exactly at the
