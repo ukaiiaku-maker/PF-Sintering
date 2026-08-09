@@ -77,6 +77,15 @@ class ModelConfig:
     sinusoid_wavelength: float | None = None
     sinusoid_amplitude: float | None = None
     sinusoid_phase: float = 0.0
+    # Milestone 14 Section 8: when set, this is the PHYSICAL GB energy
+    # (J/m^2) used directly for p.gamma_gb/p.gamma_gb_ref, bypassing the
+    # empirical theta_mis_deg -> _gb_energy() Read-Shockley-like curve.
+    # The single entry point through which every gamma_gb-derived
+    # thermodynamic coefficient (k_eta, W_cpl_f, and -- via gamma_gb_ref --
+    # the active Wc=36*gamma_gb_ref/W groove-coupling coefficient consumed
+    # by ch_exact_energy.mu0_bulk/evolve_f's own mu0) is re-derived
+    # consistently. None (default) preserves existing behavior exactly.
+    gamma_gb_override: float | None = None
 
 @dataclass
 class Params:
@@ -163,7 +172,9 @@ def build_params(c:ModelConfig)->Params:
     W=c.interface_width_override if c.interface_width_override is not None else c.interface_cells*dx
     p=Params(nx,ny,dx,r1,r2,r3,rx,ry,c.geometry,ar,c.contact_orientation,wall,ov,c.temperature,c.theta_mis_deg,c.sigma_target,W)
     p.sinusoid_wavelength=wavelength; p.sinusoid_amplitude=amplitude; p.sinusoid_phase=c.sinusoid_phase
-    p.GS1=r1+r2; p.GS2=r2+r3; p.gamma_gb=_gb_energy(c.theta_mis_deg); p.gamma_gb_ref=p.gamma_gb
+    p.GS1=r1+r2; p.GS2=r2+r3
+    p.gamma_gb=c.gamma_gb_override if c.gamma_gb_override is not None else _gb_energy(c.theta_mis_deg)
+    p.gamma_gb_ref=p.gamma_gb
     p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
     p.M_f=M_f_base*c.surface_mobility_scale
