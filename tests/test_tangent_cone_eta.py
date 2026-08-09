@@ -208,3 +208,47 @@ def test_tangent_cone_void_region_rescale_matches_ownership_convention_at_zero_m
 
     r = particle_volume_rate_decomposition(f_old, f_new, e1_old, e2_old, e3_old, e1n, e2n, e3n, p.dt, p.dx)
     assert abs(r["dV2_dt_eta_migration"]) < 1e-6 * max(abs(r["dV2_dt_transport"]), 1e-300)
+
+
+def test_tangent_cone_g_external_none_is_bit_identical_to_default():
+    # Milestone 14G Section 12: g_external defaults to None and must leave
+    # the production path completely untouched -- both the implicit default
+    # (no argument passed) and an explicit g_external=None must agree
+    # bit-for-bit with an explicit all-None-per-grain list.
+    p, s, f, e1, e2, e3 = _sinusoidal_state()
+    e1n0, e2n0, e3n0, diag0 = constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p)
+    e1n1, e2n1, e3n1, diag1 = constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, g_external=None)
+    e1n2, e2n2, e3n2, diag2 = constrained_tangent_cone_eta_update(
+        e1, e2, e3, f, s, p, g_external=[None, None, None])
+    assert np.array_equal(e1n0, e1n1) and np.array_equal(e2n0, e2n1) and np.array_equal(e3n0, e3n1)
+    assert np.array_equal(e1n0, e1n2) and np.array_equal(e2n0, e2n2) and np.array_equal(e3n0, e3n2)
+
+
+def test_tangent_cone_g_external_biases_velocity_as_expected():
+    # Milestone 14G Section 12: a nonzero diagnostic bias force g_external_i
+    # added to grain i's thermodynamic force must enter through the SAME
+    # tangent-cone update production runs use (not a separate ad hoc
+    # step-clip-renormalize loop). Use an interior state (well away from any
+    # eta=0 boundary) so the tangent-cone projection reduces to the simple
+    # sum-zero mean-subtraction v_i = v0_i - mean(v0) -- an exactly linear
+    # map -- letting the effect of the bias be checked analytically.
+    p, s, f, e1, e2, e3 = _sinusoidal_state()
+    assert np.min(e1) > 1e-3 and np.min(e2) > 1e-3  # confirm interior (no active boundaries)
+
+    e1n_base, e2n_base, e3n_base, _ = constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p)
+
+    c = 1.0  # a uniform bias force density added only to grain 1
+    bias = c * np.ones_like(e1)
+    e1n_bias, e2n_bias, e3n_bias, _ = constrained_tangent_cone_eta_update(
+        e1, e2, e3, f, s, p, g_external=[bias, None, None])
+
+    # No active boundaries here -> tangent-cone projection is the exact
+    # sum-zero mean-subtraction over the two active grains (e3 stays zero
+    # throughout this scenario), so the shift is the analytically exact
+    # -M_eta*dt*c/2 for grain 1 and +M_eta*dt*c/2 for grain 2.
+    expected_shift = 0.5 * p.M_eta * p.dt * c
+    assert np.allclose(e1n_bias - e1n_base, -expected_shift, atol=1e-12, rtol=1e-6)
+    assert np.allclose(e2n_bias - e2n_base, expected_shift, atol=1e-12, rtol=1e-6)
+    assert np.array_equal(e3n_bias, e3n_base)
+    # conservation must still hold exactly with the bias applied
+    assert np.allclose((e1n_bias + e2n_bias), np.clip(f, 0.0, 1.0), atol=1e-10)

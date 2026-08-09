@@ -79,11 +79,13 @@ from .model import effective_gamma, reproject
 
 
 def local_wc(f, e1, e2, e3, s, p):
-    """Wc(local) = 36*gl/W, the SAME local-effective-gamma construction
-    model.evolve_f uses for its eta-f coupling term (gl = gamma_gb_ref
-    away from a GB, effective_gamma(s,p) where e1*e2>1e-20 -- reproduced
-    here exactly, not re-derived, to guarantee identical Wc in both
-    contexts)."""
+    """Wc(local) = 4*gl/W (Milestone 14G obstacle-equilibrium calibration,
+    gb_obstacle_energy.gb_obstacle_coefficients -- NOT the old
+    tanh-profile-derived 36*gl/W), the SAME local-effective-gamma
+    construction model.evolve_f uses for its eta-f coupling term (gl =
+    gamma_gb_ref away from a GB, effective_gamma(s,p) where e1*e2>1e-20 --
+    reproduced here exactly, not re-derived, to guarantee identical Wc in
+    both contexts)."""
     fb = np.clip(f, 0.0, 1.0)
     es = [np.clip(e, 0.0, fb) for e in (e1, e2, e3)]
     pair = np.maximum(0.0, es[0] * es[1])
@@ -91,7 +93,7 @@ def local_wc(f, e1, e2, e3, s, p):
     mask = pair > 1e-20
     if np.any(mask):
         gl[mask] = effective_gamma(s, p)
-    return 36.0 * gl / p.interface_width
+    return 4.0 * gl / p.interface_width
 
 
 def structural_thermodynamic_force(eta_i, f, Wc, dx, k_eta, bc_x="periodic", bc_y="reflecting"):
@@ -246,7 +248,8 @@ def tangent_cone_projected_velocity(eta_list, v0_list, active_tol=1e-4):
 
 
 def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=False,
-                                         bc_x="periodic", bc_y="reflecting", active_tol=1e-4):
+                                         bc_x="periodic", bc_y="reflecting", active_tol=1e-4,
+                                         g_external=None):
     """Milestone 13 Sections 10-11: constrained-gradient-flow eta update
     using the tangent-cone-projected velocity (tangent_cone_projected_
     velocity) instead of unconstrained-step-then-model.reproject.
@@ -276,7 +279,16 @@ def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=F
         clip+rescale and tracked as `safety_correction` -- expected to be
         roundoff/negligible for a stability-respecting dt, which is the
         actual Section 11 claim, verified in tests/test_tangent_cone_eta.py.
-    """
+
+    Milestone 14G Section 12: `g_external`, an optional list of one
+    additional thermodynamic-force-density array per active grain
+    (`None` per grain, or the whole argument `None`, means zero -- the
+    default, bit-for-bit production path is unaffected), added to each
+    grain's `g_i` before the tangent-cone projection. Lets a diagnostic
+    bulk-energy bias (e.g. `Delta_g*eta_i` for the planar driven-boundary
+    mobility calibration) enter through the SAME feasible tangent-cone
+    update production runs use, instead of a separate ad hoc
+    step-clip-renormalize loop (Milestone 14E's approach, now replaced)."""
     dt = dt if dt is not None else p.dt
     fb = np.clip(f, 0.0, 1.0)
     grains = [e1, e2, e3] if use_eta3 else [e1, e2]
@@ -310,6 +322,8 @@ def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=F
 
     Wc = local_wc(fb, *(rescaled + [np.zeros_like(fb)] * (3 - N)), s, p)
     g_list = [structural_thermodynamic_force(rescaled[i], fb, Wc, p.dx, p.k_eta, bc_x, bc_y) for i in range(N)]
+    if g_external is not None:
+        g_list = [g_list[i] + g_external[i] if g_external[i] is not None else g_list[i] for i in range(N)]
     v0_list = [-p.M_eta * g for g in g_list]
 
     v_list = tangent_cone_projected_velocity(rescaled, v0_list, active_tol=active_tol)
@@ -338,47 +352,19 @@ def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=F
     return e1_new, e2_new, e3_new, diag
 
 
-GB_ENERGY_CALIBRATION_FACTOR = 19.0
-"""Milestone 14F Section 17 follow-up (Milestone 14E Section 4/5's
-identified fix): exact ratio gamma_gb_implemented/gamma_gb_declared for
-the current Wc=36*gamma_gb/W, k_eta=3*gamma_gb*W construction, at f=1,
-for an isolated planar GB with the natural (undriven) profile
-eta1=0.5*(1-tanh(x/W)), eta2=0.5*(1+tanh(x/W)).
-
-Derivation (verified both analytically, below, and numerically against
-the real simulated field to <1%, Milestone 14E Section 4): with
-f=1 (f^2/2-f=-0.5), density(x) = -0.25*Wc*(1+tanh^2(x/W)), background
-(x->+-inf) = -0.5*Wc, so
-
-    bulk excess(x) = density(x) - background = 0.25*Wc*sech^2(x/W)
-
-and integral(sech^2(x/W) dx) = 2*W, giving
-
-    integral(bulk excess) dx = 0.5*Wc*W = 0.5*(36*gamma_gb/W)*W = 18*gamma_gb.
-
-For the gradient term, eta1'=eta2'=-/+0.5*sech^2(x/W)/W, so
-grad_energy(x) = 0.25*k_eta*sech^4(x/W)/W^2, and
-integral(sech^4(x/W) dx) = (4/3)*W, giving
-
-    integral(grad excess) dx = 0.25*k_eta/W^2 * (4/3)*W = k_eta/(3*W)
-                              = (3*gamma_gb*W)/(3*W) = gamma_gb.
-
-Total: gamma_gb_implemented = 18*gamma_gb_declared + 1*gamma_gb_declared
-= 19*gamma_gb_declared EXACTLY -- independent of W (confirmed both terms
-individually reduce to a pure multiple of gamma_gb with no residual W
-dependence, so this factor is not grid/resolution-specific). This module
-remains diagnostic-only (see module docstring); `gamma_gb_target_to_
-declared` is the corresponding fix, to be passed as `gamma_gb_override`
-to `build_params` whenever a benchmark needs the IMPLEMENTED eta-GB
-excess energy to equal a specific physical target (not simply the bare
-declared value, which Milestone 14E Section 4 showed does not hold)."""
-
-
-def gamma_gb_target_to_declared(gamma_gb_target):
-    """The `gamma_gb_override` value to pass to `build_params` so that the
-    eta-GB profile's ACTUAL implemented excess free energy equals
-    `gamma_gb_target` (see `GB_ENERGY_CALIBRATION_FACTOR`)."""
-    return gamma_gb_target / GB_ENERGY_CALIBRATION_FACTOR
+# Milestone 14G superseded the `GB_ENERGY_CALIBRATION_FACTOR`/
+# `gamma_gb_target_to_declared` pair formerly defined here. Milestone
+# 14E/14F assumed the natural/equilibrium profile of the constrained
+# two-grain free energy is a TANH; it is not -- the box constraint
+# `0<=eta_i<=f` makes this an OBSTACLE problem whose equilibrium profile
+# is a compact-support sine (see `pf_sintering.gb_obstacle_energy`'s
+# module docstring for the full derivation). The tanh-profile excess
+# energy (`19.0`) was numerically correct as a fact about that
+# non-equilibrium profile, but is not a physical GB energy calibration;
+# it now lives, correctly labeled, as `gb_obstacle_energy.
+# TANH_PROFILE_EXCESS_FACTOR`, retained there for regression only. The
+# correct physical calibration is `gb_obstacle_energy.
+# gb_obstacle_coefficients`.
 
 
 def f_weighted_ownership_volumes(f, e1, e2, e3, dx, eps=1e-30):

@@ -67,7 +67,7 @@ def evolve_f_diagnostic(f, e1, e2, e3, s1, p):
     mask = pair12 > 1e-20
     if np.any(mask):
         gamma_local[mask] = effective_gamma(s1, p)
-    Wc = 36.0 * gamma_local / p.interface_width
+    Wc = 4.0 * gamma_local / p.interface_width  # Milestone 14G: obstacle calibration (gb_obstacle_energy)
 
     dF_df = p.W_f * f * (1.0 - f) * (1.0 - 2.0 * f) - Wc * eta_sq * (1.0 - fb)
 

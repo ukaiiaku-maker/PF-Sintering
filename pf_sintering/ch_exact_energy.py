@@ -44,7 +44,10 @@ def _wc(e1, e2, e3, s, p):
     mask = pair > 1e-20
     if np.any(mask):
         gl[mask] = effective_gamma(s, p)
-    return 36.0 * gl / p.interface_width
+    # Milestone 14G: Wc=4*gamma/W (obstacle-equilibrium calibration,
+    # gb_obstacle_energy.gb_obstacle_coefficients), not the old
+    # tanh-profile-derived 36*gamma/W.
+    return 4.0 * gl / p.interface_width
 
 
 def mu0_bulk(f, e1, e2, e3, s, p):

@@ -3,10 +3,8 @@ import math
 import numpy as np
 
 from pf_sintering.constrained_eta import (
-    GB_ENERGY_CALIBRATION_FACTOR,
     constrained_variational_eta_update,
     f_weighted_ownership_volumes,
-    gamma_gb_target_to_declared,
     local_wc,
     structural_thermodynamic_force,
 )
@@ -90,7 +88,8 @@ def test_f_weighted_ownership_volumes_sum_to_v2_f_total():
 
 def test_local_wc_matches_evolve_f_construction():
     # local_wc must reproduce model.evolve_f's own Wc exactly (same
-    # gamma_gb_ref / effective_gamma(s, p) branch, same 36/W scaling).
+    # gamma_gb_ref / effective_gamma(s, p) branch, same 4/W scaling --
+    # Milestone 14G obstacle calibration).
     p, s, f, e1, e2, e3 = _state()
     Wc = local_wc(f, e1, e2, e3, s, p)
     fb = np.clip(f, 0.0, 1.0)
@@ -100,7 +99,7 @@ def test_local_wc_matches_evolve_f_construction():
     mask = pair > 1e-20
     if np.any(mask):
         gl_expected[mask] = effective_gamma(s, p)
-    Wc_expected = 36.0 * gl_expected / p.interface_width
+    Wc_expected = 4.0 * gl_expected / p.interface_width  # Milestone 14G obstacle calibration
     assert np.allclose(Wc, Wc_expected)
 
 
@@ -153,32 +152,9 @@ def test_structural_force_matches_full_free_energy_derivative():
     assert min(rel_errs) < 1e-8
 
 
-def test_gb_energy_calibration_factor_matches_analytic_isolated_gb():
-    # Milestone 14E Section 4 / 14F Section 17: declared gamma_gb and the
-    # eta profile's actual implemented excess free energy differ by an
-    # exact, analytically-derived factor (18 from the bulk term + 1 from
-    # the gradient term, at f=1, isolated planar GB, natural tanh
-    # profile) -- verified here via direct numerical integration of the
-    # analytic profile, independent of the simulation machinery.
-    W = 20e-9
-    gamma_gb_declared = 1.0
-    k_eta = 3 * gamma_gb_declared * W
-    Wc = 36 * gamma_gb_declared / W
-
-    x = np.linspace(-500e-9, 500e-9, 200001)
-    eta2 = 0.5 * (1 + np.tanh(x / W))
-    eta1 = 1 - eta2
-    bulk = Wc * (eta1 ** 2 + eta2 ** 2) * (0.5 - 1.0)
-    ge1 = np.gradient(eta1, x)
-    ge2 = np.gradient(eta2, x)
-    grad_e = 0.5 * k_eta * (ge1 ** 2 + ge2 ** 2)
-    background = -0.5 * Wc
-    gamma_gb_implemented = np.trapezoid((bulk + grad_e) - background, x)
-
-    assert math.isclose(gamma_gb_implemented, GB_ENERGY_CALIBRATION_FACTOR * gamma_gb_declared, rel_tol=1e-6)
-
-
-def test_gamma_gb_target_to_declared_round_trips():
-    for target in (0.5, 1.0, 1.6, 3.0):
-        declared = gamma_gb_target_to_declared(target)
-        assert math.isclose(declared * GB_ENERGY_CALIBRATION_FACTOR, target, rel_tol=1e-12)
+# Milestone 14G superseded the gamma_gb calibration tests formerly here
+# (`test_gb_energy_calibration_factor_matches_analytic_isolated_gb`,
+# `test_gamma_gb_target_to_declared_round_trips`): the tanh profile they
+# assumed is not the equilibrium profile of this constrained (obstacle)
+# free energy. See tests/test_gb_obstacle_energy.py for the corrected
+# derivation and calibration (`pf_sintering.gb_obstacle_energy`).

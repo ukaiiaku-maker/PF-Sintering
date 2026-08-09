@@ -10,6 +10,8 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.measure import find_contours
 
+from .gb_obstacle_energy import gb_obstacle_coefficients, m_eta_from_m_gb
+
 Geometry = Literal["substrate", "threeparticle", "sinusoidal_substrate"]
 Contact = Literal["short_plane", "long_plane"]
 
@@ -82,10 +84,25 @@ class ModelConfig:
     # empirical theta_mis_deg -> _gb_energy() Read-Shockley-like curve.
     # The single entry point through which every gamma_gb-derived
     # thermodynamic coefficient (k_eta, W_cpl_f, and -- via gamma_gb_ref --
-    # the active Wc=36*gamma_gb_ref/W groove-coupling coefficient consumed
-    # by ch_exact_energy.mu0_bulk/evolve_f's own mu0) is re-derived
-    # consistently. None (default) preserves existing behavior exactly.
+    # the active Wc=4*gamma_gb_ref/W groove-coupling coefficient consumed
+    # by ch_exact_energy.mu0_bulk/evolve_f's own mu0 -- Milestone 14G's
+    # obstacle-equilibrium calibration, gb_obstacle_energy.gb_obstacle_
+    # coefficients, superseding the earlier tanh-profile-derived 36x/3x
+    # formula) is re-derived consistently. None (default) preserves
+    # existing behavior exactly (same _gb_energy curve as always; only
+    # the k_eta/W_cpl_f/Wc COEFFICIENT FORMULA changed in Milestone 14G).
     gamma_gb_override: float | None = None
+    # Milestone 14G Section 13: PHYSICAL GB mobility M_GB [m^4/(J*s)] (the
+    # coefficient in v_GB=M_GB*Delta_g), gated on Section 12's three-way
+    # M_gb_eff (analytic/circular/planar) consistency check passing --
+    # see gb_obstacle_energy.m_eta_from_m_gb / MILESTONE_14G's report.
+    # When set, p.M_eta = pi^2*M_GB/(4*W_GB) (the delta_GB=W_GB convention,
+    # W_GB=p.interface_width), OVERRIDING eta_mobility_scale and
+    # eta_diffusivity_fixed_physical. None (default) preserves existing
+    # behavior exactly; eta_mobility_scale remains available as an
+    # arbitrary (non-physically-anchored) regression/diagnostic multiplier
+    # when gb_mobility_m4_J_s is left unset.
+    gb_mobility_m4_J_s: float | None = None
 
 @dataclass
 class Params:
@@ -144,7 +161,7 @@ def _eta_diffusivity_reference(c:"ModelConfig")->float:
     magnitude relative to the dx=5nm baseline (Milestone 9 Section 2)."""
     dx_ref,W_ref,tau_target_ref,gamma_s_ref=5e-9,20e-9,1.,1.
     gamma_gb_ref_val=_gb_energy(c.theta_mis_deg)
-    k_f_ref=3*gamma_s_ref*W_ref; k_eta_ref=3*gamma_gb_ref_val*W_ref
+    k_f_ref=3*gamma_s_ref*W_ref; k_eta_ref=gb_obstacle_coefficients(gamma_gb_ref_val, W_ref)["k_eta"]
     M_f_base_ref=(20e-9)**4/(tau_target_ref*k_f_ref)
     M_eta_ref=M_f_base_ref/dx_ref**2*.01*c.eta_mobility_scale
     return M_eta_ref*k_eta_ref
@@ -175,10 +192,21 @@ def build_params(c:ModelConfig)->Params:
     p.GS1=r1+r2; p.GS2=r2+r3
     p.gamma_gb=c.gamma_gb_override if c.gamma_gb_override is not None else _gb_energy(c.theta_mis_deg)
     p.gamma_gb_ref=p.gamma_gb
-    p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W; p.k_eta=3*p.gamma_gb*W; p.W_cpl_f=36*p.gamma_gb/W
+    p.D_gb=1e-3*math.exp(-1.5e5/(p.Rgas*p.T)); p.k_f=3*p.gamma_s*W; p.W_f=12*p.gamma_s/W
+    # Milestone 14G: k_eta/W_cpl_f (=Wc) come from the single obstacle-
+    # problem coefficient provider (gb_obstacle_energy.gb_obstacle_
+    # coefficients), NOT the old tanh-profile-derived k_eta=3*gamma*W,
+    # Wc=36*gamma/W -- see that module's docstring for the full
+    # derivation. delta_GB=W_GB convention: the same physical interface
+    # width W already used for gamma_s.
+    _gb_coef = gb_obstacle_coefficients(p.gamma_gb, W)
+    p.k_eta = _gb_coef["k_eta"]; p.W_cpl_f = _gb_coef["Wc"]
     M_f_base=(20e-9)**4/(p.tau_target*p.k_f)
     p.M_f=M_f_base*c.surface_mobility_scale
-    p.M_eta=(_eta_diffusivity_reference(c)/p.k_eta) if c.eta_diffusivity_fixed_physical else (M_f_base/p.dx**2*.01*c.eta_mobility_scale)
+    if c.gb_mobility_m4_J_s is not None:
+        p.M_eta=m_eta_from_m_gb(c.gb_mobility_m4_J_s, W)
+    else:
+        p.M_eta=(_eta_diffusivity_reference(c)/p.k_eta) if c.eta_diffusivity_fixed_physical else (M_f_base/p.dx**2*.01*c.eta_mobility_scale)
     # coarsening_rate_scale=0 means "coarsening exactly off" (Milestone 7
     # differential-coarsening control C0): tau_ripening=inf makes
     # ostwald_substrate's tr=min(V*dt/tau_ripening,.002*V) exactly 0.0, an
@@ -253,7 +281,7 @@ def reproject(f,*etas):
     return out
 
 def evolve_f(f,e1,e2,e3,s1,s2,p):
-    fb=np.clip(f,0,1); es=[np.clip(e,0,fb) for e in (e1,e2,e3)]; eta2=sum(e*e for e in es); pair=np.maximum(0,es[0]*es[1]); gl=np.full_like(f,p.gamma_gb_ref);m=pair>1e-20;gl[m]=effective_gamma(s1,p); Wc=36*gl/p.interface_width
+    fb=np.clip(f,0,1); es=[np.clip(e,0,fb) for e in (e1,e2,e3)]; eta2=sum(e*e for e in es); pair=np.maximum(0,es[0]*es[1]); gl=np.full_like(f,p.gamma_gb_ref);m=pair>1e-20;gl[m]=effective_gamma(s1,p); Wc=4*gl/p.interface_width  # Milestone 14G: obstacle calibration, Wc=4*gamma/W (see gb_obstacle_energy)
     mu0=p.W_f*f*(1-f)*(1-2*f)-Wc*eta2*(1-fb)
     if p.use_aniso_surface:
         gx,gy=grad(f,p.dx); sm=sum(es)+1e-30;th0=(es[0]*p.theta_grain[0]+es[1]*p.theta_grain[1]+es[2]*p.theta_grain[2])/sm;th=np.arctan2(gy,gx);ps=np.mod(th-th0,math.pi/2);a=np.interp(ps,p.lut_psi,p.lut_a);ap=np.interp(ps,p.lut_psi,p.lut_ap);flat=gx*gx+gy*gy<(0.01/p.interface_width)**2;a[flat]=1;ap[flat]=0;mu=mu0-div(p.k_f*(a*a*gx-a*ap*gy),p.k_f*(a*a*gy+a*ap*gx),p.dx)
