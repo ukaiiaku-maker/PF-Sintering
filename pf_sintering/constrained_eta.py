@@ -338,6 +338,49 @@ def constrained_tangent_cone_eta_update(e1, e2, e3, f, s, p, dt=None, use_eta3=F
     return e1_new, e2_new, e3_new, diag
 
 
+GB_ENERGY_CALIBRATION_FACTOR = 19.0
+"""Milestone 14F Section 17 follow-up (Milestone 14E Section 4/5's
+identified fix): exact ratio gamma_gb_implemented/gamma_gb_declared for
+the current Wc=36*gamma_gb/W, k_eta=3*gamma_gb*W construction, at f=1,
+for an isolated planar GB with the natural (undriven) profile
+eta1=0.5*(1-tanh(x/W)), eta2=0.5*(1+tanh(x/W)).
+
+Derivation (verified both analytically, below, and numerically against
+the real simulated field to <1%, Milestone 14E Section 4): with
+f=1 (f^2/2-f=-0.5), density(x) = -0.25*Wc*(1+tanh^2(x/W)), background
+(x->+-inf) = -0.5*Wc, so
+
+    bulk excess(x) = density(x) - background = 0.25*Wc*sech^2(x/W)
+
+and integral(sech^2(x/W) dx) = 2*W, giving
+
+    integral(bulk excess) dx = 0.5*Wc*W = 0.5*(36*gamma_gb/W)*W = 18*gamma_gb.
+
+For the gradient term, eta1'=eta2'=-/+0.5*sech^2(x/W)/W, so
+grad_energy(x) = 0.25*k_eta*sech^4(x/W)/W^2, and
+integral(sech^4(x/W) dx) = (4/3)*W, giving
+
+    integral(grad excess) dx = 0.25*k_eta/W^2 * (4/3)*W = k_eta/(3*W)
+                              = (3*gamma_gb*W)/(3*W) = gamma_gb.
+
+Total: gamma_gb_implemented = 18*gamma_gb_declared + 1*gamma_gb_declared
+= 19*gamma_gb_declared EXACTLY -- independent of W (confirmed both terms
+individually reduce to a pure multiple of gamma_gb with no residual W
+dependence, so this factor is not grid/resolution-specific). This module
+remains diagnostic-only (see module docstring); `gamma_gb_target_to_
+declared` is the corresponding fix, to be passed as `gamma_gb_override`
+to `build_params` whenever a benchmark needs the IMPLEMENTED eta-GB
+excess energy to equal a specific physical target (not simply the bare
+declared value, which Milestone 14E Section 4 showed does not hold)."""
+
+
+def gamma_gb_target_to_declared(gamma_gb_target):
+    """The `gamma_gb_override` value to pass to `build_params` so that the
+    eta-GB profile's ACTUAL implemented excess free energy equals
+    `gamma_gb_target` (see `GB_ENERGY_CALIBRATION_FACTOR`)."""
+    return gamma_gb_target / GB_ENERGY_CALIBRATION_FACTOR
+
+
 def f_weighted_ownership_volumes(f, e1, e2, e3, dx, eps=1e-30):
     """Physical grain-volume measure (Milestone 12 Section 16): NOT raw
     integral(eta_i) (not conserved mass), but the f-weighted normalized
