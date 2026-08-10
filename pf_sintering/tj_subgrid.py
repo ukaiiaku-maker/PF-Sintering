@@ -127,7 +127,7 @@ def _segment_intersection(p1, p2, p3, p4, eps=1e-9):
     return None
 
 
-def _newton_refine(f, gb, p, xy0, max_iter=20, tol_frac_dx=1e-7):
+def _newton_refine(f, gb, p, xy0, max_iter=100, tol_frac_dx=1e-7):
     """Newton iteration on bilinearly-interpolated (f-0.5, e1-e2). Uses a
     finer finite-difference stencil (0.02*dx rather than tj_force's default
     0.5*dx) for the gradient: a coarser stencil averages the bilinear
@@ -135,7 +135,17 @@ def _newton_refine(f, gb, p, xy0, max_iter=20, tol_frac_dx=1e-7):
     cells and was found empirically to produce a damped-oscillatory (linear,
     ratio ~0.7/step) rather than quadratic Newton convergence -- correct in
     direction but needlessly slow. The finer stencil restores standard
-    quadratic Newton convergence (machine precision within ~8 iterations)."""
+    quadratic Newton convergence (machine precision within ~8 iterations)
+    in the typical, well-conditioned case. Milestone 15B: raised from 20 to
+    100 after the exact eta1+eta2=f initializer fix (gb_signed_distance.py)
+    changed the discretized e1-e2 field enough that some transient states
+    hit a near-singular Jacobian (|detJ|~4e14 observed, vs. a
+    well-conditioned case) where convergence is genuine but only linear,
+    not quadratic -- needing ~20-40 iterations rather than ~8; each
+    iteration is one cheap bilinear sample, so the added budget is
+    negligible cost and does not change the convergence tolerance/criteria
+    itself, only how long a slow-but-converging case is allowed to run
+    before being reported as failed."""
     xy = np.array(xy0, dtype=float)
     tol = tol_frac_dx * p.dx
     h = 0.02 * p.dx

@@ -4,6 +4,7 @@ import numpy as np
 from skimage.measure import find_contours
 
 from pf_sintering.gb_obstacle_energy import obstacle_ell, obstacle_profile
+from pf_sintering.gb_signed_distance import sinusoid_signed_distance
 from pf_sintering.model import ModelConfig, Sink, build_params, compute_stress, initialize_fields
 from pf_sintering.tj_force import locate_neck_tjs
 from pf_sintering.tj_subgrid import compute_subgrid_contact
@@ -43,16 +44,13 @@ def test_fields_are_finite_and_in_unit_range():
 
 
 def test_e1_e2_do_not_exceed_f():
-    # f is np.maximum(e1_raw, e2_raw) of the RAW (pre-ownership-weighting)
-    # fields; the returned e1/e2 are weighted by the t1/t2 ownership
-    # partition and are strictly <= f, but not necessarily equal to it in
-    # the transition zone -- identical, pre-existing behavior to the flat
-    # substrate case (same construction pattern), not specific to this
-    # geometry.
+    # Milestone 15B: eta1=f*(1-phi_GB), eta2=f*phi_GB with phi_GB in [0,1],
+    # so e1<=f and e2<=f holds by construction, exactly (not just
+    # approximately in a transition zone).
     p = build_params(_cfg())
     f, e1, e2, e3 = initialize_fields(p)
-    assert np.all(e1 <= f + 1e-9)
-    assert np.all(e2 <= f + 1e-9)
+    assert np.all(e1 <= f + 1e-12)
+    assert np.all(e2 <= f + 1e-12)
 
 
 def test_f_contour_follows_the_imposed_sinusoid_away_from_the_particle():
@@ -115,104 +113,63 @@ def test_v1_v2_positive_and_reasonable():
     assert 0.3 * expected_order < V2 < 1.2 * expected_order
 
 
-def test_gb_ownership_split_uses_calibrated_obstacle_profile():
-    # Milestone 15 Section 2: the t1/t2 ownership split across the GB uses
-    # gb_obstacle_energy's compact-support sine (ell=obstacle_ell(p.k_eta,
-    # p.W_cpl_f)), not a tanh -- reconstruct t2 directly from the same
-    # x_s(Y) coordinate initialize_fields uses and confirm e2/e1_raw
-    # (the un-weighted particle level set) matches obstacle_profile exactly.
+def test_gb_ownership_split_uses_exact_signed_distance_and_obstacle_profile():
+    # Milestone 15B Sections 2-3: eta1=f*(1-phi_GB), eta2=f*phi_GB, with
+    # phi_GB=obstacle_profile(d_GB, ell) and d_GB the EXACT nearest-point
+    # signed Euclidean distance to the sinusoidal GB curve x=x_s(y) (not
+    # the raw horizontal difference X-x_s(Y), which is not the normal
+    # distance wherever the curve's slope is nonzero). eta2 additionally
+    # caps at the particle's own raw level set e2_raw (min(f*phi_GB,
+    # e2_raw)) -- phi_GB alone, unconditionally, assigns spurious grain-2
+    # ownership deep in pure-substrate bulk far from the particle, where
+    # e2_raw~0 (see model.py's initialize_fields docstring).
     p = build_params(_cfg(gamma_gb_override=1.0))
     f, e1, e2, e3 = initialize_fields(p)
-    x = (np.arange(1, p.Nx + 1) - p.Nx / 2) * p.dx
-    y = (np.arange(1, p.Ny + 1) - p.Ny / 2) * p.dx
-    X, Y = np.meshgrid(x, y)
-    wall_mean = (p.substrate_wall_frac - .5) * p.Nx * p.dx
-    x_s = wall_mean + p.sinusoid_amplitude * np.cos(2 * math.pi * Y / p.sinusoid_wavelength + p.sinusoid_phase)
-    ell = obstacle_ell(p.k_eta, p.W_cpl_f)
-    t2_expected = obstacle_profile(X - x_s, ell)
-    e1_raw = .5 * (1 - np.tanh((X - x_s) / p.interface_width))
-    x_crest = wall_mean + p.sinusoid_amplitude * math.cos(p.sinusoid_phase)
-    cx = x_crest + p.Rx - p.initial_overlap
-    rr = np.sqrt(((X - cx) / p.Rx) ** 2 + (Y / p.Ry) ** 2)
-    e2_raw = .5 * (1 - np.tanh((rr - 1) * min(p.Rx, p.Ry) / p.interface_width))
-    assert np.allclose(e2, e2_raw * t2_expected, atol=1e-12)
-    assert np.allclose(e1, e1_raw * (1 - t2_expected), atol=1e-12)
-
-
-def test_eta_sum_matches_f_exactly_in_the_solid_core_near_the_tj():
-    # Milestone 15 Section 2 invariant: sum(eta_i)=f holds EXACTLY in the
-    # solid core (f>0.99) near the GB/TJ, where the calibrated obstacle
-    # split is the only thing determining ownership. It does NOT hold in
-    # the free-surface diffuse tail there (where f itself has not
-    # saturated and BOTH grains' own raw level sets are still
-    # transitioning simultaneously) -- a pre-existing characteristic of
-    # this 1D (X-x_s-only) ownership split, present at comparable
-    # magnitude with the OLD tanh split too (see
-    # test_gb_split_deficit_not_worse_than_tanh_baseline below); fixing
-    # that would mean redesigning the split's 2D geometry, out of this
-    # milestone's explicit scope ("update ONLY the structural eta
-    # initialization").
-    p = build_params(_cfg(gamma_gb_override=1.0))
-    f, e1, e2, e3 = initialize_fields(p)
-    tjs = locate_neck_tjs(f, e1, e2, p)
-    assert tjs is not None
-    nc = tjs["nc"]
-    solid = np.flatnonzero(f[:, nc] > 0.5)
-    r_lo, r_hi = solid[0], solid[-1]
-    margin = round(40e-9 / p.dx)
-    col_margin = round(60e-9 / p.dx)
-    rlo, rhi = max(0, r_lo - margin), min(p.Ny, r_hi + margin + 1)
-    clo, chi = max(0, nc - col_margin), min(p.Nx, nc + col_margin + 1)
-    fb = np.clip(f, 0.0, 1.0)
-    core = fb > 0.99
-    resid = np.abs((e1 + e2 + e3) - fb)
-    sub_resid, sub_core = resid[rlo:rhi, clo:chi], core[rlo:rhi, clo:chi]
-    assert sub_core.any()
-    assert sub_resid[sub_core].max() < 1e-9
-
-
-def test_gb_split_deficit_not_worse_than_tanh_baseline():
-    # In the free-surface diffuse tail near the TJ (see previous test),
-    # sum(eta_i) undershoots f for BOTH the old tanh split and the new
-    # calibrated-obstacle split, by comparable magnitude -- a pre-existing
-    # limitation of the 1D split, not something this milestone's profile-
-    # shape change introduces or meaningfully worsens.
-    p = build_params(_cfg(gamma_gb_override=1.0))
-    f, e1, e2, e3 = initialize_fields(p)
-    tjs = locate_neck_tjs(f, e1, e2, p)
-    nc = tjs["nc"]
-    solid = np.flatnonzero(f[:, nc] > 0.5)
-    r_lo, r_hi = solid[0], solid[-1]
-    margin = round(40e-9 / p.dx)
-    col_margin = round(60e-9 / p.dx)
-    rlo, rhi = max(0, r_lo - margin), min(p.Ny, r_hi + margin + 1)
-    clo, chi = max(0, nc - col_margin), min(p.Nx, nc + col_margin + 1)
-    resid_new = np.abs((e1 + e2 + e3) - np.clip(f, 0.0, 1.0))[rlo:rhi, clo:chi]
-
     x = (np.arange(1, p.Nx + 1) - p.Nx / 2) * p.dx
     y = (np.arange(1, p.Ny + 1) - p.Ny / 2) * p.dx
     X, Y = np.meshgrid(x, y)
     W = p.interface_width
     wall_mean = (p.substrate_wall_frac - .5) * p.Nx * p.dx
     x_s = wall_mean + p.sinusoid_amplitude * np.cos(2 * math.pi * Y / p.sinusoid_wavelength + p.sinusoid_phase)
-    e1_raw = .5 * (1 - np.tanh((X - x_s) / W))
     x_crest = wall_mean + p.sinusoid_amplitude * math.cos(p.sinusoid_phase)
     cx = x_crest + p.Rx - p.initial_overlap
     rr = np.sqrt(((X - cx) / p.Rx) ** 2 + (Y / p.Ry) ** 2)
     e2_raw = .5 * (1 - np.tanh((rr - 1) * min(p.Rx, p.Ry) / W))
-    f_old = np.maximum(e1_raw, e2_raw)
-    t1_old = .5 * (1 - np.tanh((X - x_s) / W))
-    t2_old = .5 * (1 + np.tanh((X - x_s) / W))
-    resid_old = np.abs((e1_raw * t1_old + e2_raw * t2_old) - f_old)[rlo:rhi, clo:chi]
+    ell = obstacle_ell(p.k_eta, p.W_cpl_f)
+    d_GB = sinusoid_signed_distance(X, Y, p.sinusoid_amplitude, p.sinusoid_wavelength, p.sinusoid_phase, wall_mean)
+    phi_GB_expected = obstacle_profile(d_GB, ell)
+    e2_expected = np.minimum(f * phi_GB_expected, e2_raw)
+    assert np.allclose(e2, e2_expected, atol=1e-12)
+    assert np.allclose(e1, f - e2_expected, atol=1e-12)
 
-    assert resid_new.max() < 2.0 * resid_old.max()
+
+def test_eta_sum_matches_f_exactly_everywhere():
+    # Milestone 15B Section 2 invariant: eta1=f*(1-phi_GB), eta2=f*phi_GB
+    # makes sum(eta_i)=f identically, for ANY phi_GB in [0,1] -- not just
+    # in the solid core (Milestone 15's construction, e1_raw*t1+e2_raw*t2,
+    # only achieved that approximately, with a real deficit of up to ~0.3
+    # in the free-surface diffuse tail near the TJ; this construction has
+    # no such deficit anywhere).
+    p = build_params(_cfg(gamma_gb_override=1.0))
+    f, e1, e2, e3 = initialize_fields(p)
+    resid = np.abs((e1 + e2 + e3) - np.clip(f, 0.0, 1.0))
+    assert resid.max() < 1e-9
+
+
+def test_eta_nonnegative_everywhere():
+    p = build_params(_cfg(gamma_gb_override=1.0))
+    f, e1, e2, e3 = initialize_fields(p)
+    assert np.all(e1 >= -1e-12)
+    assert np.all(e2 >= -1e-12)
 
 
 def test_tj_position_unchanged_relative_to_tanh_split_reconstruction():
-    # Milestone 15 Section 2: swapping the ownership-split SHAPE (tanh ->
-    # calibrated obstacle profile) must not move the located TJs -- f, e1
-    # (substrate level set), e2 (particle level set) are untouched by the
-    # split, and locate_neck_tjs's neck-column search is f-driven.
+    # Milestone 15B: swapping the ownership-split construction (Milestone
+    # 15's e1_raw*t1/e2_raw*t2, tanh-based coordinate -> this milestone's
+    # f*(1-phi_GB)/f*phi_GB, exact-signed-distance-based) must not move
+    # the located TJs -- f (e1_raw, e2_raw, the union f=max(e1_raw,e2_raw),
+    # particle/substrate geometry) is untouched by the split construction,
+    # and locate_neck_tjs's neck-column search is f-driven.
     p = build_params(_cfg(gamma_gb_override=1.0))
     f, e1, e2, e3 = initialize_fields(p)
     tj_new = locate_neck_tjs(f, e1, e2, p)
@@ -237,6 +194,47 @@ def test_tj_position_unchanged_relative_to_tanh_split_reconstruction():
     assert np.allclose(tj_new["tj_top"], tj_old["tj_top"])
     assert np.allclose(tj_new["tj_bottom"], tj_old["tj_bottom"])
     assert tj_new["nc"] == tj_old["nc"]
+
+
+def test_gb_phi_half_contour_matches_macroscopic_gb_curve():
+    # Milestone 15B Section 3: the phi_GB=0.5 contour (where d_GB=0, i.e.
+    # exactly on the GB curve x=x_s(y)) must coincide with the SAME
+    # macroscopic GB location the old (Milestone 15) tanh-coordinate
+    # split used (X=x_s(Y), the substrate's own free-surface line) --
+    # confirmed by checking d_GB's own zero-crossing sits on x_s(Y) to
+    # near machine precision (the Newton/coarse-search solver's own
+    # accuracy), independent of any grid discretization.
+    p = build_params(_cfg())
+    W = p.interface_width
+    y_probe = np.array([-100e-9, -30e-9, 0.0, 40e-9, 120e-9])
+    wall_mean = (p.substrate_wall_frac - .5) * p.Nx * p.dx
+    x_s_probe = wall_mean + p.sinusoid_amplitude * np.cos(2 * math.pi * y_probe / p.sinusoid_wavelength + p.sinusoid_phase)
+    d0 = sinusoid_signed_distance(x_s_probe, y_probe, p.sinusoid_amplitude, p.sinusoid_wavelength,
+                                   p.sinusoid_phase, wall_mean)
+    assert np.max(np.abs(d0)) < 1e-9 * W  # a point ON the curve has zero signed distance to it
+
+
+def test_signed_distance_matches_brute_force_nearest_point():
+    # Independent check of gb_signed_distance.sinusoid_signed_distance
+    # against brute-force fine sampling of the curve, at this milestone's
+    # actual geometry (large amplitude/wavelength ratio -> large slope,
+    # where the raw-horizontal-difference approximation would be poor).
+    A, lam, phase, x_mean = 100e-9, 320e-9, 0.0, 0.0
+    rng = np.random.default_rng(0)
+    Xs = rng.uniform(-150e-9, 150e-9, 20)
+    Ys = rng.uniform(-150e-9, 150e-9, 20)
+    d = sinusoid_signed_distance(Xs, Ys, A, lam, phase, x_mean)
+
+    def brute(x0, y0, n=200000):
+        Yp = np.linspace(y0 - 2 * lam, y0 + 2 * lam, n)
+        xs = x_mean + A * np.cos(2 * math.pi * Yp / lam + phase)
+        d2 = (x0 - xs) ** 2 + (y0 - Yp) ** 2
+        i = np.argmin(d2)
+        return math.copysign(math.sqrt(d2[i]), x0 - xs[i])
+
+    for i in range(len(Xs)):
+        expected = brute(Xs[i], Ys[i])
+        assert math.isclose(d[i], expected, abs_tol=1e-9)
 
 
 def test_custom_wavelength_and_amplitude_respected():

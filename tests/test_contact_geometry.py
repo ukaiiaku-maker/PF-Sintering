@@ -74,13 +74,16 @@ def test_far_field_position_is_far_from_the_neck_and_distinct_from_centroid():
 
 
 def test_V2_f_weighted_differs_from_raw_V2_when_eta_sum_is_slack_of_f():
+    # Milestone 15B: the production initializer now constructs
+    # eta1=f*(1-phi_GB), eta2=f*phi_GB, so eta1+eta2=f exactly, everywhere
+    # -- no incidental slack remains at t=0 to exercise this distinction.
+    # Construct slack synthetically instead (a uniform 90% fill fraction),
+    # the same kind of eta<f state that CAN arise mid-simulation.
     p, f, e1, e2, e3 = _geometry()
-    v2_eta = float(e2.sum() * p.dx * p.dx)
-    v2_f = V2_f_weighted(f, e1, e2, e3, p)
+    e1b, e2b, e3b = 0.9 * e1, 0.9 * e2, 0.9 * e3
+    v2_eta = float(e2b.sum() * p.dx * p.dx)
+    v2_f = V2_f_weighted(f, e1b, e2b, e3b, p)
     assert math.isfinite(v2_f)
-    # For the raw analytic initializer there is real slack between f and
-    # e1+e2+e3 near the interfaces, so these should not be numerically
-    # identical.
     assert abs(v2_f - v2_eta) / v2_eta > 1e-4
 
 

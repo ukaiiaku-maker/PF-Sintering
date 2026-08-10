@@ -39,7 +39,20 @@ def _add_with_capacity(
     for _ in range(32):
         if remaining <= tol:
             break
-        mask = headroom > tol
+        # Milestone 15B: `tol` is scaled to the OVERALL problem magnitude
+        # (rtol*scale_ref, scale_ref~total solid mass), not a per-cell
+        # quantity. When admissible headroom is thin (every individual
+        # cell's headroom below that aggregate-scaled `tol`, but their SUM
+        # is well above it -- occurs once initialize_fields makes
+        # eta1+eta2=f exactly, leaving no generous initial slack), masking
+        # on `headroom > tol` discarded that entire reachable capacity and
+        # this loop could return early with `remaining` still nonzero even
+        # though `sum(headroom) >> remaining`. Masking on `headroom > 0`
+        # instead keeps every genuinely available cell reachable; a cell
+        # only reaches here if `headroom = max(fb-total, 0)` is already
+        # nonnegative by construction, so this admits no negative/roundoff
+        # capacity that wasn't already implied by `headroom` itself.
+        mask = headroom > 0
         if not np.any(mask):
             break
         w = np.where(mask, np.maximum(weight, 0.0), 0.0)

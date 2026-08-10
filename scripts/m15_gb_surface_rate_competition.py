@@ -39,6 +39,7 @@ from pf_sintering.capillary_stress import (
     window_mean_kappa,
     window_mean_kappa_from_end,
 )
+from pf_sintering.bc_ops import lap9_bc
 from pf_sintering.ch_exact_energy import mu_isotropic
 from pf_sintering.constrained_eta import constrained_tangent_cone_eta_update, local_wc
 from pf_sintering.curvature_extraction import branch_mu_J_profile
@@ -97,6 +98,43 @@ def energy_ledger(f, e1, e2, e3, s, p):
         grad_term = grad_term + e3 * lap9(e3, p.dx)
     E_GB = float(np.sum(-0.5 * p.k_eta * grad_term)) * p.dx * p.dx
     return dict(E_surface=E_surface, E_coupling=E_coupling, E_GB=E_GB, F_total=E_surface + E_coupling + E_GB)
+
+
+def gb_excess_energy(f, e1, e2, e3, s, p, bc_x=BC_X, bc_y=BC_Y):
+    """Milestone 15B Section 11: the PHYSICAL GB interfacial excess energy
+    (obstacle-potential excess + eta-gradient energy), background-
+    subtracted against the LOCAL single-grain-at-the-same-f reference (not
+    just the raw energy_ledger's E_GB+E_coupling, which include a nonzero
+    single-grain "background" -- e.g. the coupling term's own bulk value
+    at f=1, single grain, is -0.5*Wc*f^2, not zero).
+
+    Derivation: with e_i=f (only grain i present, no GB), eta2=sum(e_i^2)=
+    f^2, so the coupling-term background density is Wc*f^2*(0.5f^2-f).
+    Subtracting this from the general two-grain coupling density
+    Wc*(e1^2+e2^2)*(0.5f^2-f), and using e1+e2=f (Milestone 15B Section 2's
+    now-exact identity) to eliminate f^2-(e1^2+e2^2)=2*e1*e2, gives the
+    EXACT excess coupling density Wc*e1*e2*f*(2-f) -- reducing exactly to
+    Wc*phi*(1-phi) at f=1 (phi=e2), matching gb_obstacle_energy's own
+    planar F_GB formula. The gradient term's background (single grain,
+    e_i=f) is -0.5*k_eta*f*lap9_bc(f) (zero wherever f is locally uniform,
+    but nonzero at a free surface where f itself has a gradient, even with
+    no second grain present at all -- this term correctly removes that
+    spurious contribution). Uses `lap9_bc` (not the periodic-only `lap9`
+    energy_ledger uses for the DYNAMICS' own -- correct, since production
+    eta evolution literally uses periodic-X `lap9` -- coefficients) with
+    the SAME bc_x/bc_y the coupled trajectory's surface/eta steps use, so
+    this diagnostic's boundary treatment matches what the field actually
+    saw; using plain periodic `lap9` here is WRONG whenever the physical
+    domain is not periodic in that direction (confirmed by hand: it
+    diverges as dx->0 on a one-sided planar test, ~4x too large at
+    dx=2.5nm growing to ~80x at dx=0.1nm, because a periodic Laplacian
+    assumes phi wraps back to matching values at the domain edges)."""
+    Wc = local_wc(f, e1, e2, e3, s, p)
+    excess_coupling = Wc * e1 * e2 * f * (2.0 - f)
+    grad_term = e1 * lap9_bc(e1, p.dx, bc_x=bc_x, bc_y=bc_y) + e2 * lap9_bc(e2, p.dx, bc_x=bc_x, bc_y=bc_y)
+    bg_grad_term = f * lap9_bc(f, p.dx, bc_x=bc_x, bc_y=bc_y)
+    excess_grad = -0.5 * p.k_eta * (grad_term - bg_grad_term)
+    return float(np.sum(excess_grad + excess_coupling)) * p.dx * p.dx
 
 
 def sample_state(f, e1, e2, e3, s, p, step, t, mass0, F0, cum_safety_correction, cum_variational_change):

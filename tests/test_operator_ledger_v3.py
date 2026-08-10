@@ -64,7 +64,13 @@ def test_subgrid_contact_resolves_and_varies_smoothly_step_to_step():
 def test_raw_CH_dominates_subgrid_contact_change_in_this_regime():
     # Empirically established (see MILESTONE_6C report): in the primary
     # case, raw CH's effect on L_contact_TJ_sub is consistently positive and
-    # roughly two orders of magnitude larger than any other single operator.
+    # the largest single contributor. Milestone 15B's exact eta1+eta2=f
+    # initializer (gb_signed_distance.py) removed the incidental slack the
+    # old initializer left between f and eta1+eta2; post_CH_projection's
+    # mass-preserving redistribution (structural_projection.py) now has
+    # less of that slack to silently absorb into, so it nudges
+    # L_contact_TJ_sub measurably more than before (~24% of CH's own
+    # effect, up from <10%) -- still clearly second, not comparable to CH.
     p, f0, e1_0, e2_0, e3_0 = _geometry()
     steps = run_ledger_trajectory_v3(p, f0, e1_0, e2_0, e3_0, target_dv2_frac=1e-4, max_steps=10)
     summ = summarize_ledger_v3(steps)
@@ -74,4 +80,4 @@ def test_raw_CH_dominates_subgrid_contact_change_in_this_regime():
         if op == "CH":
             continue
         other = abs(summ["totals"][op]["L_contact_TJ_sub"])
-        assert other < 0.1 * ch
+        assert other < 0.3 * ch
