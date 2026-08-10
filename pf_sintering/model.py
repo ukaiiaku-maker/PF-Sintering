@@ -104,6 +104,15 @@ class ModelConfig:
     # arbitrary (non-physically-anchored) regression/diagnostic multiplier
     # when gb_mobility_m4_J_s is left unset.
     gb_mobility_m4_J_s: float | None = None
+    # Milestone 15F Section 4-5: the 4-fold anisotropy-strength coefficient
+    # `d` in a(psi)=1-d*cos(4*psi) (Params.aniso_delta) was previously
+    # reachable only by mutating a built Params object after the fact --
+    # ModelConfig had no field for it, so build_params always used the
+    # Params dataclass default (0.15, already PAST the positive-stiffness
+    # critical value 1/15=0.0667, i.e. already in the regularized/faceted
+    # regime -- see model.py's build_params anisotropy-LUT block). None
+    # (default) preserves existing behavior exactly (Params default 0.15).
+    aniso_delta: float | None = None
 
 @dataclass
 class Params:
@@ -219,6 +228,7 @@ def build_params(c:ModelConfig)->Params:
     p.CFL=c.cfl; p.dt=min(p.CFL*p.dx**4/(p.M_f*p.k_f),1e-5)
     p.use_eta3=c.geometry=="threeparticle"; p.use_aniso_surface=c.use_aniso_surface; p.psi_measure=c.psi_measure; p.theta_grain=np.array([0.,math.radians(c.theta_mis_deg),0.])
     p.reservoir_neck_unprotected=c.reservoir_neck_unprotected
+    if c.aniso_delta is not None: p.aniso_delta=c.aniso_delta
     if p.use_aniso_surface:
         psi=np.linspace(0,math.pi/2,4096); d=p.aniso_delta; a=1-d*np.cos(4*psi); ap=4*d*np.sin(4*psi)
         if d>1/15:

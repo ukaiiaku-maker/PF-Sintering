@@ -60,14 +60,22 @@ M_ETA_HISTORICAL_REF = 4.266666666666666e-09
 
 def build_config(dx_nm, W_nm=20.0, gamma_gb=1.0, M_GB=None, surface_mobility_scale=0.3,
                   A_nm=100.0, lambda_nm=320.0, R2_nm=80.0, aspect_ratio=2.0, overlap_nm=20.0,
-                  seed=42, dt_override=None):
+                  seed=42, dt_override=None, use_aniso_surface=False, aniso_delta=None,
+                  theta_mis_deg=0.0):
+    # use_aniso_surface/aniso_delta/theta_mis_deg: Milestone 15F Section 4-6.
+    # Defaults (False/None/0.0) reproduce this function's exact pre-15F
+    # behavior for every existing (M15/M15E) call site. theta_mis_deg is
+    # ONLY the crystal-orientation reference angle here (p.theta_grain[1])
+    # since gamma_gb is always passed as an explicit override -- it does
+    # NOT also select gamma_gb via the empirical misorientation curve the
+    # way it would with gamma_gb_override left at None.
     return ModelConfig(
         preset="dev", geometry="sinusoidal_substrate", dx=dx_nm * 1e-9, r2=R2_nm * 1e-9,
         aspect_ratio=aspect_ratio, contact_orientation="short_plane", initial_overlap=overlap_nm * 1e-9,
         t_total=1e-6, sinusoid_wavelength=lambda_nm * 1e-9, sinusoid_amplitude=A_nm * 1e-9,
-        interface_width_override=W_nm * 1e-9, use_aniso_surface=False, gamma_gb_override=gamma_gb,
+        interface_width_override=W_nm * 1e-9, use_aniso_surface=use_aniso_surface, gamma_gb_override=gamma_gb,
         gb_mobility_m4_J_s=M_GB, surface_mobility_scale=surface_mobility_scale, seed=seed,
-        dt_override=dt_override,
+        dt_override=dt_override, aniso_delta=aniso_delta, theta_mis_deg=theta_mis_deg,
     )
 
 
@@ -255,11 +263,13 @@ def profile_mu_J(f, e1, e2, e3, s, p, tj_top, tj_bottom, top_particle_dir, bot_p
 def run_trajectory(dx_nm, M_GB, surface_mobility_scale, t_target, sample_times, label,
                     W_nm=20.0, gamma_gb=1.0, A_nm=100.0, lambda_nm=320.0, R2_nm=80.0,
                     aspect_ratio=2.0, overlap_nm=20.0, save_profile_at=None, verbose=True,
-                    dt_override=None):
+                    dt_override=None, use_aniso_surface=False, aniso_delta=None, theta_mis_deg=0.0):
     p, f, e1, e2, e3 = build_state(dx_nm=dx_nm, W_nm=W_nm, gamma_gb=gamma_gb, M_GB=M_GB,
                                     surface_mobility_scale=surface_mobility_scale, A_nm=A_nm,
                                     lambda_nm=lambda_nm, R2_nm=R2_nm, aspect_ratio=aspect_ratio,
-                                    overlap_nm=overlap_nm, dt_override=dt_override)
+                                    overlap_nm=overlap_nm, dt_override=dt_override,
+                                    use_aniso_surface=use_aniso_surface, aniso_delta=aniso_delta,
+                                    theta_mis_deg=theta_mis_deg)
     s = Sink(threshold=math.inf)
     M_s = m_s_ref(p.M_f, p.interface_width)
     p._M_s_cache = M_s
