@@ -202,6 +202,16 @@ def sample_state(f, e1, e2, e3, s, p, step, t, mass0, F0, cum_safety_correction,
             out["sigma_sint_app_curvature_form"] = sigma_curv
             out["sigma_sint_app_endpoint_form"] = sigma_ep
             out["F_cap_n_curvature_form"], out["F_cap_n_endpoint_form"] = Fn_curv, Fn_ep
+            # Milestone 15D Section 2: exact isotropic upper bound.
+            # F_cap_endpoint=-gamma_s*(t_top+t_bottom), |t_i|=1, so
+            # |F_cap_endpoint|<=2*gamma_s (equality only at t_top=t_bottom,
+            # i.e. psi=180deg, a perfectly flat/open neck) and
+            # |F_cap_n|<=|F_cap_endpoint|<=2*gamma_s always -- an exact,
+            # geometry-dependent ceiling on sigma_sint_endpoint, independent
+            # of any dynamics.
+            sigma_ep_max = 2.0 * p.gamma_s / sub.L_contact_TJ_sub
+            out["sigma_sint_endpoint_max"] = sigma_ep_max
+            out["sigma_sint_endpoint_over_max"] = abs(sigma_ep) / sigma_ep_max if sigma_ep_max > 0 else float("nan")
 
         W = p.interface_width
         p_gamma = {}
