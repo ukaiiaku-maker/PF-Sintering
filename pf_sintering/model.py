@@ -10,7 +10,7 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.measure import find_contours
 
-from .gb_obstacle_energy import gb_obstacle_coefficients, m_eta_from_m_gb
+from .gb_obstacle_energy import gb_obstacle_coefficients, m_eta_from_m_gb, obstacle_ell, obstacle_profile
 
 Geometry = Literal["substrate", "threeparticle", "sinusoidal_substrate"]
 Contact = Literal["short_plane", "long_plane"]
@@ -246,8 +246,18 @@ def div(vx,vy,dx):
 
 def initialize_fields(p):
     x=(np.arange(1,p.Nx+1)-p.Nx/2)*p.dx; y=(np.arange(1,p.Ny+1)-p.Ny/2)*p.dx; X,Y=np.meshgrid(x,y); W=p.interface_width
+    # Milestone 15 Section 2: the eta OWNERSHIP SPLIT (t1/t2) across the GB
+    # uses the Milestone-14G calibrated obstacle (compact-support sine)
+    # profile, not a tanh -- ell=W_GB/pi=obstacle_ell(p.k_eta,p.W_cpl_f)
+    # matches the same physical GB width convention build_params already
+    # uses for p.k_eta/p.W_cpl_f. This only reshapes how f is SPLIT into
+    # eta1/eta2 across the pre-existing GB location; f itself (e1, e2, the
+    # union f=max(e1,e2), particle/substrate/TJ geometry) is unchanged.
+    _ell_gb=obstacle_ell(p.k_eta,p.W_cpl_f)
     if p.geometry=="substrate":
-        wall=(p.substrate_wall_frac-.5)*p.Nx*p.dx; e1=.5*(1-np.tanh((X-wall)/W)); cx=wall+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W)); t1=.5*(1-np.tanh((X-wall)/W));t2=.5*(1+np.tanh((X-wall)/W));return np.maximum(e1,e2),e1*t1,e2*t2,np.zeros_like(X)
+        wall=(p.substrate_wall_frac-.5)*p.Nx*p.dx; e1=.5*(1-np.tanh((X-wall)/W)); cx=wall+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W))
+        t2=obstacle_profile(X-wall,_ell_gb); t1=1-t2
+        return np.maximum(e1,e2),e1*t1,e2*t2,np.zeros_like(X)
     if p.geometry=="sinusoidal_substrate":
         # Section 1/2: the substrate free surface x_s(Y) oscillates as a
         # cosine of the CENTERED Y coordinate (Y=0 at the domain's vertical
@@ -260,7 +270,7 @@ def initialize_fields(p):
         e1=.5*(1-np.tanh((X-x_s)/W))
         x_crest=wall_mean+p.sinusoid_amplitude*math.cos(p.sinusoid_phase)
         cx=x_crest+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W))
-        t1=.5*(1-np.tanh((X-x_s)/W)); t2=.5*(1+np.tanh((X-x_s)/W))
+        t2=obstacle_profile(X-x_s,_ell_gb); t1=1-t2
         return np.maximum(e1,e2),e1*t1,e2*t2,np.zeros_like(X)
     c1=-(p.R1+p.R2-p.initial_overlap); c2=0.; c3=p.R2+p.R3-p.initial_overlap; e=[]
     for c,r in ((c1,p.R1),(c2,p.R2),(c3,p.R3)): e.append(.5*(1-np.tanh((np.hypot(X-c,Y)-r)/W)))
