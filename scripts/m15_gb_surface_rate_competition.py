@@ -179,6 +179,8 @@ def sample_state(f, e1, e2, e3, s, p, step, t, mass0, F0, cum_safety_correction,
     wall_mean = p.substrate_wall_frac * p.Nx * p.dx
     top_particle_dir, top_substrate_dir = classify_branches(f, p, tj_top, top.v_s1, top.v_s2, wall_mean)
     bot_particle_dir, bot_substrate_dir = classify_branches(f, p, tj_bottom, bottom.v_s1, bottom.v_s2, wall_mean)
+    out["top_particle_tangent"] = [float(v) for v in top_particle_dir]
+    out["bot_particle_tangent"] = [float(v) for v in bot_particle_dir]
 
     arc = trace_particle_arc(f, p, tj_top, tj_bottom, top_particle_dir, bot_particle_dir)
     out["arc_resolved"] = bool(arc.get("resolved", False))

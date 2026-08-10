@@ -270,23 +270,28 @@ def initialize_fields(p):
     # deep in pure-substrate bulk far from the particle (wherever X is
     # merely close to that infinite reference line), where the particle's
     # own raw level set e2_raw is essentially zero -- caught empirically as
-    # a >5x inflation of contact_width's contact-region estimate. Capping
-    # eta2 at the particle's own raw level set (min(f*phi_GB, e2_raw))
-    # restores eta2->0 there while leaving the calibrated obstacle-profile
-    # SHAPE intact near the true crossing (where the cap does not bind,
-    # since e2_raw~f there); the analogous eta1 cap is not applied
-    # symmetrically (a possible, much narrower imperfection right at the
-    # TJs where e2_raw could locally exceed e1_raw on the nominal
-    # substrate side; not pursued further here, out of this milestone's
-    # scope -- Sections 2-3 do not require it and downstream TJ/contact
-    # diagnostics were reverified against this construction, Section 4).
+    # a >5x inflation of contact_width's contact-region estimate.
+    # Milestone 15C Section 2: rather than Milestone 15B's one-sided cap
+    # (min(f*phi_GB,e2_raw), which left eta1 potentially exceeding e1_raw
+    # near the TJs), clip the DESIRED ownership eta2_desired=f*phi_GB into
+    # the admissible band [max(0,f-e1_raw), min(f,e2_raw)] -- the exact
+    # symmetric range for which eta1=f-eta2 satisfies 0<=eta1<=e1_raw
+    # automatically (verified algebraically and by direct test): neither
+    # grain can be assigned more local ownership than its own raw level
+    # set indicates is physically present, in either direction.
     _ell_gb=obstacle_ell(p.k_eta,p.W_cpl_f)
+    def _split(f,e1_raw,e2_raw,phi0):
+        eta2_desired=f*phi0
+        eta2_min=np.maximum(0.0,f-e1_raw)
+        eta2_max=np.minimum(f,e2_raw)
+        eta2=np.clip(eta2_desired,eta2_min,eta2_max)
+        return f-eta2,eta2
     if p.geometry=="substrate":
         wall=(p.substrate_wall_frac-.5)*p.Nx*p.dx; e1=.5*(1-np.tanh((X-wall)/W)); cx=wall+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W))
         f=np.maximum(e1,e2)
-        phi_GB=obstacle_profile(X-wall,_ell_gb)  # flat GB: X-wall is already the exact signed distance
-        eta2=np.minimum(f*phi_GB,e2)
-        return f,f-eta2,eta2,np.zeros_like(X)
+        phi0=obstacle_profile(X-wall,_ell_gb)  # flat GB: X-wall is already the exact signed distance
+        eta1,eta2=_split(f,e1,e2,phi0)
+        return f,eta1,eta2,np.zeros_like(X)
     if p.geometry=="sinusoidal_substrate":
         # Section 1/2: the substrate free surface x_s(Y) oscillates as a
         # cosine of the CENTERED Y coordinate (Y=0 at the domain's vertical
@@ -301,9 +306,9 @@ def initialize_fields(p):
         cx=x_crest+p.Rx-p.initial_overlap; rr=np.sqrt(((X-cx)/p.Rx)**2+(Y/p.Ry)**2); e2=.5*(1-np.tanh((rr-1)*min(p.Rx,p.Ry)/W))
         f=np.maximum(e1,e2)
         d_GB=sinusoid_signed_distance(X,Y,p.sinusoid_amplitude,p.sinusoid_wavelength,p.sinusoid_phase,wall_mean)
-        phi_GB=obstacle_profile(d_GB,_ell_gb)
-        eta2=np.minimum(f*phi_GB,e2)
-        return f,f-eta2,eta2,np.zeros_like(X)
+        phi0=obstacle_profile(d_GB,_ell_gb)
+        eta1,eta2=_split(f,e1,e2,phi0)
+        return f,eta1,eta2,np.zeros_like(X)
     c1=-(p.R1+p.R2-p.initial_overlap); c2=0.; c3=p.R2+p.R3-p.initial_overlap; e=[]
     for c,r in ((c1,p.R1),(c2,p.R2),(c3,p.R3)): e.append(.5*(1-np.tanh((np.hypot(X-c,Y)-r)/W)))
     g1=(c1+c2)/2;g2=(c2+c3)/2;t1=.5*(1-np.tanh((X-g1)/W));t2=.5*(1+np.tanh((X-g1)/W))*.5*(1-np.tanh((X-g2)/W));t3=.5*(1+np.tanh((X-g2)/W));return np.maximum.reduce(e),e[0]*t1,e[1]*t2,e[2]*t3
