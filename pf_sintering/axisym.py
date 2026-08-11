@@ -84,10 +84,22 @@ def face_grad_r(f, dr):
     return g
 
 
-def face_grad_z(f, dz):
-    """(Nz, Nr) gradient of f at z-faces (periodic): face[j] is the
-    gradient between row j and row j+1 (row Nz-1 wraps to row 0)."""
-    return (np.roll(f, -1, axis=0) - f) / dz
+def face_grad_z(f, dz, bc_z="periodic"):
+    """(Nz, Nr) gradient of f at z-faces: face[j] is the gradient
+    between row j and row j+1. `bc_z="periodic"` (default, unchanged
+    behavior): row Nz-1 wraps to row 0. `bc_z="noflux"` (Milestone 16C
+    Section 11's capped/two-substrate topology): the wrap face (index
+    Nz-1, "above" the last row / "below" the first) is forced to
+    exactly 0 -- div_cyl's np.roll telescoping then gives an EXACT
+    finite-volume no-flux boundary at both z-ends with no other change
+    needed (div_cyl itself is unmodified; it only ever consumes
+    whatever Jz_face values it is given)."""
+    g = (np.roll(f, -1, axis=0) - f) / dz
+    if bc_z == "noflux":
+        g[-1, :] = 0.0
+    elif bc_z != "periodic":
+        raise ValueError(f"unknown bc_z {bc_z!r}")
+    return g
 
 
 def div_cyl(Jr_face, Jz_face, r_c, r_f, dr, dz):
@@ -101,16 +113,18 @@ def div_cyl(Jr_face, Jz_face, r_c, r_f, dr, dz):
     return div_r + div_z
 
 
-def axisym_laplacian(f, dr, dz, r_c, r_f):
+def axisym_laplacian(f, dr, dz, r_c, r_f, bc_z="periodic"):
     """Cylindrical (axisymmetric) Laplacian f_rr + f_r/r + f_zz, via
     div_cyl(grad(f)) -- the exact discrete adjoint structure needed for
-    mu's gradient term (Section 4)."""
+    mu's gradient term (Section 4). `bc_z` (Milestone 16C Section 11):
+    "periodic" (default, unchanged) or "noflux" (capped/two-substrate
+    topology, see face_grad_z)."""
     gr = face_grad_r(f, dr)
-    gz = face_grad_z(f, dz)
+    gz = face_grad_z(f, dz, bc_z=bc_z)
     return div_cyl(gr, gz, r_c, r_f, dr, dz)
 
 
-def axisym_mu(f, p, dr, dz, r_c, r_f):
+def axisym_mu(f, p, dr, dz, r_c, r_f, bc_z="periodic"):
     """mu = W_f*f*(1-f)*(1-2f) - k_f*Laplacian_cylindrical(f). Reuses
     the SAME calibrated p.W_f, p.k_f the Cartesian model uses (the bulk
     term is coordinate-independent; k_f is the same physical gradient-
@@ -118,7 +132,7 @@ def axisym_mu(f, p, dr, dz, r_c, r_f):
     unaffected by the global curvature of the r-weighting to leading
     order)."""
     mu0 = p.W_f * f * (1 - f) * (1 - 2 * f)
-    return mu0 - p.k_f * axisym_laplacian(f, dr, dz, r_c, r_f)
+    return mu0 - p.k_f * axisym_laplacian(f, dr, dz, r_c, r_f, bc_z=bc_z)
 
 
 def axisym_q(f, W):
@@ -132,14 +146,14 @@ def axisym_volume(f, r_c, dr, dz):
     return 2 * math.pi * float(np.sum(r_c[None, :] * f)) * dr * dz
 
 
-def axisym_free_energy(f, p, dr, dz, r_c, r_f):
+def axisym_free_energy(f, p, dr, dz, r_c, r_f, bc_z="periodic"):
     """F = 2*pi*integral(r*psi)dr dz, using the EXACT discrete adjoint
     form -0.5*k_f*f*Laplacian_cyl(f) for the gradient term (matching
     ch_exact_energy.py's own pattern for the Cartesian case) so this is
     the exact energy whose variational derivative is axisym_mu (verified
     numerically in tests, not just asserted)."""
     bulk = 0.5 * p.W_f * f * f * (1 - f) ** 2
-    grad_term = -0.5 * p.k_f * f * axisym_laplacian(f, dr, dz, r_c, r_f)
+    grad_term = -0.5 * p.k_f * f * axisym_laplacian(f, dr, dz, r_c, r_f, bc_z=bc_z)
     return 2 * math.pi * float(np.sum(r_c[None, :] * (bulk + grad_term))) * dr * dz
 
 
@@ -276,12 +290,14 @@ def axisym_face_gradient_r(a, dr, dz):
     return gr_face, gz_face
 
 
-def axisym_face_gradient_z(a, dr, dz):
-    """Both (gr,gz) AT the z-face between row j and j+1 (periodic in z).
-    z-derivative: exact one-sided difference across the face.
-    r-derivative: each neighboring row's own centered r-derivative
-    (one-sided at the two r-boundaries, matching a natural Neumann
-    extrapolation there), averaged onto the face."""
+def axisym_face_gradient_z(a, dr, dz, bc_z="periodic"):
+    """Both (gr,gz) AT the z-face between row j and j+1 (periodic in z
+    by default). z-derivative: exact one-sided difference across the
+    face. r-derivative: each neighboring row's own centered r-
+    derivative (one-sided at the two r-boundaries, matching a natural
+    Neumann extrapolation there), averaged onto the face.
+    `bc_z="noflux"` (Milestone 16C Section 11): the wrap face (index
+    Nz-1) is forced to (0,0), matching face_grad_z's no-flux BC."""
     Nz, Nr = a.shape
     gz_face = (np.roll(a, -1, axis=0) - a) / dz
     gr_cell = np.zeros_like(a)
@@ -290,10 +306,15 @@ def axisym_face_gradient_z(a, dr, dz):
     gr_cell[:, 0] = (a[:, 1] - a[:, 0]) / dr if Nr > 1 else 0.0
     gr_cell[:, -1] = (a[:, -1] - a[:, -2]) / dr if Nr > 1 else 0.0
     gr_face = 0.5 * (gr_cell + np.roll(gr_cell, -1, axis=0))
+    if bc_z == "noflux":
+        gz_face[-1, :] = 0.0
+        gr_face[-1, :] = 0.0
+    elif bc_z != "periodic":
+        raise ValueError(f"unknown bc_z {bc_z!r}")
     return gr_face, gz_face
 
 
-def axisym_face_projected_flux(f, mu, dr, dz, W, M_s, eps_n=None):
+def axisym_face_projected_flux(f, mu, dr, dz, W, M_s, eps_n=None, bc_z="periodic"):
     """Axisymmetric equivalent of surface_transport.
     surface_flux_face_projected: n/P_t/grad(mu) all constructed AT the
     same face, SAME q(f)=(12/W)*f^2(1-f)^2 and M_s convention as the
@@ -302,7 +323,13 @@ def axisym_face_projected_flux(f, mu, dr, dz, W, M_s, eps_n=None):
     at their own respective face families, matching the Cartesian
     Jx_face/Jy_face convention exactly (only the "own" component is
     used by the conservative divergence; both components are returned
-    per face family for the tangentiality/dissipation diagnostics)."""
+    per face family for the tangentiality/dissipation diagnostics).
+    `bc_z="noflux"` (Milestone 16C Section 11, capped/two-substrate
+    topology): Jz_face's wrap entry is forced to exactly 0, matching
+    face_grad_z/axisym_face_gradient_z's no-flux convention (already
+    propagates automatically since the underlying gradients are zeroed
+    there, but zeroed explicitly too for the same defensive-clarity
+    reason Jr_face's boundary columns are zeroed explicitly above)."""
     if eps_n is None:
         eps_n = 1e-6 / W
     Nz, Nr = f.shape
@@ -324,16 +351,18 @@ def axisym_face_projected_flux(f, mu, dr, dz, W, M_s, eps_n=None):
     Jr_face[:, Nr] = 0.0
 
     # z-face family
-    gr_f2, gz_f2 = axisym_face_gradient_z(f, dr, dz)
+    gr_f2, gz_f2 = axisym_face_gradient_z(f, dr, dz, bc_z=bc_z)
     gmag_z = np.sqrt(gr_f2 * gr_f2 + gz_f2 * gz_f2 + eps_n * eps_n)
     nr_z, nz_z = gr_f2 / gmag_z, gz_f2 / gmag_z
     f_face_z = 0.5 * (f + np.roll(f, -1, axis=0))
     q_face_z = axisym_q(f_face_z, W)
-    gr_mu_z, gz_mu_z = axisym_face_gradient_z(mu, dr, dz)
+    gr_mu_z, gz_mu_z = axisym_face_gradient_z(mu, dr, dz, bc_z=bc_z)
     coef_z = M_s * q_face_z
     Mzz_z = coef_z * (1.0 - nz_z * nz_z)
     Mrz_z = coef_z * (-nr_z * nz_z)
     Jz_face = -(Mrz_z * gr_mu_z + Mzz_z * gz_mu_z)
+    if bc_z == "noflux":
+        Jz_face[-1, :] = 0.0
 
     return dict(Jr_face=Jr_face, Jz_face=Jz_face, nr_r=nr_r, nz_r=nz_r, gr_mu_r=gr_mu_r, gz_mu_r=gz_mu_r,
                 Mrr_r=Mrr_r, Mrz_r=Mrz_r, nr_z=nr_z, nz_z=nz_z, gr_mu_z=gr_mu_z, gz_mu_z=gz_mu_z,
@@ -353,14 +382,17 @@ def axisym_exact_dissipation(fp):
     return Dr, Dz
 
 
-def axisym_face_projected_step(f, p, dr, dz, r_c, r_f, dt, M_s, W):
+def axisym_face_projected_step(f, p, dr, dz, r_c, r_f, dt, M_s, W, bc_z="periodic"):
     """Production-quality axisymmetric conservative step: tangentially-
     projected face flux + cylindrical divergence. Returns (f_new, mu,
     diag) with the SAME Fdot_chain chain-rule diagnostic as
     axisym_surface_diffusion_step, plus D_h (exact dissipation) for the
-    audit."""
-    mu = axisym_mu(f, p, dr, dz, r_c, r_f)
-    fp = axisym_face_projected_flux(f, mu, dr, dz, W, M_s)
+    audit. `bc_z="noflux"` (Milestone 16C Section 11): capped/two-
+    substrate topology -- exact no-flux boundary at both z-ends
+    instead of periodic wrap, conserving whatever solid material is
+    within the domain exactly (no reservoir, no sink)."""
+    mu = axisym_mu(f, p, dr, dz, r_c, r_f, bc_z=bc_z)
+    fp = axisym_face_projected_flux(f, mu, dr, dz, W, M_s, bc_z=bc_z)
     div = div_cyl(fp["Jr_face"], fp["Jz_face"], r_c, r_f, dr, dz)
     f_new = f - dt * div
     Fdot = -2 * math.pi * float(np.sum(r_c[None, :] * mu * div)) * dr * dz
