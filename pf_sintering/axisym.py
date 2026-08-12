@@ -204,22 +204,27 @@ def axisym_surface_diffusion_step(f, p, dr, dz, r_c, r_f, dt, M_s, W):
 # refinement of the production Cartesian GB kinetics.
 # ---------------------------------------------------------------------------
 
-def axisym_mu_f_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f):
+def axisym_mu_f_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f, bc_z="periodic"):
     """mu for the CONSERVED f field including the eta-f coupling term
     (matching model.py's mu0 bulk term exactly, cylindrically-weighted
-    gradient part as in axisym_mu)."""
+    gradient part as in axisym_mu). `bc_z` (Milestone 16G): "periodic"
+    (default, unchanged) or "noflux" (capped/particle-on-asperity
+    topology, see face_grad_z) -- threaded straight through to the
+    gradient-energy Laplacian, matching axisym_mu's own pattern."""
     fb = np.clip(f, 0.0, 1.0)
     eta2 = e1 * e1 + e2 * e2
     mu0 = p.W_f * f * (1 - f) * (1 - 2 * f) - Wc * eta2 * (1 - fb)
-    return mu0 - p.k_f * axisym_laplacian(f, dr, dz, r_c, r_f)
+    return mu0 - p.k_f * axisym_laplacian(f, dr, dz, r_c, r_f, bc_z=bc_z)
 
 
-def axisym_g_eta(e_i, f, Wc, p, dr, dz, r_c, r_f):
+def axisym_g_eta(e_i, f, Wc, p, dr, dz, r_c, r_f, bc_z="periodic"):
     """g_i = delta F/delta eta_i = -k_eta*Laplacian_cyl(e_i) +
     2*Wc*e_i*(f^2/2-f) -- the cylindrical generalization of
-    constrained_eta.structural_thermodynamic_force."""
+    constrained_eta.structural_thermodynamic_force. `bc_z` (Milestone
+    16G): threaded through to the Laplacian, same convention as
+    axisym_mu_f_gb."""
     coupling = 2.0 * Wc * e_i * (0.5 * f * f - f)
-    return coupling - p.k_eta * axisym_laplacian(e_i, dr, dz, r_c, r_f)
+    return coupling - p.k_eta * axisym_laplacian(e_i, dr, dz, r_c, r_f, bc_z=bc_z)
 
 
 def axisym_reproject(f, e1, e2):
@@ -432,7 +437,7 @@ def axisym_face_projected_step(f, p, dr, dz, r_c, r_f, dt, M_s, W, bc_z="periodi
 from .constrained_eta import tangent_cone_projected_velocity  # noqa: E402
 
 
-def axisym_free_energy_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f):
+def axisym_free_energy_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f, bc_z="periodic"):
     """F_total = F_surface + F_GB = 2*pi*integral r*[ (W_f/2)*f^2*(1-f)^2
     + Wc*(e1^2+e2^2)*(f^2/2-f) + (k_eta/2)*(|grad e1|^2+|grad e2|^2) ] dr dz,
     the axisymmetric port of constrained_eta.py's module-docstring free
@@ -440,21 +445,21 @@ def axisym_free_energy_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f):
     form -0.5*k*field*Laplacian_cyl(field) axisym_free_energy already
     uses for the pure-surface case (so this is the exact energy whose
     eta-derivative is axisym_g_eta and whose f-derivative is
-    axisym_mu_f_gb -- verified by directional-derivative test, see
-    tests/test_axisym_gb.py)."""
+    axisym_mu_f_gb). `bc_z` (Milestone 16G): threaded through to both
+    Laplacian terms, same convention as axisym_mu_f_gb/axisym_g_eta."""
     fb = np.clip(f, 0.0, 1.0)
     bulk = 0.5 * p.W_f * f * f * (1 - f) ** 2
-    grad_f_term = -0.5 * p.k_f * f * axisym_laplacian(f, dr, dz, r_c, r_f)
+    grad_f_term = -0.5 * p.k_f * f * axisym_laplacian(f, dr, dz, r_c, r_f, bc_z=bc_z)
     eta2 = e1 * e1 + e2 * e2
     coupling = Wc * eta2 * (0.5 * fb * fb - fb)
-    grad_eta_term = -0.5 * p.k_eta * (e1 * axisym_laplacian(e1, dr, dz, r_c, r_f)
-                                       + e2 * axisym_laplacian(e2, dr, dz, r_c, r_f))
+    grad_eta_term = -0.5 * p.k_eta * (e1 * axisym_laplacian(e1, dr, dz, r_c, r_f, bc_z=bc_z)
+                                       + e2 * axisym_laplacian(e2, dr, dz, r_c, r_f, bc_z=bc_z))
     density = bulk + grad_f_term + coupling + grad_eta_term
     return 2 * math.pi * float(np.sum(r_c[None, :] * density)) * dr * dz
 
 
 def axisym_constrained_tangent_cone_eta_update(e1, e2, f, Wc, p, dr, dz, r_c, r_f, dt, M_eta,
-                                                active_tol=1e-4):
+                                                active_tol=1e-4, bc_z="periodic"):
     """Axisymmetric port of constrained_eta.constrained_tangent_cone_eta_
     update (N=2 grains only, matching axisym_reproject's existing
     scope): (a) f-tracking rescale so sum_i eta_i=f exactly (an
@@ -467,7 +472,8 @@ def axisym_constrained_tangent_cone_eta_update(e1, e2, f, Wc, p, dr, dz, r_c, r_
     -- pointwise/coordinate-agnostic), (d) a safety-net clip+rescale for
     any residual finite-dt overshoot. Returns (e1_new, e2_new, diag)
     with the same variational/f_tracking/safety_correction breakdown
-    the Cartesian version tracks."""
+    the Cartesian version tracks. `bc_z` (Milestone 16G): threaded
+    through to axisym_g_eta."""
     fb = np.clip(f, 0.0, 1.0)
     grains = [e1, e2]
     N = 2
@@ -480,7 +486,7 @@ def axisym_constrained_tangent_cone_eta_update(e1, e2, f, Wc, p, dr, dz, r_c, r_
     rescaled = [np.where(has_mass, g * scale, fallback) for g in grains]
     f_tracking_correction = float(sum(np.sum(np.abs(rescaled[i] - grains[i])) for i in range(N)))
 
-    g_list = [axisym_g_eta(rescaled[i], fb, Wc, p, dr, dz, r_c, r_f) for i in range(N)]
+    g_list = [axisym_g_eta(rescaled[i], fb, Wc, p, dr, dz, r_c, r_f, bc_z=bc_z) for i in range(N)]
     v0_list = [-M_eta * g for g in g_list]
 
     v_list = tangent_cone_projected_velocity(rescaled, v0_list, active_tol=active_tol)
@@ -505,7 +511,7 @@ def axisym_constrained_tangent_cone_eta_update(e1, e2, f, Wc, p, dr, dz, r_c, r_
 
 
 def axisym_gb_face_projected_step(f, e1, e2, p, Wc, dr, dz, r_c, r_f, dt, M_s, M_eta, W,
-                                   active_tol=1e-4):
+                                   active_tol=1e-4, bc_z="periodic"):
     """Full production-quality axisymmetric step with GB physics: (1)
     conservative f-transport using the face-projected/tangentially-
     projected flux (Sections 3-6) with the eta-coupled mu
@@ -515,14 +521,21 @@ def axisym_gb_face_projected_step(f, e1, e2, p, Wc, dr, dz, r_c, r_f, dt, M_s, M
     Preserves: conserved f, physical M_GB mapping (via
     gb_obstacle_energy.m_eta_from_m_gb/m_gb_from_m_eta, applied by the
     caller when choosing M_eta), no independent M_TJ, eta_i>=0,
-    sum_i eta_i=f exactly."""
-    mu = axisym_mu_f_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f)
-    fp = axisym_face_projected_flux(f, mu, dr, dz, W, M_s)
+    sum_i eta_i=f exactly. `bc_z="noflux"` (Milestone 16G: particle-on-
+    asperity topology with GB physics, extending the pure-surface
+    bc_z="noflux" path from M16C Section 11/axisym_face_projected_step
+    to the full GB-coupled step): exact no-flux boundary at both z-ends
+    for f-transport, mu's gradient term, AND the eta kinetics' gradient
+    term -- no reservoir, no sink, whatever solid is in the domain is
+    conserved exactly, verified directly by mass-conservation checks in
+    scripts/m16g_pr_derived_particle_asperity.py rather than assumed."""
+    mu = axisym_mu_f_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f, bc_z=bc_z)
+    fp = axisym_face_projected_flux(f, mu, dr, dz, W, M_s, bc_z=bc_z)
     div = div_cyl(fp["Jr_face"], fp["Jz_face"], r_c, r_f, dr, dz)
     f_new = f - dt * div
 
     e1_new, e2_new, eta_diag = axisym_constrained_tangent_cone_eta_update(
-        e1, e2, f_new, Wc, p, dr, dz, r_c, r_f, dt, M_eta, active_tol=active_tol)
+        e1, e2, f_new, Wc, p, dr, dz, r_c, r_f, dt, M_eta, active_tol=active_tol, bc_z=bc_z)
 
     Dr, Dz = axisym_exact_dissipation(fp)
     D_h = 2 * math.pi * (float(np.sum(r_f[None, :] * Dr)) + float(np.sum(r_c[None, :] * Dz))) * dr * dz
