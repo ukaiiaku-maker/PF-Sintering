@@ -436,3 +436,117 @@ either accepting the same placeholder mobility scale (and reporting
 mobility convention itself (`M_s=1e-33` has been an unexamined placeholder
 since M16A) as a more direct route to physically meaningful recession
 magnitudes than further geometric refinement.
+
+## 12. Status update: commit `b0ca4f8` was an interim checkpoint
+
+`b0ca4f8` (the commit above this section) captured the C3-smooth
+construction, the corrected checkpoint/restart and Hussein-stress code,
+and the initial long z2-capped trajectory — but it was an **interim**
+checkpoint, not the completion of this milestone's own acceptance gates.
+The work below (all uncommitted at the time `b0ca4f8` was made, committed
+together with this section) closes out M16G's own remaining questions
+before Milestone 16H's three-regime demonstration builds on top of it.
+
+**Geometric correction — the true one-contact geometry.** The z2-capped
+construction (the primary construction as of `b0ca4f8`) retains the exact
+Figure-4 profile all the way to `z2` — the FORMER SECOND GB/contact of
+the parent geometry — before attaching its free-end cap. Removing grain 3
+removed that trough's eta-ownership but left its geometric neck fully in
+place; the cap only starts past it. A cleaner one-contact construction
+instead cuts the exact profile at `z=lambda` (the particle's own crest,
+the midpoint between `z1` and `z2`) — verified analytically and
+numerically to be an exact mirror-symmetry point of the two-mode profile
+(`R'(lambda)=0`, `R'''(lambda)=0`, and critically `R''(lambda)<0`, already
+the correct sign for a convex terminal cap, unlike `z2`'s trough
+curvature, which required the sign-reversing Hermite transition the
+z2-capped construction needed). This lets an ellipsoidal cap attach
+**directly** at `z=lambda` with exact C3 matching and no intermediate
+transition segment at all (`R3=R(lambda)`,
+`a_cap=sqrt(R3/|R''(lambda)|)` — chosen so the ellipsoid's own near-
+equator curvature matches exactly). Verified: only 2 extrema in the
+resulting free-surface profile (one minimum at the retained contact `z1`,
+one maximum at `lambda`) — no second trough survives — and the seam/flux
+audit is even cleaner than the z2-capped construction's (cap-region flux
+`0.04x` the natural near-GB baseline, vs. `0.65x` for z2-capped).
+Implementation: `build_particle_asperity_geometry_c3_crest` in
+`scripts/m16g_pr_derived_particle_asperity.py`.
+
+**A/B classification: B2, not B1.** Running the crest-capped geometry
+from `t=0` and comparing directly against the z2-capped control at
+matched time points:
+
+```
+t~1:   z2-cap a/a0=0.999044   crest a/a0=0.999044
+t~10:  z2-cap a/a0=0.998085   crest a/a0=0.998086
+t~25:  z2-cap a/a0=0.997491   crest a/a0=0.997490
+t~50:  z2-cap a/a0=0.996951   crest a/a0=0.996950
+t~75:  z2-cap a/a0=0.996601   crest a/a0=0.996603
+```
+
+`a/a0(t)` is essentially identical (agreeing to 6 significant figures out
+to `t=75`) between the two constructions — **B2**: the crest-capped
+geometry behaves essentially identically to the z2-capped control. The
+weak, strongly-decelerating contact recession documented in Sections 7-11
+above is **not** an artifact of the retained "ghost" second neck; it
+persists in the topologically cleaner one-contact geometry too. Per the
+governing instruction for this comparison, this result is accepted
+without further decomposition — Milestone 16H's three-regime work
+(`MILESTONE_16H_THREE_REGIME_SINK_BARRIER_RESPONSE.md`) proceeds directly
+from the crest-capped geometry rather than spending further milestones on
+this question. A parent Figure-4 comparison at the SAME retained contact
+(`scripts/m16g_parent_comparison.py`, tracking the left-GB trough
+directly rather than relying on M16F's whole-grain `V1` proxy) confirms
+the same conclusion from a third angle: `a/a0=0.99695` at `t=50` for the
+full periodic two-GB parent, matching the z2-capped/crest-capped
+reduced-geometry value at the same `t` closely, with the parent's
+grain-volume loss rate (`V1` fractional loss) `~2.33x` the reduced
+geometry's `Vp` loss rate over the same window — consistent with the
+parent's small grain being drained from two GBs simultaneously versus one
+for the reduced geometry, a mechanistic explanation for the *rate*
+difference that does not implicate the retained-neck construction.
+
+**Checkpoint-restart bug (found and fixed).** A first attempt at
+resuming `scripts/m16g_long_run_c3.py` exposed a real bug: `a_over_a0`
+in the terminal status line reset to `1.00000` after a resume with no
+new diagnostic row logged in between — traced to `a_over_a0_last` being
+hardcoded to `1.0` at the top of `run()` regardless of resume state. The
+underlying `a0`/`Vp0`/`Vs0`/`V0` reference values were, in fact, already
+being correctly preserved via `meta.json` on every resume (this was never
+a normalization bug in the logged data itself, only in that one summary
+print statement) — fixed by recovering the last-known value from the
+existing JSONL log on resume, and by adding fail-closed validation
+(`_recover_meta_from_log`, raises rather than silently re-deriving
+references) for the case where `meta.json` is missing required keys.
+Restart parity was then explicitly qualified with a dedicated test
+(build a short trajectory, checkpoint, record state, resume, verify
+`a/a0` continues smoothly with no discontinuity) before being trusted for
+any further long run.
+
+**Hussein Eq.-1b sign correction (found and fixed).** The stress formula
+implementation was feeding the SIGNED meridional curvature's reciprocal
+(negative at a neck) directly into `1/r`, producing `sigma_sintering_
+paper` values of the wrong sign and roughly the wrong magnitude
+(`~-22 MPa` at `t=0` instead of the correct `~+0.85 MPa`). The paper's
+`r` is a positive geometric radius — the formula's own two-term structure
+(`1/r` positive, `-C_GB/X` always negative) is what produces a
+sign-varying `sigma`, not a signed `r`. Fixed in `pf_sintering/
+hussein_neck_stress.py` (`neck_curvature_windows` now returns a positive
+`r_neck`; `hussein_eq1b_sigma` additionally takes `abs()` defensively and
+raises on a non-finite/zero input rather than silently propagating a bad
+value). Verified exactly against provided reference numbers at
+`r=87.661nm, X=93.303nm, psi=160`: `sigma_curvature=+11.408 MPa`,
+`sigma_contact_GB=-10.555 MPa`, `sigma=+0.853 MPa` — matches to 3
+significant figures. The corrected trajectory (z2-capped control,
+`t=0` to `234.5`) shows `sigma_s` climbing smoothly and monotonically
+from `+0.85 MPa` to `+2.13 MPa`, decomposed to show the increase driven
+almost entirely by curvature sharpening at the neck (`sigma_curvature`
+`+8.0%`) rather than contact narrowing (`sigma_contact_GB` `+0.3%` only)
+over that window — a corrected, and qualitatively different (originally
+all-negative and non-monotonic-looking), physical picture from the
+pre-fix numbers.
+
+With the geometric question closed (B2), the checkpoint/restart machinery
+qualified, and the stress diagnostic corrected and verified, M16G's own
+scope is complete. `b0ca4f8` plus this section's corrections together
+constitute the finished milestone. STOP (M16G). Continuation work is
+Milestone 16H, reported separately.

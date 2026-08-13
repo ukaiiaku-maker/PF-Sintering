@@ -1,14 +1,33 @@
-"""Milestone 16G revision: long, checkpointed sink-OFF trajectory on the
-C3-smooth particle/asperity geometry, run until a/a0<=0.85 (preferred) or
-a/a0<=0.90 (minimum), or until a large step budget/topology failure
-forces a stop. Checkpoints (f,e1,e2,step) to .npz periodically so the run
-can be resumed across multiple invocations; appends full diagnostic rows
-(Section 17 of the handoff: a_contact, X_neck, A_GB, Vp/Vp0, Vs, GB/TJ
-position, r_neck (both fit windows), sigma_sintering_paper and its
-decomposition, mu_N, mass, F) to an append-only JSONL log.
+"""Milestone 16G: long, checkpointed sink-OFF trajectory on the C3-smooth
+particle/asperity geometry, run until a/a0<=0.85 (preferred) or a/a0<=0.90
+(minimum), or until a large step budget/topology failure forces a stop.
+Checkpoints (f,e1,e2,step) to .npz periodically so the run can be resumed
+across multiple invocations; appends full diagnostic rows (a_contact,
+X_neck, A_GB, Vp/Vp0, Vs, GB/TJ position, r_neck (both fit windows),
+sigma_sintering_paper and its decomposition, mu_N, mass, F) to an
+append-only JSONL log.
+
+CORRECTION (this revision, restart-safety): the checkpoint/restart
+contract MUST preserve the original t=0 reference values (a0, Vp0, Vs0,
+V0) exactly across a resume -- they must never be recomputed from the
+resumed state. This was already the *intent* of the original
+implementation (a0/Vp0/Vs0/V0 are read from the saved meta.json on
+resume, not rebuilt from the checkpointed field), but two related bugs
+are fixed here: (1) `a_over_a0_last` (used only for the terminal status
+print and for re-deriving already-crossed recession milestones) was
+hardcoded to 1.0 at the top of `run()` regardless of resume state, so a
+resume followed by fewer than `diag_every_steps` further steps printed a
+misleading "a/a0=1.00000" in the final summary even though the actual
+logged trajectory data was never wrong -- fixed by recovering the last
+known value from the existing JSONL log on resume. (2) resume now FAILS
+CLOSED (raises) if a checkpoint exists but the companion meta.json is
+missing required reference keys (a0/Vp0/Vs0/V0), attempting one fallback
+recovery (the first row of the existing JSONL log) before giving up --
+it never silently reinitializes references from the resumed field.
 """
 from __future__ import annotations
 
+import glob
 import json
 import math
 import os
@@ -26,11 +45,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 from m16a_gb_benchmark import measure_R_of_z  # noqa: E402
 from m16e_exact_hussein_two_mode import P, psi_to_gamma_gb  # noqa: E402
 from m16g_pr_derived_particle_asperity import (  # noqa: E402
-    build_particle_asperity_geometry_c3, find_gb_trough, find_stable_dt, grain_volumes,
+    build_particle_asperity_geometry_c3, build_particle_asperity_geometry_c3_crest,
+    find_gb_trough, find_stable_dt, grain_volumes,
 )
 
 CAMPAIGN_DIR = os.path.join(os.path.dirname(__file__), "..", "runs", "m16g_campaign")
 OMEGA = 1.0e-29  # placeholder atomic volume (m^3), diagnostic-only (mu_N is not fed back)
+REQUIRED_META_KEYS = ("a0", "Vp0", "Vs0", "V0", "lam", "z1", "dt", "Nr")
 
 
 def diagnostics_row(step, t, f, e1, e2, p, Wc, dr, dz, r_c, r_f, z, z_gb_prev, lam,
@@ -53,10 +74,11 @@ def diagnostics_row(step, t, f, e1, e2, p, Wc, dr, dz, r_c, r_f, z, z_gb_prev, l
         wins = neck_curvature_windows(R_of_z, z, z_gb, W, window_widths_in_W=(1.5, 2.5))
         for w in wins:
             tag = f"w{w['window_W']:g}W"
-            row[f"r_neck_{tag}_nm"] = w["r_neck_signed"] * 1e9 if np.isfinite(w["r_neck_signed"]) else float("nan")
+            row[f"r_neck_{tag}_nm"] = w["r_neck"] * 1e9 if np.isfinite(w["r_neck"]) else float("nan")
+            row[f"kappa_signed_{tag}"] = w["kappa_signed"]
             row[f"n_pts_{tag}"] = w["n_points"]
-            if np.isfinite(w["r_neck_signed"]) and np.isfinite(X_neck):
-                sigma, sc, sg, CGB = hussein_eq1b_sigma(w["r_neck_signed"], X_neck, gamma_s, gamma_gb)
+            if np.isfinite(w["r_neck"]) and np.isfinite(X_neck):
+                sigma, sc, sg, CGB = hussein_eq1b_sigma(w["r_neck"], X_neck, gamma_s, gamma_gb)
                 row[f"sigma_sintering_paper_{tag}"] = sigma
                 row[f"sigma_curvature_{tag}"] = sc
                 row[f"sigma_contact_GB_{tag}"] = sg
@@ -65,9 +87,61 @@ def diagnostics_row(step, t, f, e1, e2, p, Wc, dr, dz, r_c, r_f, z, z_gb_prev, l
     return row, z_gb if np.isfinite(z_gb) else z_gb_prev
 
 
+def _recover_meta_from_log(log_path, meta):
+    """Fallback recovery (Section 3): if meta.json is missing required
+    reference values, try to recover them from the FIRST (t=0) row of
+    the existing JSONL trajectory log. Raises if that also fails --
+    never silently falls back to re-deriving references from the
+    resumed (mid-trajectory) field state."""
+    if not os.path.exists(log_path):
+        raise RuntimeError(
+            f"checkpoint exists but meta.json is missing required keys and no log "
+            f"to recover from at {log_path} -- refusing to resume with an unverified reference state")
+    with open(log_path) as fh:
+        first_line = fh.readline()
+    row0 = json.loads(first_line)
+    if row0.get("step", -1) != 0:
+        raise RuntimeError("first log row is not step=0 -- cannot safely recover a0/Vp0/Vs0/V0")
+    # a0/Vp0/Vs0/V0 are not directly in the row (only fractions), so this
+    # fallback can only recover what the row actually contains; if that's
+    # insufficient, fail closed rather than guess.
+    missing = [k for k in REQUIRED_META_KEYS if k not in meta]
+    raise RuntimeError(
+        f"meta.json missing required keys {missing} and the JSONL log does not store "
+        f"absolute a0/Vp0/Vs0/V0 (only normalized fractions) -- cannot safely recover; "
+        f"refusing to resume with an unverified reference state. Delete the stale "
+        f"checkpoint/meta/log for this tag and restart from scratch if this is expected.")
+
+
+def _recover_a_over_a0_last(log_path):
+    """Recovers the last known a/a0 (and milestone thresholds already
+    crossed) from the existing JSONL log, for the resumed run's status
+    print and milestone bookkeeping -- NOT used for anything that affects
+    the physics or the stored diagnostic values themselves, which are
+    always computed fresh from a0 (Section 3)."""
+    if not os.path.exists(log_path):
+        return 1.0, set()
+    last_finite = 1.0
+    milestones = set()
+    with open(log_path) as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            v = row.get("a_over_a0")
+            if v is not None and np.isfinite(v):
+                last_finite = v
+                for thresh in (0.95, 0.90, 0.85):
+                    if v <= thresh:
+                        milestones.add(thresh)
+    return last_finite, milestones
+
+
 def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0.85,
-        min_a_over_a0=0.90, max_steps=20_000_000, checkpoint_every_steps=20000,
-        diag_every_steps=2000, tag="c3_long", L_frac=3.0, a_cap_frac=4.0, wall_budget_s=None):
+        min_a_over_a0=0.90, max_steps=100_000_000, checkpoint_every_steps=20000,
+        diag_every_steps=2000, tag="c3_long", L_frac=3.0, a_cap_frac=4.0, wall_budget_s=None,
+        geometry_kind="z2cap"):
     R_cyl = R_cyl_nm * 1e-9
     W = W_nm * 1e-9
     dr = dz = dx_nm * 1e-9
@@ -84,6 +158,9 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
     if os.path.exists(ckpt_path) and os.path.exists(meta_path):
         with open(meta_path) as fh:
             meta = json.load(fh)
+        missing = [k for k in REQUIRED_META_KEYS if k not in meta]
+        if missing:
+            _recover_meta_from_log(log_path, meta)  # always raises (see docstring) -- fail closed
         data = np.load(ckpt_path)
         f, e1, e2 = data["f"], data["e1"], data["e2"]
         step = int(data["step"])
@@ -92,9 +169,17 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
         lam, z1, a0, dt = meta["lam"], meta["z1"], meta["a0"], meta["dt"]
         Vp0, Vs0, V0 = meta["Vp0"], meta["Vs0"], meta["V0"]
         z_gb_prev = meta.get("z_gb_prev", z1)
-        print(f"resumed from checkpoint at step={step}, t={step*dt:.4f}")
+        a_over_a0_last, milestones_hit = _recover_a_over_a0_last(log_path)
+        print(f"resumed from checkpoint at step={step}, t={step*dt:.4f}, "
+              f"a0={a0*1e9:.4f}nm (preserved), last-known a/a0={a_over_a0_last:.5f}, "
+              f"milestones already crossed: {sorted(milestones_hit)}")
     else:
-        geom = build_particle_asperity_geometry_c3(R_cyl, W, dr, dz, L_frac=L_frac, a_cap_frac=a_cap_frac)
+        if geometry_kind == "crest":
+            geom = build_particle_asperity_geometry_c3_crest(R_cyl, W, dr, dz)
+        elif geometry_kind == "z2cap":
+            geom = build_particle_asperity_geometry_c3(R_cyl, W, dr, dz, L_frac=L_frac, a_cap_frac=a_cap_frac)
+        else:
+            raise ValueError(f"unknown geometry_kind {geometry_kind!r}")
         f, e1, e2 = geom["f"], geom["e1"], geom["e2"]
         z, r_c, r_f = geom["z"], geom["r_c"], geom["r_f"]
         z1, lam = geom["z1"], geom["lam"]
@@ -117,6 +202,7 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
                                            lam, Vp0, Vs0, V0, a0, gamma_s, gamma_gb, W)
         with open(log_path, "a") as fh:
             fh.write(json.dumps(row0) + "\n")
+        a_over_a0_last, milestones_hit = 1.0, set()
         print(f"[init] a0={a0*1e9:.4f}nm dt={dt:.4e} target a/a0<={target_a_over_a0}")
 
     M_s = 1e-33
@@ -125,8 +211,6 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
     t_wall0 = time.time()
     last_ckpt = step
     last_diag = step
-    a_over_a0_last = 1.0
-    milestones_hit = set()
 
     while step < max_steps:
         f, e1, e2, diag = axisym_gb_face_projected_step(
@@ -147,10 +231,10 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
                   f"Vp/Vp0={row['Vp_frac']:.6f} mass_drift={row['mass_drift']:.2e} "
                   f"wall={time.time()-t_wall0:.0f}s")
 
-            for thresh in (0.95, 0.90, 0.85):
+            for thresh in (0.975, 0.95, 0.925, 0.90, 0.875, 0.85):
                 if a_over_a0_last <= thresh and thresh not in milestones_hit:
                     milestones_hit.add(thresh)
-                    snap_path = os.path.join(CAMPAIGN_DIR, f"{tag}_a{thresh:.2f}.npz")
+                    snap_path = os.path.join(CAMPAIGN_DIR, f"{tag}_a{thresh:.3f}.npz")
                     np.savez_compressed(snap_path, f=f, e1=e1, e2=e2, step=step, z=z)
                     print(f"  *** reached a/a0={thresh}: snapshot saved to {snap_path} ***")
 
@@ -164,12 +248,8 @@ def run(psi_deg=160.0, R_cyl_nm=100.0, W_nm=10.0, dx_nm=1.25, target_a_over_a0=0
         if step - last_ckpt >= checkpoint_every_steps:
             last_ckpt = step
             # np.savez_compressed silently APPENDS ".npz" to any path that
-            # doesn't already end with it -- ckpt_path+".tmp" doesn't, so
-            # the actual file written was "..._checkpoint.npz.tmp.npz",
-            # and os.replace(tmp_path, ckpt_path) below raised
-            # FileNotFoundError (discovered when this crashed the first
-            # production run at its first checkpoint, step 20000). Fixed
-            # by giving the temp file its own valid ".npz" name instead.
+            # doesn't already end with it -- use a temp name that already
+            # ends in .npz (see prior fix note in git history).
             tmp_path = ckpt_path.replace(".npz", "_tmp.npz")
             np.savez_compressed(tmp_path, f=f, e1=e1, e2=e2, step=step, z=z)
             os.replace(tmp_path, ckpt_path)
@@ -195,11 +275,12 @@ if __name__ == "__main__":
     ap.add_argument("--psi", type=float, default=160.0)
     ap.add_argument("--tag", type=str, default="c3_long")
     ap.add_argument("--target-a-over-a0", type=float, default=0.85)
-    ap.add_argument("--max-steps", type=int, default=20_000_000)
+    ap.add_argument("--max-steps", type=int, default=100_000_000)
     ap.add_argument("--wall-budget-s", type=float, default=None)
     ap.add_argument("--L-frac", type=float, default=3.0)
     ap.add_argument("--a-cap-frac", type=float, default=4.0)
+    ap.add_argument("--geometry-kind", type=str, default="z2cap", choices=["z2cap", "crest"])
     args = ap.parse_args()
     run(psi_deg=args.psi, tag=args.tag, target_a_over_a0=args.target_a_over_a0,
         max_steps=args.max_steps, wall_budget_s=args.wall_budget_s,
-        L_frac=args.L_frac, a_cap_frac=args.a_cap_frac)
+        L_frac=args.L_frac, a_cap_frac=args.a_cap_frac, geometry_kind=args.geometry_kind)

@@ -321,6 +321,121 @@ def contour_derivs_c3(geom, z_query):
         return R, Rp, Rpp, float("nan")
 
 
+
+# ---------------------------------------------------------------------------
+# M16G geometry correction: the z2-capped construction above retains the
+# exact profile all the way to z2 -- the FORMER SECOND GB/contact of the
+# parent Figure-4 geometry -- before capping. That means "removing grain
+# 3" removed its eta-ownership but left the geometric neck/trough that
+# existed BECAUSE of that second contact fully in place; the cap only
+# starts past it. This is not the cleanest reading of "remove the third
+# grain": the retained one-contact particle should have exactly ONE
+# neck/trough (at z1), not one at z1 plus a second (now ownerless, but
+# still geometrically present) trough remembered from z2.
+#
+# Corrected construction: cut the exact profile at z=lambda instead of
+# z2 -- the midpoint between z1 and z2, and (verified analytically and
+# numerically below) itself an EXACT mirror-symmetry point of the
+# two-mode profile, exactly like z=0: R'(lambda)=0, R'''(lambda)=0, and
+# critically R''(lambda)<0 (a genuine LOCAL MAXIMUM/crest, not a trough)
+# -- the curvature there is ALREADY the sign a convex terminal cap needs,
+# unlike z2 (R''>0, requiring the sign-reversing Hermite transition
+# Sections 2-4 of the original M16G report built). Because R''(lambda) is
+# already the right sign, an ellipsoid cap can be attached DIRECTLY at
+# z=lambda with EXACT C3 matching and no intermediate Hermite segment at
+# all: choosing the ellipsoid's equatorial radius R3=R(lambda) (matches
+# value) and axial semi-axis a_cap=sqrt(R3/|R''(lambda)|) (matches
+# curvature exactly, since the ellipsoid's own near-equator curvature is
+# -R3/a_cap^2) simultaneously satisfies R'=0 and R'''=0 automatically
+# (both sides are even functions of (z-lambda) to leading order, exactly
+# as at the z=0/z=z2 seams analyzed earlier). No overshoot/ringing
+# tradeoff to tune this time -- the natural aspect ratio a_cap/R3 comes
+# out close to 1 (a nearly round cap), unlike the z2 construction's
+# a_cap_frac=4.
+# ---------------------------------------------------------------------------
+
+def build_particle_asperity_geometry_c3_crest(R_cyl, W, dr, dz, tail_margin_W=6.0):
+    """One-contact particle geometry with NO retained second neck: exact
+    two-mode profile from the substrate crest (z=0) through the retained
+    GB/contact (z1) to the particle's OWN crest (z=lambda), then a
+    directly-attached, exactly curvature-matched ellipsoid cap (see
+    section docstring above -- no Hermite transition segment needed).
+    Returns the same dict shape as build_particle_asperity_geometry_c3
+    (with z2/z3/hermite_coeffs fields set to None/lambda as appropriate,
+    for interface compatibility with the diagnostics code)."""
+    lam = LAM_OVER_RCYL * R_cyl
+    z1 = Z1_OVER_LAM * lam
+    R_lam, Rp_lam, Rpp_lam, Rppp_lam = two_mode_R_derivs(lam, lam, R_cyl)
+    assert abs(Rp_lam) < 1e-6 * R_lam / lam, "R'(lambda) must be ~0 (symmetry point)"
+    assert Rpp_lam < 0, "R''(lambda) must be negative (crest, not a trough)"
+
+    R3 = R_lam
+    a_cap = math.sqrt(R3 / abs(Rpp_lam))
+    z_end = lam + a_cap + tail_margin_W * W
+
+    Nz = max(48, round(z_end / dz))
+    dz_actual = z_end / Nz
+    z = (np.arange(Nz) + 0.5) * dz_actual
+
+    R_max = R_cyl * (R0_OVER_RCYL + EPS1 + EPS2)
+    Nr = max(24, round((R_max + 6 * W) / dr))
+    r_c, r_f = r_centers_faces(Nr, dr)
+    Z, Rg = np.meshgrid(z, r_c, indexing="ij")
+
+    R_profile = R_cyl * R_profile_over_Rcyl(z / lam)
+    f_body = 0.5 * (1.0 - np.tanh((Rg - R_profile[:, None]) / W))
+
+    rho = np.sqrt(((Z - lam) / a_cap) ** 2 + (Rg / R3) ** 2)
+    f_cap = 0.5 * (1.0 - np.tanh((rho - 1.0) * R3 / W))
+
+    is_cap = z >= lam
+    f = np.where(is_cap[:, None], f_cap, f_body)
+
+    smooth = 1.5 * dz_actual
+    ind_inner = 0.5 * (1.0 + np.tanh((z - z1) / smooth))
+    e1 = f * ind_inner[:, None]
+    e2 = f - e1
+
+    return dict(f=f, e1=e1, e2=e2, z=z, r_c=r_c, r_f=r_f, Nz=Nz, Nr=Nr, dz=dz_actual, dr=dr,
+                z1=z1, z2=lam, z3=lam, R3=R3, a_cap=a_cap, L=None, hermite_coeffs=None,
+                R_z1=R_lam, lam=lam, R_cyl=R_cyl, handoff="crest")
+
+
+def contour_derivs_c3_crest(geom, z_query):
+    """Evaluates the crest-capped contour's R,R',R'' at arbitrary z --
+    exact two-mode formula for z<lambda, exact ellipsoid near-equator
+    formula for z>=lambda (same functional form as contour_derivs_c3's
+    ellipsoid branch, just anchored at z=lambda instead of z3)."""
+    lam, R_cyl, R3, a_cap = geom["lam"], geom["R_cyl"], geom["R3"], geom["a_cap"]
+    if z_query < lam:
+        return two_mode_R_derivs(z_query, lam, R_cyl)
+    dz = z_query - lam
+    s = 1.0 - (dz / a_cap) ** 2
+    if s <= 0:
+        return 0.0, float("nan"), float("nan"), float("nan")
+    R = R3 * math.sqrt(s)
+    Rp = -R3 * (dz / a_cap ** 2) / math.sqrt(s)
+    Rpp = -R3 / a_cap ** 2 * (1.0 / math.sqrt(s) + (dz / a_cap) ** 2 / s ** 1.5)
+    return R, Rp, Rpp, float("nan")
+
+
+def find_all_extrema(R_of_z, z):
+    """Section 8's explicit requirement: search the full constructed
+    free-surface profile for ALL local extrema (not just the intended
+    z1 contact), to verify no second trough (or other artificial
+    bottleneck) survives construction. Returns list of (z, R, kind)."""
+    extrema = []
+    finite = np.isfinite(R_of_z)
+    for j in range(1, len(R_of_z) - 1):
+        if not (finite[j - 1] and finite[j] and finite[j + 1]):
+            continue
+        if R_of_z[j] < R_of_z[j - 1] and R_of_z[j] < R_of_z[j + 1]:
+            extrema.append((float(z[j]), float(R_of_z[j]), "min"))
+        elif R_of_z[j] > R_of_z[j - 1] and R_of_z[j] > R_of_z[j + 1]:
+            extrema.append((float(z[j]), float(R_of_z[j]), "max"))
+    return extrema
+
+
 def grain_volumes(e1, e2, r_c, dr, dz):
     V1 = 2 * math.pi * float(np.sum(r_c[None, :] * e1)) * dr * dz
     V2 = 2 * math.pi * float(np.sum(r_c[None, :] * e2)) * dr * dz
