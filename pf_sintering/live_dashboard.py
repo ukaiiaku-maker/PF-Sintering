@@ -18,6 +18,7 @@ import csv
 import json
 import os
 
+import numpy as np
 import matplotlib
 
 matplotlib.use("Agg")
@@ -167,8 +168,20 @@ def render_dashboard_figure(run_dir, n_recent_history=4000):
     style_axes(ax_q, "time", "MPa")
     ax_q.legend(frameon=False, fontsize=8, loc="upper left")
     ax_q2 = ax_q.twinx()
-    ax_q2.plot(t, [r.get("Q_1p5W") for r in rows], color="0.3", linewidth=1.0, linestyle=":", label="Q")
-    ax_q2.set_ylabel("Q = X_neck/(C_GB*r_neck)")
+    q_vals = [r.get("Q_1p5W") for r in rows]
+    ax_q2.plot(t, q_vals, color="0.3", linewidth=1.0, linestyle=":", label="Q")
+    # M16J Section 30 audit: Q = X_neck/(C_GB*r_neck) is positive by construction
+    # (X_neck>0, r_neck>0, C_GB=sqrt(1-(gamma_gb/2/gamma_s)^2)>0) -- confirmed against
+    # production history data. A shared-subplot twinx() with no explicit floor let the
+    # dotted Q line visually sit near the negative sigma_width curve (a DIFFERENT axis,
+    # different units) and read as if Q itself were negative. This was a display-clarity
+    # issue only; the underlying data was never wrong. Fix: give the twin axis an
+    # explicit floor at 0 and mark the sigma_s=0 boundary (Q=1) explicitly.
+    q_finite = [v for v in q_vals if v is not None and np.isfinite(v)]
+    q_top = max(1.5, 1.1 * max(q_finite)) if q_finite else 1.5
+    ax_q2.set_ylim(0, q_top)
+    ax_q2.axhline(1.0, color="0.3", linewidth=0.7, linestyle="--", alpha=0.5)
+    ax_q2.set_ylabel("Q = X_neck/(C_GB*r_neck)  [dashed line: Q=1, sigma_s=0]")
     ax_q2.grid(False)
 
     header = (f"{status.get('barrier_regime', '?').upper()}  t={status.get('simulation_time', float('nan')):.2f}  "

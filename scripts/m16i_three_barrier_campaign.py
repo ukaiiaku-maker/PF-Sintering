@@ -133,6 +133,16 @@ def diagnostics_row(f, e1, e2, p, Wc, dr, dz, r_c, r_f, z, z_gb_prev, lam, Vp0, 
         total_solid_volume_nm3=V * 1e27,
         RBM_cumulative_displacement_nm=sink.cumulative_disp * 1e9,
         particle_COM_shift_nm=com_shift,
+        # NOTE (M16J Section 29 audit): despite its name, this quantity tracks the
+        # particle's raw center-of-mass shift and is nonzero from ordinary coarsening
+        # alone (sink inactive, RBM displacement=0) -- it is a COM-shift PROXY, not a
+        # measurement of true sink-driven densification. The field name is kept as-is
+        # here because this driver's history schema is frozen for the already-collected
+        # M16I data (renaming would break loading of existing runs/ history files); new
+        # code (M16J) should not treat this field as the primary densification strain.
+        # `rbm_strain` below (cumulative rigid-body displacement / 2*a0) is the
+        # authoritative sink-driven densification metric -- it is exactly 0 whenever the
+        # sink has never activated, which is the correct behavior.
         sintering_strain=com_shift * 1e-9 / (2 * a0) if np.isfinite(com_shift) else float("nan"),
         rbm_strain=sink.cumulative_disp / (2 * a0),
         free_surface_area_nm2=A_free * 1e18 if np.isfinite(A_free) else float("nan"),
