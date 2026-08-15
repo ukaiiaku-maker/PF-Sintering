@@ -27,11 +27,13 @@ Because the actual event-completion bookkeeping already uses the **measured** (s
 
 ## 4. Legacy-control run status
 
-Relaunched with the fixed gate (`runs/m16m_multisink_qualification/`, `codex/m16m-poisson-multisink`, event-count target reduced to 10 per the restart handoff's Section 22, wall-clock cap 4h). Explicitly labeled **LEGACY-STRESS POISSON CONTROL** throughout (single-window 1.5W=15nm circle-fit sigma, per Section 2 of the restart handoff) — it answers questions about Poisson-clock/multi-event mechanics, not absolute physical stress. Status at time of writing: climbing toward the ~45MPa legacy activation point (same deterministic pre-activation trajectory as M16L, since geometry/hazard parameters are unchanged and the RNG seed is identical). Results will be appended to this report once the run reaches its stopping condition.
+Relaunched with the fixed gate (`runs/m16m_multisink_qualification/`, `codex/m16m-poisson-multisink`, event-count target reduced to 10 per the restart handoff's Section 22, wall-clock cap 4h), explicitly labeled **LEGACY-STRESS POISSON CONTROL** throughout (single-window 1.5W=15nm circle-fit sigma) — answers questions about Poisson-clock/multi-event mechanics, not absolute physical stress.
+
+**Outcome: reached and completed exactly ONE event (the same deterministic pre-activation trajectory as M16L: birth at step=90558, t=4.4218, sigma=45.126MPa; completion at step=90770, t=4.4321, sigma=47.805MPa, `cumulative_RBM/b=0.999997` — essentially exact one-Burgers-vector completion, consistent with M16L's own validated result), then the PF field solver hit a genuine numerical BLOWUP (NaN/overflow in `axisym.py`'s surface-diffusion flux terms) at step=99693, t=4.8678 — roughly 0.44 model-time-units, ~9000 PF steps, AFTER the event completed, with no second event ever born (`N_active=0` throughout the post-event interval).** A real, non-negligible mass-drift jump (from ~4.9e-15 to 8.88e-6 relative) appears in the diagnostic sample immediately following the event's completion — small in absolute terms but ~9 orders of magnitude larger than the pre-event baseline, and a plausible precursor to the blowup roughly 9000 steps later. This is a NEW failure mode not seen in M16L's own single-event run (which continued cleanly to t~4.8-25 in various M16K/M16L extensions) — whether it is connected to the same under-resolved-curvature root cause identified in Sections 10-14 (a numerically sharper, less-diffuse post-event neck than the solver can stably advance) or a separate issue was not diagnosed further this pass; flagged as a required follow-up before any longer multi-event run is attempted.
 
 ## 5-6. N_active statistics / completed-event count
 
-Pending run completion (Section 4). Given `B<<1` (Section 8 below reprises the M16M overlap finding), `N_active<=1` is expected almost always.
+`N_active`: 0 for the entire pre-activation climb (t=0 to 4.42), 1 for the ~0.01 time-unit duration of the single event (t=4.4218-4.4321), then 0 again until the blowup at t=4.8678. `N_completed`=1, `N_born`=1 — consistent with `B<<1` (Section 7): no overlapping events were observed or expected, and none occurred.
 
 ## 7. Revised interpretation from B<<1
 
@@ -122,7 +124,7 @@ Implemented (`scripts/m16m_energy_conjugate_stress.py`): starting from the same 
 
 ## 17. Sequential-event qualified run results
 
-Not applicable this pass (Section 15/16) — the legacy-stress control run (Section 4) continues as a mechanics/Poisson-clock check, not a quantitatively qualified production run.
+Not applicable this pass (Section 15/16) — the legacy-stress control run (Section 4) reached only 1 completed event before a numerical blowup (Section 4), far short of even a single well-characterized sequential-accumulation trend, and used the unqualified `sigma_legacy` coordinate throughout regardless.
 
 ## 18. Estimated event count for 5/10/25 MPa relaxation
 
@@ -139,12 +141,12 @@ Unchanged / carried forward: the thinning-algorithm Poisson clock (`poisson_mult
 ## Remaining limitations
 
 - The root-cause finding (true fillet radius ~6.87nm) explains the DIRECTION and rough scale of the discrepancy but has not yet been used to construct a properly converged `sigma_qualified` — that requires either (a) a much finer W/dx run (estimated substantially more expensive than anything run to date), or (b) an alternative, resolution-independent local-curvature estimator validated against the analytic benchmark at radii comparable to 6.87nm specifically (only 10/20/40/80nm were tested; the smallest, most relevant case to this project's own geometry was not directly probed).
-- The matched-morphology (fixed-window, matched-X_neck) W=10/6/4 re-comparison was still running at the time of writing after the candidate-selection bug fix; only the matched-TIME comparison (confounded, per Sections 2-3/5) and the analytic benchmark (unconfounded, decisive) are reported in full above.
+- The W=4nm/dx=0.65nm fixed-window screen was still running at the time of writing (slow: ~55-60s/sample at this resolution) and showed an unexplained SIGN FLIP (`sigma_15nm` negative, ~-0.6 to -0.7MPa, from t=0.025 to at least t=0.1) not seen at W=10/6nm — flagged as a further, not-yet-diagnosed anomaly at this finest tested resolution, consistent with the broader "not numerically trustworthy yet at fine W" finding but not specifically explained.
 - Only 2 states available for the TJ-vs-trough audit; a third was attempted but discarded due to a data-loading mistake (documented in Section 9) rather than silently reported.
 - The energy-conjugate diagnostic's second-derivative check was not fully numerically resolved, and (per Section 14's update above) the method itself has not yet been validated against a known-force analytic benchmark, per the restart continuation's Section 7 requirement.
 - The reciprocal window/W ladder test (Section 4 of the restart continuation: window/W in {1.0, 1.5, 2.0, 2.5, 3.0, 4.0} at each W) was not run as its own explicit sweep — the fixed-window ladder (6-24nm) at each W partially substitutes but does not exactly reproduce this specific request.
-- The legacy-stress multi-sink control run's full results (N_active/N_completed statistics, cumulative RBM, per-event stress response) were still in progress at the time of writing and are appended below once available.
+- **NEW: the legacy-stress control run (Section 4) hit a genuine PF numerical blowup ~9000 steps (0.44 time units) after its one completed event, with a suspicious ~9-order-of-magnitude mass-drift jump immediately following event completion.** This is a new, undiagnosed robustness issue that must be understood before any longer/multi-event run is attempted, independent of the stress-metrology question.
 
 ## Recommendation on the video campaign
 
-**Not justified.** Per Sections 10-12 and 14 above, two of the restart handoff's explicit stop conditions are triggered. No video/production work should proceed until the stress-metrology discrepancy (W-convergence and energy-vs-local-curvature disagreement) is either resolved or at minimum well-characterized enough to assign a defensible uncertainty band to the ~20-190MPa range spanned by the methods tested so far.
+**Not justified.** Per Sections 10-12 and 14 above, two of the restart handoff's explicit stop conditions are triggered, and Section 4's new post-event blowup adds a THIRD, independent reason (numerical robustness) not to proceed. No video/production work should proceed until (a) the stress-metrology discrepancy (W-convergence and energy-vs-local-curvature disagreement) is resolved or well-characterized, and (b) the post-event blowup is root-caused and fixed.
