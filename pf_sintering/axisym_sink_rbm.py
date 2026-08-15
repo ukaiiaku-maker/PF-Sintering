@@ -306,23 +306,42 @@ def nucleation_hazard_step(sink: AxisymSink, sigma_s: float, dt: float, hp: Haza
 
 def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, sigma_s: float, dt: float, dz: float,
                                 r_c, z, GB_z_hint, seconds_per_model_time: float = SECONDS_PER_MODEL_TIME):
-    """M16K Sections 1-6: propagates an ALREADY-nucleated event by AT MOST
-    one physical timestep's worth of Coble-type diffusional advection,
-    capped so the event's cumulative displacement (`sink.current_disp`,
-    playing the role of `delta_event`) never exceeds one Burgers vector
-    `hp.b`. Uses `sigma_drive=max(sigma_s,0)` (never abs(), never a
-    floor) -- if the local stress has relaxed to <=0, the event PAUSES
-    (v_event=0, sink stays active, no forced completion) rather than
-    stalling forever OR being forced through; a later PF-coarsening-driven
-    stress recovery can resume the same event. Fixes the axisymmetric
-    mass-conservation bug in the excess-mass redistribution (volume-
-    weighted, not a raw unweighted sum).
+    """M16K/M16L Sections 1-8: propagates an ALREADY-nucleated event by AT
+    MOST one physical timestep's worth of Coble-type diffusional
+    advection, capped so the event's cumulative displacement
+    (`sink.current_disp`, playing the role of `delta_event`) NEVER
+    exceeds one Burgers vector `hp.b` -- and, per the M16L correctness
+    fix below, the FIELD MUTATION ITSELF is scaled to the capped amount,
+    not merely the bookkeeping variable (see `frac` below: the M16K
+    version computed `d_delta_requested=min(v_event*dt, remaining)` for
+    reporting purposes but then always advected for the FULL `dt`,
+    relying on a post-hoc `min(measured_d, remaining)` clip that left the
+    FIELDS mutated by more than `remaining` whenever an event was close
+    to completion -- this violates the one-b contract at the field level
+    even though the reported `delta_event` never exceeded `b`. Fixed by
+    scaling the advection SUBSTEP DURATION itself by
+    `frac=d_delta_requested/(v_event*dt_seconds)` before ever touching
+    f/e1/e2, so a request for `epsilon` produces a field mutation of
+    `epsilon`, not `v_event*dt_seconds` silently clipped afterward.).
+
+    Uses `sigma_drive=max(sigma_s,0)` (never abs(), never a floor) -- if
+    the local stress has relaxed to <=0, the event PAUSES (v_event=0,
+    sink stays active, no forced completion) rather than stalling forever
+    OR being forced through; a later PF-coarsening-driven stress recovery
+    can resume the same event. Volume-weighted (not raw-summed)
+    axisymmetric mass conservation in the excess-mass redistribution.
+    Tracks BOTH particle (e1) and substrate (e2) center-of-mass so the
+    reported displacement is the RELATIVE particle-substrate motion
+    (Section 6/7), not merely the particle's own absolute COM shift
+    (which would silently absorb any spurious substrate drift from the
+    shared advection velocity field near the neck).
 
     Returns (f, e1, e2, completed, diag) where diag is a dict with
-    requested_d_delta, measured_COM_d_delta, delta_event, remaining_to_b,
-    tau_Coble, v_event, sigma_drive, mass_conservation_residual (the
-    fractional excess/deposit volume mismatch this step, should be ~0),
-    e1e2f_residual (max|e1+e2-f| after this step)."""
+    requested_d_delta, measured_particle_COM_d_delta,
+    measured_substrate_COM_d_delta, measured_relative_d_delta,
+    applied_d_delta (== measured_relative_d_delta, clipped defensively to
+    `remaining`), delta_event, remaining_to_b, tau_Coble, v_event,
+    sigma_drive, mass_conservation_residual, e1e2f_residual."""
     if not sink.active:
         return f, e1, e2, False, dict(paused=False, active=False)
 
@@ -336,28 +355,41 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
         # and let this same event resume later.
         return f, e1, e2, False, dict(paused=True, active=True, sigma_drive=sigma_drive,
                                        tau_Coble=math.inf, v_event=0.0, requested_d_delta=0.0,
-                                       measured_COM_d_delta=0.0, delta_event=sink.current_disp,
+                                       measured_particle_COM_d_delta=0.0, measured_substrate_COM_d_delta=0.0,
+                                       measured_relative_d_delta=0.0, applied_d_delta=0.0,
+                                       delta_event=sink.current_disp,
                                        remaining_to_b=remaining, mass_conservation_residual=0.0,
                                        e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))))
 
     xd = 0.5 * hp.GS / 2
     tau_Coble = (xd * xd * hp.kB * hp.T) / (sigma_drive * hp.Omega * hp.D_gb) + hp.tau_ex0
     v_event = hp.b / tau_Coble
-    d_delta_requested = min(v_event * dt_seconds, remaining)
+    d_delta_full = v_event * dt_seconds
+    d_delta_requested = min(d_delta_full, remaining)
+    # M16L correctness fix: scale the ADVECTION DURATION (not just the
+    # bookkeeping) by the fraction of the full step that's actually
+    # allowed, so the field mutation matches the request exactly rather
+    # than being clipped after the fact.
+    frac = (d_delta_requested / d_delta_full) if d_delta_full > 1e-300 else 0.0
+    frac = min(1.0, max(0.0, frac))
+    dt_scaled_seconds = dt_seconds * frac
 
     den = e1 + e2 + 1e-30
     vz_field = (-v_event) * (e1 / den)  # <=0, same convention as before but driven by v_event, not b/tau_sink directly
     vmax = float(np.max(np.abs(vz_field)))
-    if vmax < 1e-40:
+    if vmax < 1e-40 or dt_scaled_seconds <= 0.0:
         return f, e1, e2, False, dict(paused=True, active=True, sigma_drive=sigma_drive, tau_Coble=tau_Coble,
                                        v_event=v_event, requested_d_delta=d_delta_requested,
-                                       measured_COM_d_delta=0.0, delta_event=sink.current_disp,
+                                       measured_particle_COM_d_delta=0.0, measured_substrate_COM_d_delta=0.0,
+                                       measured_relative_d_delta=0.0, applied_d_delta=0.0,
+                                       delta_event=sink.current_disp,
                                        remaining_to_b=remaining, mass_conservation_residual=0.0,
                                        e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))))
 
-    n_sub = max(1, math.ceil(dt_seconds * vmax / dz / 0.4))
-    ds = dt_seconds / n_sub
-    com0 = particle_com_z(e1, z, r_c, dz, dz)
+    n_sub = max(1, math.ceil(dt_scaled_seconds * vmax / dz / 0.4))
+    ds = dt_scaled_seconds / n_sub
+    com0_particle = particle_com_z(e1, z, r_c, dz, dz)
+    com0_substrate = particle_com_z(e2, z, r_c, dz, dz)
     mass_resid_max = 0.0
 
     for _ in range(n_sub):
@@ -387,12 +419,20 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
                 mass_resid_max = max(mass_resid_max,
                                       abs(_axisym_weighted_sum(dep / V_dep * V_excess, r_c) - V_excess) / V_excess)
 
-    com1 = particle_com_z(e1, z, r_c, dz, dz)
-    measured_d = max(0.0, com0 - com1) if math.isfinite(com0) and math.isfinite(com1) else 0.0
-    # hard cap: never let this single call push delta_event past b, even
-    # if the measured advection overshot the requested amount slightly
-    # (Section 3's audit -- report the discrepancy, don't silently absorb it)
-    applied_d = min(measured_d, remaining)
+    com1_particle = particle_com_z(e1, z, r_c, dz, dz)
+    com1_substrate = particle_com_z(e2, z, r_c, dz, dz)
+    measured_particle_d = (com0_particle - com1_particle) if (math.isfinite(com0_particle) and
+                                                                math.isfinite(com1_particle)) else 0.0
+    measured_substrate_d = (com0_substrate - com1_substrate) if (math.isfinite(com0_substrate) and
+                                                                   math.isfinite(com1_substrate)) else 0.0
+    # relative displacement = how much closer the particle got to the
+    # substrate, net of any spurious substrate motion picked up by the
+    # shared advection velocity field near the neck (Section 6/7).
+    measured_relative_d = max(0.0, measured_particle_d - measured_substrate_d)
+    # defensive clip only (should already be ~exact after the frac fix
+    # above -- report any residual discrepancy via the diag dict rather
+    # than silently absorbing it):
+    applied_d = min(measured_relative_d, remaining)
     sink.current_disp += applied_d
     sink.cumulative_disp += applied_d
 
@@ -404,7 +444,9 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
         completed = True
 
     diag = dict(paused=False, active=sink.active, sigma_drive=sigma_drive, tau_Coble=tau_Coble, v_event=v_event,
-                requested_d_delta=d_delta_requested, measured_COM_d_delta=measured_d, applied_d_delta=applied_d,
+                requested_d_delta=d_delta_requested, measured_particle_COM_d_delta=measured_particle_d,
+                measured_substrate_COM_d_delta=measured_substrate_d, measured_relative_d_delta=measured_relative_d,
+                applied_d_delta=applied_d,
                 delta_event=(0.0 if completed else sink.current_disp), remaining_to_b=max(0.0, hp.b - sink.current_disp),
                 mass_conservation_residual=mass_resid_max, e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))),
                 completed=completed)
