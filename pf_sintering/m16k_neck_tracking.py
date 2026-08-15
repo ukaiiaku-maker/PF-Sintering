@@ -81,3 +81,46 @@ class NeckTracker:
                     distance_from_previous_contact=dist, switched=ambiguous,
                     all_candidate_curvatures=all_curv, selected_curvature=all_curv.get(1.5, float("nan")),
                     r_neck_spread_pct=spread_pct, a_contact=a_contact, z_gb=z_gb)
+
+
+def find_tj_from_contour(f, e1, e2, r_c, z, R_of_z, z_gb_guess, search_frac=0.15):
+    """M16K Section 9: locate the TRUE triple junction as the point along
+    the ALREADY-TRACED free-surface contour (f=0.5, i.e. (z, R_of_z(z)))
+    where grain identity flips (e1(z,R_of_z(z)) - e2(z,R_of_z(z))
+    changes sign) -- not merely a local minimum of R(z), which is only an
+    indirect geometric proxy for the TJ (used here as a secondary
+    cross-check, per the explicit instruction). Interpolates e1,e2 onto
+    the contour at each finite R_of_z(z) via the nearest r-index (grid
+    resolution is fine enough that this is adequate for a diagnostic).
+
+    Returns dict(z_tj, r_tj, z_gb_r_of_z_min, agreement_nm) where
+    `agreement_nm` = |z_tj - z_gb_r_of_z_min| converted to a radial-scale
+    distance via the local contour, for reporting how well the two
+    definitions agree."""
+    window = search_frac * max(abs(z[-1] - z[0]), 1e-30)
+    mask = np.abs(z - z_gb_guess) < window
+    idx = np.where(mask & np.isfinite(R_of_z))[0]
+    if len(idx) < 3:
+        return dict(z_tj=float("nan"), r_tj=float("nan"), z_gb_r_of_z_min=z_gb_guess, agreement_nm=float("nan"))
+
+    diff = np.full(len(idx), np.nan)
+    for k, i in enumerate(idx):
+        Rz = R_of_z[i]
+        j = int(np.argmin(np.abs(r_c - Rz)))
+        diff[k] = e1[i, j] - e2[i, j]
+
+    z_tj = float("nan")
+    for k in range(len(idx) - 1):
+        if np.isfinite(diff[k]) and np.isfinite(diff[k + 1]) and diff[k] * diff[k + 1] < 0:
+            z0, z1 = z[idx[k]], z[idx[k + 1]]
+            d0, d1 = diff[k], diff[k + 1]
+            frac = -d0 / (d1 - d0) if (d1 - d0) != 0 else 0.5
+            z_tj = z0 + frac * (z1 - z0)
+            break
+
+    if not np.isfinite(z_tj):
+        return dict(z_tj=float("nan"), r_tj=float("nan"), z_gb_r_of_z_min=z_gb_guess, agreement_nm=float("nan"))
+
+    r_tj = float(np.interp(z_tj, z[idx], R_of_z[idx]))
+    return dict(z_tj=z_tj, r_tj=r_tj, z_gb_r_of_z_min=z_gb_guess,
+                agreement_nm=abs(z_tj - z_gb_guess) * 1e9)

@@ -27,7 +27,7 @@ from pf_sintering.gb_obstacle_energy import gb_obstacle_coefficients  # noqa: E4
 from pf_sintering.hussein_neck_stress import hussein_eq1b_sigma  # noqa: E402
 from pf_sintering.m16j_geometry import build_candidate_geometry  # noqa: E402
 from pf_sintering.m16k_neck_tracking import NeckTracker  # noqa: E402
-from pf_sintering.sintering_potential_stress import sigma_potential as sigma_potential_fn  # noqa: E402
+from pf_sintering.young_laplace_pressure import young_laplace_pressure as young_laplace_pressure_fn  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(__file__))
 from m16a_gb_benchmark import measure_R_of_z  # noqa: E402
@@ -95,7 +95,7 @@ def run(R_p_um, ratio, t_target, W_nm, dx_nm, n_samples, out_dir):
         # kappa_meridional (signed) from the same 1.5W fit, for sigma_potential
         from pf_sintering.hussein_neck_stress import neck_curvature_windows
         win = neck_curvature_windows(R_of_z, z, z_gb, W, window_widths_in_W=(1.5,))[0]
-        sigma_P, km, ka = sigma_potential_fn(win["kappa_signed"], a_contact, GAMMA_S)
+        p_YL, km, ka = young_laplace_pressure_fn(win["kappa_signed"], a_contact, GAMMA_S)
 
         V = axisym_volume(f, r_c, dr, dz)
         A_free = free_surface_area_of_revolution(R_of_z, z)
@@ -109,14 +109,14 @@ def run(R_p_um, ratio, t_target, W_nm, dx_nm, n_samples, out_dir):
                    n_candidates=len(tr["all_candidate_contacts"]), switched=tr["switched"],
                    r_neck_spread_pct=tr["r_neck_spread_pct"],
                    sigma_Hussein_MPa=sigma_H / 1e6, sigma_curvature_MPa=sc / 1e6, sigma_width_MPa=sw / 1e6,
-                   sigma_potential_MPa=sigma_P / 1e6,
+                   young_laplace_pressure_MPa=p_YL / 1e6,
                    S_over_V_1_per_nm=sv["S_over_V"] * 1e-9, free_energy=F, energy_decreasing=(F <= F0 + 1e-20),
                    mass_drift=(V - V0) / V0)
         for w_mult, rn in tr["all_candidate_curvatures"].items():
             row[f"r_neck_{w_mult}W_nm"] = rn * 1e9 if np.isfinite(rn) else float("nan")
         rows.append(row)
         print(f"  t={t:.3f} a={a_contact*1e9:.2f}nm X={X_neck*1e9:.2f}nm r1.5W={r_neck_1p5W*1e9:.3f}nm "
-              f"sigmaH={sigma_H/1e6:.3f}MPa sigmaP={sigma_P/1e6:.3f}MPa spread={tr['r_neck_spread_pct']:.1f}% "
+              f"sigmaH={sigma_H/1e6:.3f}MPa p_YL={p_YL/1e6:.3f}MPa spread={tr['r_neck_spread_pct']:.1f}% "
               f"n_cand={len(tr['all_candidate_contacts'])} switch={tr['switched']} wall={time.time()-t0:.0f}s",
               flush=True)
 

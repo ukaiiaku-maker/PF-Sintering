@@ -218,3 +218,194 @@ def rbm_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, dt: float, dz: float
         sink.hazard = 0.0
         completed = True
     return f, e1, e2, completed
+
+
+# =============================================================================
+# Milestone 16K continuation: corrected post-nucleation event physics.
+#
+# The original `hazard_step`+`rbm_step` pair conflated two distinct physical
+# questions (does a NEW event nucleate? vs. how does an ALREADY-nucleated
+# event propagate?) and had two confirmed bugs when exercised at the ~45 MPa
+# stress scale (an order of magnitude above M16H/M16I's original ~1-3 MPa
+# calibration target, where these issues had negligible practical effect):
+#
+#  (1) axisymmetric mass-conservation bug in the excess-mass redistribution:
+#      `ex_sum`/`dsum` above are PLAIN, UNWEIGHTED array sums over the
+#      (z,r) grid. For an axisymmetric field the correct volume element is
+#      2*pi*r*dr*dz -- a cell's r-position must weight its contribution.
+#      Since the excess mass and the deposit pattern generally have
+#      DIFFERENT r-distributions, the unweighted normalization used above
+#      does not exactly conserve physical volume in general. Fixed below
+#      via `_axisym_weighted_sum`.
+#
+#  (2) `tau_sink=inf` whenever sigma<=0 was being (implicitly, via the
+#      unmodified `rbm_step` above) used as the ONLY rule governing an
+#      ALREADY-ACTIVE event's propagation, not just new-nucleation
+#      suppression -- appropriate for (1) but not automatically valid for
+#      (2). Separated below into `nucleation_hazard_step` (decides ONLY
+#      whether a new event nucleates) and `active_sink_transport_step`
+#      (governs an already-nucleated event's propagation under an
+#      explicit physical contract: at most ONE Burgers-vector `b` of
+#      total rigid-body displacement per event, propagating at a
+#      finite, stress-dependent Coble-type rate that SLOWS as the local
+#      stress relaxes and PAUSES -- never force-completes -- if the
+#      driving stress reaches zero before `b` is reached).
+#
+# TIME-UNIT CAVEAT (Section 7/10 audit, unresolved): `dt` here is the same
+# PF stepping variable used throughout M16H-M16K, treated as if it were
+# literally SI seconds when combined with tau_sink/D_gb (which ARE real
+# SI quantities). Investigation of `model.py`'s M_f/M_s calibration
+# (`M_f_base=(20e-9)**4/(tau_target*k_f)`) found the PF surface-diffusion
+# mobility is set by a CHOSEN numerical relaxation timescale `tau_target`,
+# not a real atomistic surface diffusivity -- so "1 model time unit = 1
+# real second" is NOT demonstrated, only assumed (as it has been,
+# implicitly, since M16H). `SECONDS_PER_MODEL_TIME` below makes this
+# assumption an explicit, named, overridable parameter (currently kept at
+# 1.0, preserving existing behavior) rather than leaving it silently
+# buried, per the "fail closed" instruction -- a full resolution would
+# require calibrating M_s/M_eta against a real atomistic mobility, out of
+# scope for this continuation.
+# =============================================================================
+
+SECONDS_PER_MODEL_TIME = 1.0  # UNVALIDATED, see caveat above.
+
+
+def _axisym_weighted_sum(field, r_c):
+    """sum(r_c[None,:]*field) -- proportional to the true axisymmetric
+    volume represented by `field` (the constant 2*pi*dr*dz factor is
+    omitted since callers only ever use RATIOS of these sums, in which
+    that constant cancels)."""
+    return float(np.sum(r_c[None, :] * field))
+
+
+def nucleation_hazard_step(sink: AxisymSink, sigma_s: float, dt: float, hp: HazardParams, rng,
+                            seconds_per_model_time: float = SECONDS_PER_MODEL_TIME) -> bool:
+    """M16K Section 5: NUCLEATION ONLY. Decides whether a NEW sink event
+    nucleates; does nothing if one is already active (an active event's
+    propagation is governed entirely by `active_sink_transport_step`, not
+    by this function). Same Arrhenius first-passage structure as the
+    original `hazard_step` for the nucleation decision itself."""
+    if sink.active:
+        return False
+    if sink.threshold <= 0:
+        sink.threshold = float(rng.exponential())
+    sigma = max(0.0, sigma_s)
+    dt_seconds = dt * seconds_per_model_time
+    sink.r_nuc = (hp.r0 * (hp.b / hp.GS) ** 3 * math.exp(-max(0.0, hp.A0 - sigma * hp.V0) / (hp.kB * hp.T))
+                  if sigma > 0 else 0.0)
+    sink.hazard += sink.r_nuc * dt_seconds
+    if sink.hazard >= sink.threshold:
+        sink.active = True
+        sink.current_disp = 0.0  # delta_event: progress toward this event's own b-quota
+        sink.hazard = 0.0
+        sink.threshold = float(rng.exponential())
+        sink.n_events += 1
+        return True
+    return False
+
+
+def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, sigma_s: float, dt: float, dz: float,
+                                r_c, z, GB_z_hint, seconds_per_model_time: float = SECONDS_PER_MODEL_TIME):
+    """M16K Sections 1-6: propagates an ALREADY-nucleated event by AT MOST
+    one physical timestep's worth of Coble-type diffusional advection,
+    capped so the event's cumulative displacement (`sink.current_disp`,
+    playing the role of `delta_event`) never exceeds one Burgers vector
+    `hp.b`. Uses `sigma_drive=max(sigma_s,0)` (never abs(), never a
+    floor) -- if the local stress has relaxed to <=0, the event PAUSES
+    (v_event=0, sink stays active, no forced completion) rather than
+    stalling forever OR being forced through; a later PF-coarsening-driven
+    stress recovery can resume the same event. Fixes the axisymmetric
+    mass-conservation bug in the excess-mass redistribution (volume-
+    weighted, not a raw unweighted sum).
+
+    Returns (f, e1, e2, completed, diag) where diag is a dict with
+    requested_d_delta, measured_COM_d_delta, delta_event, remaining_to_b,
+    tau_Coble, v_event, sigma_drive, mass_conservation_residual (the
+    fractional excess/deposit volume mismatch this step, should be ~0),
+    e1e2f_residual (max|e1+e2-f| after this step)."""
+    if not sink.active:
+        return f, e1, e2, False, dict(paused=False, active=False)
+
+    sigma_drive = max(0.0, sigma_s)
+    dt_seconds = dt * seconds_per_model_time
+    remaining = max(0.0, hp.b - sink.current_disp)
+
+    if sigma_drive <= 0.0 or remaining <= 0.0:
+        # event PAUSED (Section 6): no forced completion, no advection,
+        # sink stays active so PF coarsening can rebuild positive stress
+        # and let this same event resume later.
+        return f, e1, e2, False, dict(paused=True, active=True, sigma_drive=sigma_drive,
+                                       tau_Coble=math.inf, v_event=0.0, requested_d_delta=0.0,
+                                       measured_COM_d_delta=0.0, delta_event=sink.current_disp,
+                                       remaining_to_b=remaining, mass_conservation_residual=0.0,
+                                       e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))))
+
+    xd = 0.5 * hp.GS / 2
+    tau_Coble = (xd * xd * hp.kB * hp.T) / (sigma_drive * hp.Omega * hp.D_gb) + hp.tau_ex0
+    v_event = hp.b / tau_Coble
+    d_delta_requested = min(v_event * dt_seconds, remaining)
+
+    den = e1 + e2 + 1e-30
+    vz_field = (-v_event) * (e1 / den)  # <=0, same convention as before but driven by v_event, not b/tau_sink directly
+    vmax = float(np.max(np.abs(vz_field)))
+    if vmax < 1e-40:
+        return f, e1, e2, False, dict(paused=True, active=True, sigma_drive=sigma_drive, tau_Coble=tau_Coble,
+                                       v_event=v_event, requested_d_delta=d_delta_requested,
+                                       measured_COM_d_delta=0.0, delta_event=sink.current_disp,
+                                       remaining_to_b=remaining, mass_conservation_residual=0.0,
+                                       e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))))
+
+    n_sub = max(1, math.ceil(dt_seconds * vmax / dz / 0.4))
+    ds = dt_seconds / n_sub
+    com0 = particle_com_z(e1, z, r_c, dz, dz)
+    mass_resid_max = 0.0
+
+    for _ in range(n_sub):
+        v_face = 0.5 * (vz_field + np.roll(vz_field, -1, axis=0))
+        f_face = np.maximum(v_face, 0) * f + np.minimum(v_face, 0) * np.roll(f, -1, axis=0)
+        f = f - ds * (f_face - np.roll(f_face, 1, axis=0)) / dz
+        for arr in (e1, e2):
+            fw = (np.roll(arr, -1, axis=0) - arr) / dz
+            bw = (arr - np.roll(arr, 1, axis=0)) / dz
+            arr -= ds * vz_field * np.where(vz_field >= 0, bw, fw)
+            np.clip(arr, 0.0, 1.0, out=arr)
+        excess = np.maximum(0.0, f - 1.0)
+        f = np.clip(f, 0.0, 1.0)
+        V_excess = _axisym_weighted_sum(excess, r_c)  # FIX: volume-weighted, not raw np.sum
+        if V_excess > 1e-30:
+            surf_weight = 16.0 * f * f * (1.0 - f) ** 2
+            j_gb = int(np.argmin(np.abs(z - GB_z_hint)))
+            sigma_cells = max(3.0, 2.0)
+            gauss = np.exp(-0.5 * ((np.arange(f.shape[0])[:, None] - j_gb) / sigma_cells) ** 2)
+            dep = surf_weight * gauss * np.ones((1, f.shape[1]))
+            V_dep = _axisym_weighted_sum(dep, r_c)  # FIX: volume-weighted, not raw np.sum
+            if V_dep <= 1e-30:
+                dep = surf_weight
+                V_dep = _axisym_weighted_sum(dep, r_c)
+            if V_dep > 1e-30:
+                f = f + dep / V_dep * V_excess
+                mass_resid_max = max(mass_resid_max,
+                                      abs(_axisym_weighted_sum(dep / V_dep * V_excess, r_c) - V_excess) / V_excess)
+
+    com1 = particle_com_z(e1, z, r_c, dz, dz)
+    measured_d = max(0.0, com0 - com1) if math.isfinite(com0) and math.isfinite(com1) else 0.0
+    # hard cap: never let this single call push delta_event past b, even
+    # if the measured advection overshot the requested amount slightly
+    # (Section 3's audit -- report the discrepancy, don't silently absorb it)
+    applied_d = min(measured_d, remaining)
+    sink.current_disp += applied_d
+    sink.cumulative_disp += applied_d
+
+    completed = False
+    if sink.current_disp >= hp.b - 1e-15:
+        sink.active = False
+        sink.current_disp = 0.0
+        sink.hazard = 0.0
+        completed = True
+
+    diag = dict(paused=False, active=sink.active, sigma_drive=sigma_drive, tau_Coble=tau_Coble, v_event=v_event,
+                requested_d_delta=d_delta_requested, measured_COM_d_delta=measured_d, applied_d_delta=applied_d,
+                delta_event=(0.0 if completed else sink.current_disp), remaining_to_b=max(0.0, hp.b - sink.current_disp),
+                mass_conservation_residual=mass_resid_max, e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))),
+                completed=completed)
+    return f, e1, e2, completed, diag
