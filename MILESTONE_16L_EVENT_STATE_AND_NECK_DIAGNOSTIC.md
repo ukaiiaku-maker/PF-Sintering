@@ -1,6 +1,6 @@
 # Milestone 16L — One-b Event State Machine, RBM Remap, and Robust Neck-Stress Measurement
 
-## Status: The central finding of this milestone is a previously-undetected GRAIN-IDENTITY MISMATCH between the M16J geometry construction and the RBM/transport module — the entire M16K finite-hazard investigation advected/measured the SUBSTRATE, not the particle. Found via exactly the disciplined microtest process Section 6 prescribed, fixed, and verified. The one-b state machine is now proven correct by direct unit test. An integrated one-event run with the corrected physics is in progress / reported below.
+## Status: The central finding of this milestone is a previously-undetected GRAIN-IDENTITY MISMATCH between the M16J geometry construction and the RBM/transport module — the entire M16K finite-hazard investigation advected/measured the SUBSTRATE, not the particle. Found via exactly the disciplined microtest process Section 6 prescribed, root-caused, and fixed. The one-b state machine is proven correct by direct unit test. **With the corrected grain physics, the integrated one-event run genuinely demonstrated the full nucleate → transport → complete (`delta_event=b`) → sink OFF → hazard rearmed → stress reload cycle for the first time in the M16H-M16L lineage** — the event completed in 213 PF steps (0.0104 time-units), mass conservation held to floating-point precision, and stress resumed climbing immediately afterward with no artifact. The full curvature-consensus-gate architecture (Sections 10-12) was not built this session — flagged as the top remaining gap. Per the explicit stop gate, the video/multi-event campaign was **not** started.
 
 ---
 
@@ -114,11 +114,22 @@ Unchanged from the M16K continuation's finding: `SECONDS_PER_MODEL_TIME=1.0` rem
 
 ## 12. Short integrated one-event result (Section 19-20)
 
-*[Filled in once the corrected run completes — see below.]*
+`scripts/m16l_first_event_qualification.py --t-target 8.0 --n-samples 160`, same frozen geometry and hazard calibration as every prior run (`V0=12.5·b³`, `A0=0.859eV`, `random_seed=0`). Wall time: 1404s (23.4 minutes) — most of it the deterministic pre-activation buildup phase, common to every prior M16K/M16L run.
+
+**Activation**: `step=90490, t=4.4185, sigma=45.122 MPa` — exact match to every prior run (confirms the grain-identity fix does not touch pre-activation determinism, as expected — it only changes the transport code path, which never executes before nucleation).
+
+**Event evolution** (`event_dense_history.csv`, 213 rows, one per PF step from `step=90491` to `step=90703`):
+- `delta_event` rose smoothly from `~0` to `b=0.25nm` over exactly 213 PF steps — **`0.0104` model-time-units**, i.e. ~24× shorter than the 0.05-time-unit diagnostic sampling interval, meaning the *entire* event happened between two consecutive diagnostic samples and would have been invisible to `history.csv` alone (the dense per-step log was essential).
+- **`requested_d_delta` and `measured_relative_d_delta` agree closely at every one of the 213 steps** (e.g. step 90491: requested `2.2907e-12 m`, measured relative `2.2961e-12 m` — sub-1%-level agreement; not exact, consistent with the Section 4 microtest's own ~9% residual-gap caveat, but far tighter than any discrepancy that would call the mechanism into question).
+- `sigma_Hussein` **did not collapse** — it *rose* throughout the event, from `45.12 MPa` (activation) to `47.79 MPa` (the last active-window sample) — driven by the ordinary PF coarsening trend that was already pushing `sigma` upward pre-activation, essentially undisturbed by the geometrically negligible RBM motion (consistent with Section 4's prediction).
+- `tau_Coble` stayed in the `5.0-5.3ms` range throughout (never diverged toward the M16K "self-limiting" behavior, since `sigma_drive` never approached zero).
+- **Mass conservation**: `mass_conservation_residual` max `4.4e-16` — floating-point noise. **`e1e2f_residual`** max `9.2e-4` — small, and notably ~20× smaller than the wrong-grain M16K run's peak (`0.020`), consistent with this being a far gentler, more physically well-behaved event.
+
+**Completion and aftermath**: `*** EVENT COMPLETE at step=90703 t=4.4289 RBM_disp=0.2500nm ***` — `sink.current_disp` reached exactly `b` (`0.2499991...nm`, matching to 6 significant figures), `sink.active` immediately became `False`, `sink.hazard` reset to `0`. The run continued for the required post-event relaxation window (`n_steps_total//20` steps, ~0.4 time-units): `sink=inactive` throughout, `hazard` re-accumulating smoothly from `0` (`0.0037` at `t=4.45` → `0.067` by `t=4.8`, i.e. genuinely rearmed and integrating again, not stuck), and **`sigma_Hussein` continued climbing past the completion point** (`48.7 → 49.4 → 49.8 → 50.1 → 50.3 → 50.5 → 50.7 → 50.9 MPa` from `t=4.45` to `t=4.8`) — a clean, uninterrupted **stress-reloading** phase, exactly as Section 20's acceptance criteria require. Overall run `mass_drift` stayed at `8.88e-6` (0.00089%) throughout the post-event window.
 
 ## 13. Whether an actual `delta_event == b → sink OFF` transition was demonstrated
 
-*[Filled in below.]*
+**Yes — unambiguously, for the first time in the M16H-M16L lineage.** `delta_event` reached exactly `b`, `completed=True` fired exactly once, `sink.active` transitioned to `False` immediately (not after further steps, not via a stall-and-drift), `hazard` was rearmed and resumed integrating from a clean `0`, and `sigma_Hussein` resumed its natural rising trend afterward with no discontinuity or artifact. This satisfies every criterion in Section 20's acceptance list: nucleation in the intended tens-of-MPa range; `0≤delta_event≤b` at all times; the final increment clipped exactly to `remaining_to_b`; `sink.active→False` immediately upon completion; `completed=True` exactly once; zero further RBM until the next nucleation; `requested_d_delta` agreeing with `measured_relative_d_delta`; mass conserved to numerical tolerance; and a smooth post-event reload. The full nucleate → transport → complete → sink-OFF → hazard-rearmed → reload cycle is genuinely demonstrated.
 
 ## 14. Remaining limitations
 
