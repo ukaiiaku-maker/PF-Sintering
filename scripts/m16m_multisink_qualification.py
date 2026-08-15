@@ -311,8 +311,7 @@ def main(max_wall_hours=6.0, t_target_cap=2000.0, n_samples=4000, diag_every_con
                     print(stop_reason)
 
             if do_diag or newly_completed:
-                event_dense_writer.write(dict(step=step, time=t, sigma_Hussein_MPa=sigma_now / 1e6,
-                                               n_active=len(active_events), **tdiag))
+                event_dense_writer.write(dict(step=step, time=t, sigma_Hussein_MPa=sigma_now / 1e6, **tdiag))
 
             for eid in newly_completed:
                 ev = next(e for e in events if e.event_id == eid)
