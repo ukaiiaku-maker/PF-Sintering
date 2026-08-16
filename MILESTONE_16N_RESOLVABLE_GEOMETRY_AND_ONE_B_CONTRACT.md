@@ -1,6 +1,6 @@
 # M16N — Resolvable Geometry + Correct One-b Event Contract
 
-**Status: Sections A, C, F, G, H complete. Section D found a significant, unexpected result requiring attention before proceeding (see below). Per the explicit stop gate, this report stops before Sections I (barrier recalibration) and J (Poisson sequential events) — no barrier recalibration or multi-event run has been started.**
+**Status: Sections A, C, F, G, H all complete (H confirmed by both an initial pass and a corrected rerun). Section D found a significant, unexpected result requiring attention before proceeding (see below). Per the explicit stop gate, this report stops before Sections I (barrier recalibration) and J (Poisson sequential events) — no barrier recalibration or multi-event run has been started.**
 
 **Headline finding from Section D: for the new, properly-resolved geometry, sink-OFF sintering stress is DECREASING under capillary relaxation, not loading toward 50MPa.** `ratio=0.185` (initial `sigma_sharp=35.6MPa`) declined smoothly and monotonically to `30.9MPa` by `t=0.325` (a decelerating but still-declining trend, `r_neck` growing 26.2→29.9nm — the neck is blunting, not sharpening). This is the physically-expected direction for ordinary surface-diffusion-driven capillary relaxation (which generally reduces curvature/stress over time), and is the OPPOSITE of the trend the old, unresolved `rho=6.87nm` geometry appeared to show (`sigma` climbing from ~19.5MPa toward ~50MPa over `t=0-8`) throughout the entire M16H-M16M lineage. This raises the possibility that the "loading" narrative built into this project's hazard framework was, at least in part, an artifact of measuring an under-resolved feature with a window/tracker setup that happened to drift in a particular direction as the (poorly-measured) geometry evolved — not necessarily genuine physical stress accumulation. This is flagged prominently rather than pursued further this pass (see Section D below and Remaining limitations).
 
@@ -114,13 +114,22 @@ Both functions' docstrings and diag dicts were updated accordingly (`delta_sink_
 
 **This means the earlier blowup does NOT simply reproduce from "the pre-event `dt` is unstable immediately after the RBM remap"** — even 8x finer than production `dt`, stability holds well past where the real blowup occurred.
 
-**Important caveat (now addressed with a corrected rerun)**: this first pass used a hardcoded `GB_z_hint=0.0` for the excess-mass redistribution rather than the real driver's tracker-derived `z_gb` (~3.58nm at this state) — since the redistribution's Gaussian deposit is centered on this hint, the reconstructed post-event field state may not have been bit-identical to what the real legacy-control run produced. The uncorrected results are preserved in `runs/m16n_post_event_blowup_diagnostic_zgb0_uncorrected/`; a corrected rerun with the proper `z_gb=3.581363283165118e-9` hint was launched and results will be appended once available.
+**Caveat addressed — corrected rerun confirms the same conclusion.** The first pass used a hardcoded `GB_z_hint=0.0`; a corrected rerun with the real tracker-derived `z_gb=3.581363283165118e-9` produced essentially IDENTICAL results (uncorrected results preserved in `runs/m16n_post_event_blowup_diagnostic_zgb0_uncorrected/`):
+
+| dt | first_nonfinite (corrected) | final mass_drift (corrected) | final max\|mu\| (corrected) |
+|---|---|---:|---:|
+| dt_base | none | -1.14e-15 | 2.504e+10 |
+| dt_base/2 | none | -6.85e-16 | 2.525e+10 |
+| dt_base/4 | none | -2.97e-15 | 2.535e+10 |
+| dt_base/8 | none | -4.34e-15 | 2.540e+10 |
+
+**All four dt values are STABLE through the full matched interval in BOTH the uncorrected and corrected reconstructions.** This closes the caveat: the `GB_z_hint` choice does not change the conclusion. **The earlier legacy-control run's blowup is NOT explained by "the pre-event dt becomes unstable immediately after the RBM remap"** — a clean, isolated PF-only reconstruction of the post-event state remains numerically stable at the production dt (and 8x finer) for at least 0.5 time units past event completion, well beyond the ~0.446-time-unit interval where the real run failed. The real blowup must therefore originate from something specific to the FULL production driver's operation beyond pure PF stepping from this state — candidates not yet investigated: interaction with the continuously-running Poisson/hazard bookkeeping, the path-continuous tracker's accumulated internal state across many more calls than this microtest exercises, or some other difference between this isolated reconstruction and the real driver's full per-step sequence of operations. Root-causing the actual blowup remains open.
 
 ## Remaining limitations / next steps (per the stop gate)
 
 - **Central open question (Section D)**: does the properly-resolved geometry genuinely fail to load toward 45-50MPa under pure sink-off relaxation, or would it eventually turn around and load after an initial blunting transient, or over a longer time than was practical to run this session? Only ~0.325 time units were observed (vs the old geometry's full `t=0-8` trajectory); the decline was decelerating but not yet plateaued. `ratio=0.200`/`0.215` were not run long enough to compare trends. This is the single most consequential open item — it determines whether this geometry family can support the project's existing ~45-50MPa physical target at all, or whether a different geometry, mechanism, or target stress needs to be reconsidered.
 - Section E (energy-vs-local stress comparison for the new candidate, and energy-method analytic validation) was not completed — blocked on first establishing a reference state from Section D.
-- Section H's `GB_z_hint`-corrected rerun was launched but not complete at the time of writing.
+- **Section H's real blowup cause remains unidentified**: dt-refinement (up to 8x finer) does not reproduce or explain it, ruling out the simplest hypothesis. The actual cause requires comparing the isolated microtest against the full production driver's operation more directly (e.g. instrumenting the real driver to save state incrementally through the blowup window, rather than reconstructing a simplified proxy).
 - Sections I (barrier recalibration) and J (Poisson sequential events) were explicitly NOT started, per the stop gate.
 
 ## Recommendation
