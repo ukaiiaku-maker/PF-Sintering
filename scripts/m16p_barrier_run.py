@@ -140,7 +140,7 @@ def operative_sigma(f, r_c, z, tracker, W_for_tracker_step):
     tr = tracker.step(R_of_z, z, W_for_tracker_step)
     if tr["selected_contact"] is None:
         z_gb = tracker.prev_z_gb if tracker.prev_z_gb is not None else 0.0
-        return 0.0, R_of_z, z_gb, float("nan")
+        return 0.0, R_of_z, z_gb, float("nan"), float("nan")
     z_gb, a = tr["selected_contact"]
     win = neck_curvature_windows(R_of_z, z, z_gb, 1e-9, window_widths_in_W=(TRACK_WINDOW_NM,))[0]
     r_neck = win["r_neck"]
@@ -148,7 +148,7 @@ def operative_sigma(f, r_c, z, tracker, W_for_tracker_step):
         sigma_H, *_ = hussein_eq1b_sigma(r_neck, 2 * a, GAMMA_S, GAMMA_GB)
     else:
         sigma_H = 0.0
-    return (sigma_H if np.isfinite(sigma_H) else 0.0), R_of_z, z_gb, a
+    return (sigma_H if np.isfinite(sigma_H) else 0.0), R_of_z, z_gb, a, r_neck
 
 
 def save_frame(png_path, f, particle, substrate, z, r_c, z_gb, a_contact, t, sigma_MPa, n_active, n_completed,
@@ -264,7 +264,7 @@ def main(chi, ratio, mode, a0_ev, w_nm=6.0, dx_nm=0.85, t_target_cap=2.0, n_samp
                 break
 
         t = step * dt
-        sigma_now, R_of_z, z_gb, a_contact = operative_sigma(f, r_c, z, tracker, W)
+        sigma_now, R_of_z, z_gb, a_contact, r_neck_now = operative_sigma(f, r_c, z, tracker, W)
 
         do_diag = (step % diag_every == 0)
 
@@ -346,6 +346,7 @@ def main(chi, ratio, mode, a0_ev, w_nm=6.0, dx_nm=0.85, t_target_cap=2.0, n_samp
         if do_diag:
             row = dict(step=step, time=t, sigma_MPa=sigma_now / 1e6, a_contact_nm=a_contact * 1e9 if np.isfinite(a_contact) else float("nan"),
                        X_neck_nm=2 * a_contact * 1e9 if np.isfinite(a_contact) else float("nan"),
+                       r_neck_nm=r_neck_now * 1e9 if np.isfinite(r_neck_now) else float("nan"),
                        N_active=n_active, N_born=n_born, N_completed=n_completed,
                        cumulative_delta_sink_nm=cumulative_delta_sink * 1e9,
                        cumulative_delta_sink_over_b=cumulative_delta_sink / B,
