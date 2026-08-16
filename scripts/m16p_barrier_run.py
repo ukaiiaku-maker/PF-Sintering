@@ -134,6 +134,35 @@ class IncrementalWriter:
             self._fh = None
 
 
+def _refine_zgb_subgrid(R_of_z, z, z_gb_discrete):
+    """M16P sub-grid fix: `find_all_extrema`/`NeckTracker` only ever
+    compare DISCRETE grid points -- for this chi=1.5 geometry's very
+    tight neck (r_neck~13-15nm, only ~16-18 grid cells at dx=0.85nm),
+    a shallow/near-degenerate minimum can occasionally have its EXACT
+    grid-cell location hop by one full grid spacing between consecutive
+    PF steps even though the underlying continuous profile is evolving
+    smoothly -- a real, isolated (n_candidates=1 throughout, NOT a
+    multi-candidate tracker-switch) but previously undiagnosed artifact,
+    verified via a direct instrumented replay to cause discontinuous
+    ~20MPa sigma jumps with NO active sink event to explain them
+    physically. Fixed with a standard 3-point quadratic (parabolic)
+    sub-grid interpolation around the discrete minimum, clipped to +/-1
+    grid cell for safety. Verified this eliminates the jump entirely
+    (smooth sigma before/after, matching the surrounding trend) in the
+    exact case that exposed it."""
+    j = int(np.argmin(np.abs(z - z_gb_discrete)))
+    if j <= 0 or j >= len(z) - 1:
+        return z_gb_discrete
+    y0, y1, y2 = R_of_z[j - 1], R_of_z[j], R_of_z[j + 1]
+    denom = y0 - 2 * y1 + y2
+    if abs(denom) < 1e-30:
+        return z_gb_discrete
+    dz_grid = z[1] - z[0]
+    offset = 0.5 * (y0 - y2) / denom
+    offset = max(-1.0, min(1.0, offset))
+    return z[j] + offset * dz_grid
+
+
 def operative_sigma(f, r_c, z, tracker, W_for_tracker_step):
     from pf_sintering.hussein_neck_stress import neck_curvature_windows
     R_of_z = measure_R_of_z(f, r_c)
@@ -141,7 +170,8 @@ def operative_sigma(f, r_c, z, tracker, W_for_tracker_step):
     if tr["selected_contact"] is None:
         z_gb = tracker.prev_z_gb if tracker.prev_z_gb is not None else 0.0
         return 0.0, R_of_z, z_gb, float("nan"), float("nan")
-    z_gb, a = tr["selected_contact"]
+    z_gb_discrete, a = tr["selected_contact"]
+    z_gb = _refine_zgb_subgrid(R_of_z, z, z_gb_discrete)
     win = neck_curvature_windows(R_of_z, z, z_gb, 1e-9, window_widths_in_W=(TRACK_WINDOW_NM,))[0]
     r_neck = win["r_neck"]
     if np.isfinite(r_neck) and r_neck > 0:
