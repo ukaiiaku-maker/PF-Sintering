@@ -2,7 +2,7 @@
 
 **Status: Sections A, C, F, G, H all complete (H confirmed by both an initial pass and a corrected rerun). Section D found a significant, unexpected result requiring attention before proceeding (see below). Per the explicit stop gate, this report stops before Sections I (barrier recalibration) and J (Poisson sequential events) — no barrier recalibration or multi-event run has been started.**
 
-**Headline finding from Section D: for the new, properly-resolved geometry, sink-OFF sintering stress is DECREASING under capillary relaxation, not loading toward 50MPa.** `ratio=0.185` (initial `sigma_sharp=35.6MPa`) declined smoothly and monotonically to `30.9MPa` by `t=0.325` (a decelerating but still-declining trend, `r_neck` growing 26.2→29.9nm — the neck is blunting, not sharpening). This is the physically-expected direction for ordinary surface-diffusion-driven capillary relaxation (which generally reduces curvature/stress over time), and is the OPPOSITE of the trend the old, unresolved `rho=6.87nm` geometry appeared to show (`sigma` climbing from ~19.5MPa toward ~50MPa over `t=0-8`) throughout the entire M16H-M16M lineage. This raises the possibility that the "loading" narrative built into this project's hazard framework was, at least in part, an artifact of measuring an under-resolved feature with a window/tracker setup that happened to drift in a particular direction as the (poorly-measured) geometry evolved — not necessarily genuine physical stress accumulation. This is flagged prominently rather than pursued further this pass (see Section D below and Remaining limitations).
+**Headline finding from Section D: for the new, properly-resolved geometry, sink-OFF sintering stress is DECREASING under capillary relaxation over a full time unit, not loading toward 50MPa.** `ratio=0.185` (initial `sigma_sharp=35.6MPa`) declined smoothly and monotonically to `27.6MPa` over the COMPLETE `t=0-1.0` run (a decelerating but still-negative trend at the end, `r_neck` growing 26.2→33.1nm — the neck steadily blunting, not sharpening). This is the physically-expected direction for ordinary surface-diffusion-driven capillary relaxation (which generally reduces curvature/stress over time), and is the OPPOSITE of the trend the old, unresolved `rho=6.87nm` geometry appeared to show (`sigma` climbing from ~19.5MPa toward ~50MPa over `t=0-8`) throughout the entire M16H-M16M lineage. This raises the possibility that the "loading" narrative built into this project's hazard framework was, at least in part, an artifact of measuring an under-resolved feature with a window/tracker setup that happened to drift in a particular direction as the (poorly-measured) geometry evolved — not necessarily genuine physical stress accumulation. This is flagged prominently rather than pursued further this pass (see Section D below and Remaining limitations).
 
 ## A. Analytic geometry scan (no PF)
 
@@ -54,20 +54,25 @@ Selected 3 candidates spanning the qualified band for Section C/D screening: `ra
 
 **Cost note**: the larger `a` (185-215nm vs the old geometry's 100nm) roughly doubles the domain size (`Nz=597, Nr=738` vs `248x413` for `ratio=0.200`), making each short screen substantially more expensive than the M16M continuation's window-convergence runs (~85-130s per 0.025-time-unit sample vs ~8s previously). A full `t_target=8` run (matching the historical W=10 archive) was not practical within this session.
 
-**Result (`ratio=0.185`, `W=6nm`, `dx=0.85nm`, `t=0` to `0.325`, 14 samples):**
+**Result (`ratio=0.185`, `W=6nm`, `dx=0.85nm`, `t=0` to `1.0` -- COMPLETE run, 40 samples, `runs/m16n_sinkoff_screen/ratio0.185_W6dx0.85.csv`):**
 
 | t | X_neck (nm) | r_neck (nm) | sigma (MPa) | n_candidates |
 |---:|---:|---:|---:|---:|
 | 0.000 | 372.99 | 26.17 | 35.58 | 1 |
-| 0.050 | 374.43 | 27.16 | 34.19 | 6 |
 | 0.100 | 374.81 | 27.81 | 33.33 | 4 |
-| 0.150 | 375.08 | 28.36 | 32.64 | 4 |
 | 0.200 | 375.24 | 28.85 | 32.04 | 4 |
-| 0.250 | 375.34 | 29.29 | 31.52 | 5 |
-| 0.300 | 375.40 | 29.69 | 31.06 | 6 |
-| 0.325 | 375.43 | 29.87 | 30.86 | 5 |
+| 0.300 | 375.40 | 29.68 | 31.06 | 6 |
+| 0.400 | 375.49 | 30.36 | 30.31 | 6 |
+| 0.500 | 375.55 | 30.94 | 29.70 | 5 |
+| 0.600 | 375.62 | 31.44 | 29.18 | 7 |
+| 0.700 | 375.68 | 31.90 | 28.73 | 8 |
+| 0.800 | 375.74 | 32.32 | 28.32 | 8 |
+| 0.900 | 375.79 | 32.72 | 27.94 | 5 |
+| 1.000 | 375.85 | 33.08 | 27.61 | 4 |
 
-**`sigma` declines smoothly and monotonically (35.6→30.9MPa, -13.6% over `t=0-0.325`), while `r_neck` grows (26.2→29.9nm, the neck BLUNTING, not sharpening).** The decline rate is decelerating (successive drops: -1.39, -0.86, -0.69, -0.60, -0.52, -0.46, -0.20MPa per 0.05-time-unit step) but had not yet visibly plateaued within the window run. This is the OPPOSITE direction from Section B's target ("sink-OFF capillary evolution should be capable of sharpening the neck toward ~18-20nm / ~45-50MPa") and from the qualitative trend the OLD, unresolved geometry appeared to show throughout M16H-M16M.
+**`sigma` declines smoothly and monotonically over the ENTIRE run, 35.6→27.6MPa (-22.5% over `t=0-1.0`), while `r_neck` grows (26.2→33.1nm, the neck steadily BLUNTING, not sharpening).** The decline rate decelerates throughout (per-0.025-step drops shrink from ~-0.9MPa near `t=0` to ~-0.08MPa by `t=1.0`) but had NOT reached a firm plateau by the end of the run — still declining, just more slowly. `n_candidates` grew to as many as 9 simultaneous local minima during the run (the path-continuous tracker handled this without erratic jumps in the reported trajectory, but this is a real, worsening ambiguity flagged by Section D's own reject criteria). This is the OPPOSITE direction from Section B's target ("sink-OFF capillary evolution should be capable of sharpening the neck toward ~18-20nm / ~45-50MPa") and from the qualitative trend the OLD, unresolved geometry appeared to show throughout M16H-M16M.
+
+**This is now a robust, complete-run finding, not a short transient**: over a full time unit, with a decelerating-but-still-negative slope and no sign of reversal, the most defensible extrapolation is that this geometry approaches some plateau stress somewhat below 27.6MPa (or continues declining slowly) — not that it turns around and climbs toward 45-50MPa. Reaching a firm asymptote, or ruling out an eventual turnaround, would require substantially more wall-clock time than was practical this session (the observed rate implies many further time units at a cost of ~3200s each).
 
 An additional Section D reject criterion is also triggered: the tracker sees 4-6 simultaneous candidate minima from `t=0.05` onward (`n_candidates` column) — the path-continuous selection handles this without erratic jumping (the trajectory above is smooth), but per Section D's own explicit list ("Reject cases showing: ... tracker switching"), this candidate does not cleanly qualify on that criterion either.
 
@@ -127,7 +132,7 @@ Both functions' docstrings and diag dicts were updated accordingly (`delta_sink_
 
 ## Remaining limitations / next steps (per the stop gate)
 
-- **Central open question (Section D)**: does the properly-resolved geometry genuinely fail to load toward 45-50MPa under pure sink-off relaxation, or would it eventually turn around and load after an initial blunting transient, or over a longer time than was practical to run this session? Only ~0.325 time units were observed (vs the old geometry's full `t=0-8` trajectory); the decline was decelerating but not yet plateaued. `ratio=0.200`/`0.215` were not run long enough to compare trends. This is the single most consequential open item — it determines whether this geometry family can support the project's existing ~45-50MPa physical target at all, or whether a different geometry, mechanism, or target stress needs to be reconsidered.
+- **Central open question (Section D)**: does the properly-resolved geometry genuinely fail to load toward 45-50MPa under pure sink-off relaxation, or would it eventually turn around and load after a longer blunting transient than the full `t=0-1.0` unit observed (vs the old geometry's full `t=0-8` trajectory)? The decline was still decelerating-but-negative at `t=1.0`, with no turnaround visible. `ratio=0.200`/`0.215` were only probed very briefly (both also declining, consistent with `0.185`) and not run long enough for a full comparison. This is the single most consequential open item — it determines whether this geometry family can support the project's existing ~45-50MPa physical target at all, or whether a different geometry, mechanism, or target stress needs to be reconsidered.
 - Section E (energy-vs-local stress comparison for the new candidate, and energy-method analytic validation) was not completed — blocked on first establishing a reference state from Section D.
 - **Section H's real blowup cause remains unidentified**: dt-refinement (up to 8x finer) does not reproduce or explain it, ruling out the simplest hypothesis. The actual cause requires comparing the isolated microtest against the full production driver's operation more directly (e.g. instrumenting the real driver to save state incrementally through the blowup window, rather than reconstructing a simplified proxy).
 - Sections I (barrier recalibration) and J (Poisson sequential events) were explicitly NOT started, per the stop gate.
