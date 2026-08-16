@@ -43,9 +43,15 @@ target stress = 72MPa, reached deterministically at t=0.03
 H(t_target) = 0.693146  (ln(2) = 0.693147, matches to 6 significant figures)
 ```
 
-This satisfies the essential requirement (`sigma_initial < typical nucleation stress < natural sink-OFF ceiling`) so the system visibly loads (`t=0 to t~0.03`, `sigma: 69.6->72.0MPa`) before the median nucleation event, without exceeding the (extrapolated) reachable ceiling. Not repeatedly retuned; frozen for Run A and Run C (the finite-barrier controls) per the explicit "one recalibration, then freeze" instruction.
+This satisfies the essential requirement (`sigma_initial < typical nucleation stress < natural sink-OFF ceiling`) so the system visibly loads (`t=0 to t~0.03`, `sigma: 69.6->72.0MPa`) before the median nucleation event, without exceeding the reachable ceiling (subsequently confirmed at ~73.8MPa, Section 4 above). Not repeatedly retuned; frozen for Run A and Run C (the finite-barrier controls) per the explicit "one recalibration, then freeze" instruction.
 
-**Pending** completion of Section 4's extended trajectory -- the target cannot be responsibly chosen before the natural ceiling is known (per the explicit "do NOT choose a target above the reachable deterministic ceiling" instruction).
+## Discrete-grid neck-position artifact (found and fixed during Run A)
+
+Run A's first launch produced a genuine correctness anomaly requiring investigation before trusting further results, per Section 31's explicit fail-closed instruction: after the first birth/completion (a real, large single-event relaxation, `sigma: 72.00MPa -> ~46-48MPa` -- see below), the reported `sigma(t)` showed a discontinuous **+20MPa jump within a single PF step, with `N_active=0`** (no sink activity active to explain it physically).
+
+**Root cause** (verified via a direct instrumented replay, `scripts/m16p_barrier_run.py`'s `operative_sigma`/`NeckTracker` reproduced step-by-step): `n_candidates=1` throughout the jump (NOT the previously-documented M16K/M16M multi-candidate tracker-switching artifact) -- instead, the DISCRETE grid-cell location of a single, genuine physical R(z) minimum hopped by exactly one grid spacing (`dz=0.85nm`) between two consecutive PF steps, because `find_all_extrema`/`NeckTracker` only ever compare discrete grid points, with no sub-grid interpolation. This `chi=1.5` geometry's very tight neck (`r_neck~13-15nm`, only ~16-18 grid cells at `dx=0.85nm`) makes the minimum shallow/near-degenerate at grid resolution -- a genuinely new numerical regime relative to the gentler necks explored in M16H-M16O.
+
+**Fix**: added a standard 3-point quadratic (parabolic) sub-grid interpolation around the discrete minimum (clipped to +/-1 grid cell for safety), applied to both the curvature-window evaluation and the `GB_z_hint` fed back into the RBM excess-mass redistribution. Verified via a second instrumented replay: completely eliminates the jump in the exact case that exposed it (smooth, continuous `sigma` before/after/through the region that previously jumped). Run A relaunched with the fix.
 
 ## Remaining sections (8-34)
 
