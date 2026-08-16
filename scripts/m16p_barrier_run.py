@@ -240,7 +240,7 @@ def main(chi, ratio, mode, a0_ev, w_nm=6.0, dx_nm=0.85, t_target_cap=2.0, n_samp
     prev_sigma_for_deriv = None
     prev_t_for_deriv = None
 
-    def maybe_save_frame(step, t, sigma_now, n_active, force=False, flush_buffer=False):
+    def maybe_save_frame(step, t, sigma_now, n_active, z_gb_now, a_contact_now, force=False, flush_buffer=False):
         nonlocal last_frame_step
         if not save_frames:
             return
@@ -249,11 +249,7 @@ def main(chi, ratio, mode, a0_ev, w_nm=6.0, dx_nm=0.85, t_target_cap=2.0, n_samp
             return
         last_frame_step = step
         png_path = os.path.join(frames_dir, f"frame_{frame_idx[0]:05d}.png")
-        R_of_z = measure_R_of_z(f, r_c)
-        tr = tracker.prev_z_gb
-        a_contact = float("nan")
-        z_gb_show = tr if tr is not None else float("nan")
-        save_frame(png_path, f, particle, substrate, z, r_c, z_gb_show, a_contact, t, sigma_now / 1e6,
+        save_frame(png_path, f, particle, substrate, z, r_c, z_gb_now, a_contact_now, t, sigma_now / 1e6,
                    n_active, n_completed, cumulative_delta_sink / B, r_max_plot_nm, z_range_plot_nm)
         frame_idx[0] += 1
 
@@ -342,9 +338,10 @@ def main(chi, ratio, mode, a0_ev, w_nm=6.0, dx_nm=0.85, t_target_cap=2.0, n_samp
         # flush (save) the buffered ones the moment a transient begins
         pre_buffer.append((step, t, sigma_now, n_active))
         if in_transient and save_frames:
-            maybe_save_frame(step, t, sigma_now, n_active, force=(n_born > 0 and step - last_frame_step > 5))
+            maybe_save_frame(step, t, sigma_now, n_active, z_gb, a_contact,
+                              force=(n_born > 0 and step - last_frame_step > 5))
         elif do_diag:
-            maybe_save_frame(step, t, sigma_now, n_active)
+            maybe_save_frame(step, t, sigma_now, n_active, z_gb, a_contact)
 
         if do_diag:
             row = dict(step=step, time=t, sigma_MPa=sigma_now / 1e6, a_contact_nm=a_contact * 1e9 if np.isfinite(a_contact) else float("nan"),
