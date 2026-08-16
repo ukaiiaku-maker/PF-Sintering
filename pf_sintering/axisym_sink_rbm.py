@@ -336,12 +336,31 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
     (which would silently absorb any spurious substrate drift from the
     shared advection velocity field near the neck).
 
+    M16N Section F correction: the event's progress quota
+    (`sink.current_disp`, `delta_event`) is now driven by `delta_sink`
+    (== `d_delta_requested`, the analytic Coble-rate quantity the field
+    was ACTUALLY advected by this step -- deterministic, monotonic,
+    never gated on how the mesoscale morphology happens to respond) --
+    NOT by `delta_COM` (`measured_relative_d_delta`, the measured
+    particle-relative-substrate COM response), which is retained purely
+    as a diagnostic output. Previously `sink.current_disp` accumulated
+    `applied_d = min(measured_relative_d, remaining)`, conflating the
+    microscopic sink-transport quota with a mesoscale response
+    diagnostic that a full-lifetime audit showed smoothly declines from
+    ~1.0x to ~0.47x the requested amount over an event's lifetime (a
+    real, reproducible morphology-response effect, not noise or a bug --
+    but the wrong quantity to gate a "one Burgers vector per event"
+    contract on).
+
     Returns (f, e1, e2, completed, diag) where diag is a dict with
-    requested_d_delta, measured_particle_COM_d_delta,
-    measured_substrate_COM_d_delta, measured_relative_d_delta,
-    applied_d_delta (== measured_relative_d_delta, clipped defensively to
-    `remaining`), delta_event, remaining_to_b, tau_Coble, v_event,
-    sigma_drive, mass_conservation_residual, e1e2f_residual."""
+    requested_d_delta (== delta_sink_this_step, what the field was
+    advected by and what the event's quota accumulates),
+    measured_particle_COM_d_delta, measured_substrate_COM_d_delta,
+    delta_COM_this_step (== measured_relative_d_delta, diagnostic only),
+    applied_d_delta (== delta_sink_this_step, kept for backward
+    compatibility with existing readers), delta_event, remaining_to_b,
+    tau_Coble, v_event, sigma_drive, mass_conservation_residual,
+    e1e2f_residual."""
     if not sink.active:
         return f, e1, e2, False, dict(paused=False, active=False)
 
@@ -425,16 +444,28 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
                                                                 math.isfinite(com1_particle)) else 0.0
     measured_substrate_d = (com0_substrate - com1_substrate) if (math.isfinite(com0_substrate) and
                                                                    math.isfinite(com1_substrate)) else 0.0
-    # relative displacement = how much closer the particle got to the
-    # substrate, net of any spurious substrate motion picked up by the
-    # shared advection velocity field near the neck (Section 6/7).
+    # M16N Section F correction: delta_COM (the mesoscale particle-
+    # relative-substrate COM response) is a DIAGNOSTIC OUTPUT describing
+    # how the morphology responded to this step's sink-mediated
+    # advection -- it is NOT the event's progress variable. M16L/M16M's
+    # dense-history audit found delta_COM/d_delta_requested smoothly
+    # declining from ~1.0 to ~0.47 over a single event's lifetime; using
+    # delta_COM to gate completion (the previous `applied_d`/
+    # `sink.current_disp += applied_d` below) meant the field was
+    # ALWAYS advected by exactly `d_delta_requested` (the frac-scaled
+    # substep loop above guarantees this) while the completion counter
+    # silently ran on a DIFFERENT, smaller number -- conflating the
+    # microscopic sink-transport quota with a mesoscale response
+    # diagnostic. Fixed: `delta_sink` (the event's actual quota
+    # variable, `sink.current_disp`) now accumulates `d_delta_requested`
+    # -- the quantity the field was ACTUALLY advected by this step
+    # (already correctly capped so a single event never exceeds `b`) --
+    # and `delta_COM` (measured_relative_d) is reported purely as an
+    # output, never fed back into `sink.current_disp`.
     measured_relative_d = max(0.0, measured_particle_d - measured_substrate_d)
-    # defensive clip only (should already be ~exact after the frac fix
-    # above -- report any residual discrepancy via the diag dict rather
-    # than silently absorbing it):
-    applied_d = min(measured_relative_d, remaining)
-    sink.current_disp += applied_d
-    sink.cumulative_disp += applied_d
+    delta_sink_this_step = d_delta_requested
+    sink.current_disp += delta_sink_this_step
+    sink.cumulative_disp += delta_sink_this_step
 
     completed = False
     if sink.current_disp >= hp.b - 1e-15:
@@ -444,9 +475,11 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
         completed = True
 
     diag = dict(paused=False, active=sink.active, sigma_drive=sigma_drive, tau_Coble=tau_Coble, v_event=v_event,
-                requested_d_delta=d_delta_requested, measured_particle_COM_d_delta=measured_particle_d,
-                measured_substrate_COM_d_delta=measured_substrate_d, measured_relative_d_delta=measured_relative_d,
-                applied_d_delta=applied_d,
+                requested_d_delta=d_delta_requested, delta_sink_this_step=delta_sink_this_step,
+                measured_particle_COM_d_delta=measured_particle_d,
+                measured_substrate_COM_d_delta=measured_substrate_d, delta_COM_this_step=measured_relative_d,
+                measured_relative_d_delta=measured_relative_d,  # kept for backward-compat with existing readers
+                applied_d_delta=delta_sink_this_step,
                 delta_event=(0.0 if completed else sink.current_disp), remaining_to_b=max(0.0, hp.b - sink.current_disp),
                 mass_conservation_residual=mass_resid_max, e1e2f_residual=float(np.max(np.abs(e1 + e2 - f))),
                 completed=completed)

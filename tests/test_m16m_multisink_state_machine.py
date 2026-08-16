@@ -165,6 +165,11 @@ def test_F_active_count_rises_and_falls_without_corrupting_state():
 
 
 def test_G_total_applied_equals_sum_of_per_event_increments():
+    """M16N Section F: each event's delta_sink increment sums to the
+    TOTAL REQUESTED displacement (the deterministic quantity the field
+    was actually advected by), not the measured COM response -- those
+    are now correctly decoupled (delta_sink drives completion,
+    delta_COM/total_measured_relative_dDelta is a separate diagnostic)."""
     f, particle, substrate, r_c, z, dz, z_mid = _synthetic_fields()
     hp = _hazard_params()
     events = [SinkEvent(event_id=k, birth_time=0.0, birth_step=0, birth_sigma=100e6) for k in range(1, 4)]
@@ -172,7 +177,7 @@ def test_G_total_applied_equals_sum_of_per_event_increments():
     f, particle, substrate, completed_ids, diag = multi_sink_transport_step(
         f, particle, substrate, events, hp, 100e6, 1e-4, dz, r_c, z, z_mid)
     sum_increments = sum(e.delta - deltas_before[e.event_id] for e in events)
-    assert sum_increments == pytest.approx(diag["total_measured_relative_dDelta"], rel=1e-9, abs=1e-22)
+    assert sum_increments == pytest.approx(diag["total_requested_dDelta"], rel=1e-9, abs=1e-22)
 
 
 def test_H_no_individual_event_ever_exceeds_b():

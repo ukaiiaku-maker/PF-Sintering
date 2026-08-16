@@ -29,10 +29,15 @@ avalanche/hysteresis/site-interaction physics:
     requested displacements as ONE conservative particle-relative-
     substrate RBM remap per PF step (not one remap per event -- Section
     10 of the handoff explicitly warns against event-ordering-dependent
-    repeated remaps), then distributes the ACTUALLY MEASURED total
-    displacement back to each event's own `delta_j` proportionally to its
-    requested share. A per-event cap at `hp.b` is enforced independently
-    of how many events are simultaneously active (Section 12).
+    repeated remaps). Each event's own `delta_j` (its `delta_sink` quota)
+    accumulates its OWN requested share directly -- the deterministic
+    analytic Coble-rate amount the field was actually advected by (M16N
+    Section F correction: NOT a distribution of the measured COM
+    response, which is a separate mesoscale diagnostic, per the
+    transport-only microtest in M16N Section G showing ordinary capillary
+    relaxation alone moves COM by a comparable amount with zero sink
+    activity). A per-event cap at `hp.b` is enforced independently of how
+    many events are simultaneously active (Section 12).
 
 No event directly interacts with any other event (Section 26): the only
 coupling is through the shared field state and the shared instantaneous
@@ -152,9 +157,9 @@ def multi_sink_transport_step(f, particle, substrate, events: List[SinkEvent], h
                                seconds_per_model_time: float = SECONDS_PER_MODEL_TIME):
     """Section 9-12: propagates ALL currently-active events by one PF
     step's worth of Coble-type diffusional advection, applied as ONE
-    conservative particle-relative-substrate RBM remap (Section 10), then
-    distributes the measured total displacement back to each event
-    proportionally to its own requested share, capping each event
+    conservative particle-relative-substrate RBM remap (Section 10). Each
+    event's own `delta_sink` quota accumulates its OWN requested share
+    directly (M16N Section F correction), capping each event
     independently at `hp.b` (Section 12).
 
     Every active event experiences the SAME instantaneous sigma(t) and
@@ -243,16 +248,20 @@ def multi_sink_transport_step(f, particle, substrate, events: List[SinkEvent], h
     relative_error = (abs(measured_relative_d - total_requested) / total_requested
                        if total_requested > 1e-30 else 0.0)
 
-    # Section 11 gate: distribute the MEASURED total (not the raw request)
-    # back to events, proportional to each event's own requested share --
-    # this is what keeps individual event bookkeeping self-consistent with
-    # what the field actually did, exactly mirroring the single-event
-    # `frac` correction in M16L's `active_sink_transport_step`.
+    # M16N Section F correction (mirrors the single-event fix in
+    # axisym_sink_rbm.active_sink_transport_step): each event's own
+    # `delta` (its `delta_sink` quota) accumulates `requested[e.event_id]`
+    # DIRECTLY -- the deterministic, already-correctly-capped analytic
+    # Coble-rate amount the field was actually advected by this step --
+    # NOT a share of `measured_relative_d` (the mesoscale COM response,
+    # which legitimately differs from the sink-transport request due to
+    # concurrent natural capillary relaxation, per the transport-only
+    # microtest in M16N Section G). `measured_relative_d` remains a
+    # diagnostic output (`total_measured_relative_dDelta` /
+    # `relative_error` below) and is never fed back into `e.delta`.
     newly_completed = []
     for e in active_events:
-        share = requested[e.event_id] / total_requested
-        d_applied = share * measured_relative_d
-        e.delta = min(hp.b, e.delta + d_applied)
+        e.delta = min(hp.b, e.delta + requested[e.event_id])
         if e.delta >= hp.b - 1e-15:
             e.active = False
             newly_completed.append(e.event_id)
