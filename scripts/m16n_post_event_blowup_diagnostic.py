@@ -45,6 +45,7 @@ GS = 201.74e-9
 R0 = 1e12
 T = 1000.0
 SIGMA_FIXED = 45.126e6
+Z_GB_HINT = 3.581363283165118e-9  # the real, path-continuous-tracker z_gb at this exact frozen state (M16M debug)
 T_TARGET = 0.5  # comfortably past the real blowup's ~0.446 post-event interval
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "runs", "m16n_post_event_blowup_diagnostic")
@@ -66,7 +67,7 @@ def build_post_event_state():
     completed = False
     while not completed:
         f, particle, substrate, completed, diag = active_sink_transport_step(
-            f, particle, substrate, sink, hp, SIGMA_FIXED, dt, dz, r_c, z, 0.0)
+            f, particle, substrate, sink, hp, SIGMA_FIXED, dt, dz, r_c, z, Z_GB_HINT)
     return f, particle, substrate
 
 
