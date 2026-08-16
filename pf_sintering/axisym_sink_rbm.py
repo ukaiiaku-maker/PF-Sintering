@@ -420,23 +420,40 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
             bw = (arr - np.roll(arr, 1, axis=0)) / dz
             arr -= ds * vz_field * np.where(vz_field >= 0, bw, fw)
             np.clip(arr, 0.0, 1.0, out=arr)
+        # M16P Section 7 fix: `np.clip(f, 0.0, 1.0)` below clips BOTH
+        # bounds, but only the f>1 side (`excess`) was ever compensated
+        # by the redistribution step -- small negative undershoots from
+        # the upwind advection (a well-known artifact at sharp gradients)
+        # were silently clipped UP to 0, ADDING uncompensated mass every
+        # substep. Root-caused via a direct instrumented replay (see
+        # scripts/m16p_mass_residual_microtest.py): the clip-to->=0 step
+        # alone accounted for the ENTIRE ~8.8e-6 relative mass drift
+        # previously observed per one-b event. Fixed by tracking BOTH
+        # the positive excess (f>1) and the negative deficit (f<0)
+        # BEFORE clipping, and applying ONE combined (excess-minus-
+        # deficit) correction via the same Gaussian-weighted deposit --
+        # not two separate corrections, which could overshoot.
         excess = np.maximum(0.0, f - 1.0)
+        deficit = np.maximum(0.0, -f)
         f = np.clip(f, 0.0, 1.0)
-        V_excess = _axisym_weighted_sum(excess, r_c)  # FIX: volume-weighted, not raw np.sum
-        if V_excess > 1e-30:
+        V_excess = _axisym_weighted_sum(excess, r_c)  # volume-weighted, not raw np.sum
+        V_deficit = _axisym_weighted_sum(deficit, r_c)
+        V_net_correction = V_excess - V_deficit
+        if abs(V_net_correction) > 1e-30:
             surf_weight = 16.0 * f * f * (1.0 - f) ** 2
             j_gb = int(np.argmin(np.abs(z - GB_z_hint)))
             sigma_cells = max(3.0, 2.0)
             gauss = np.exp(-0.5 * ((np.arange(f.shape[0])[:, None] - j_gb) / sigma_cells) ** 2)
             dep = surf_weight * gauss * np.ones((1, f.shape[1]))
-            V_dep = _axisym_weighted_sum(dep, r_c)  # FIX: volume-weighted, not raw np.sum
+            V_dep = _axisym_weighted_sum(dep, r_c)  # volume-weighted, not raw np.sum
             if V_dep <= 1e-30:
                 dep = surf_weight
                 V_dep = _axisym_weighted_sum(dep, r_c)
             if V_dep > 1e-30:
-                f = f + dep / V_dep * V_excess
+                f = f + dep / V_dep * V_net_correction
                 mass_resid_max = max(mass_resid_max,
-                                      abs(_axisym_weighted_sum(dep / V_dep * V_excess, r_c) - V_excess) / V_excess)
+                                      abs(_axisym_weighted_sum(dep / V_dep * V_net_correction, r_c)
+                                          - V_net_correction) / max(V_excess, V_deficit, 1e-30))
 
     com1_particle = particle_com_z(e1, z, r_c, dz, dz)
     com1_substrate = particle_com_z(e2, z, r_c, dz, dz)

@@ -220,10 +220,18 @@ def multi_sink_transport_step(f, particle, substrate, events: List[SinkEvent], h
             bw = (arr - np.roll(arr, 1, axis=0)) / dz
             arr -= ds * vz_field * np.where(vz_field >= 0, bw, fw)
             np.clip(arr, 0.0, 1.0, out=arr)
+        # M16P Section 7 fix (mirrors axisym_sink_rbm.active_sink_transport_step):
+        # track both the f>1 excess AND the f<0 deficit before clipping,
+        # and apply one combined (excess-minus-deficit) correction -- the
+        # uncompensated negative-clip was previously the entire source of
+        # the ~8.8e-6 relative per-event mass residual.
         excess = np.maximum(0.0, f - 1.0)
+        deficit = np.maximum(0.0, -f)
         f = np.clip(f, 0.0, 1.0)
         V_excess = _axisym_weighted_sum(excess, r_c)
-        if V_excess > 1e-30:
+        V_deficit = _axisym_weighted_sum(deficit, r_c)
+        V_net_correction = V_excess - V_deficit
+        if abs(V_net_correction) > 1e-30:
             surf_weight = 16.0 * f * f * (1.0 - f) ** 2
             j_gb = int(np.argmin(np.abs(z - GB_z_hint)))
             sigma_cells = max(3.0, 2.0)
@@ -234,9 +242,10 @@ def multi_sink_transport_step(f, particle, substrate, events: List[SinkEvent], h
                 dep = surf_weight
                 V_dep = _axisym_weighted_sum(dep, r_c)
             if V_dep > 1e-30:
-                f = f + dep / V_dep * V_excess
+                f = f + dep / V_dep * V_net_correction
                 mass_resid_max = max(mass_resid_max,
-                                      abs(_axisym_weighted_sum(dep / V_dep * V_excess, r_c) - V_excess) / V_excess)
+                                      abs(_axisym_weighted_sum(dep / V_dep * V_net_correction, r_c)
+                                          - V_net_correction) / max(V_excess, V_deficit, 1e-30))
 
     com1_particle = particle_com_z(particle, z, r_c, dz, dz)
     com1_substrate = particle_com_z(substrate, z, r_c, dz, dz)
