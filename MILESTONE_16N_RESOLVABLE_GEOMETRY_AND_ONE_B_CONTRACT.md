@@ -1,6 +1,8 @@
 # M16N — Resolvable Geometry + Correct One-b Event Contract
 
-**Status: Sections A, C, F, G complete. Section D (short sink-off evolution) and Section H (post-event blowup diagnostic) in progress at the time of writing; this report will be updated with their results. Per the explicit stop gate, this report stops before Sections I (barrier recalibration) and J (Poisson sequential events) — no barrier recalibration or multi-event run has been started.**
+**Status: Sections A, C, F, G, H complete. Section D found a significant, unexpected result requiring attention before proceeding (see below). Per the explicit stop gate, this report stops before Sections I (barrier recalibration) and J (Poisson sequential events) — no barrier recalibration or multi-event run has been started.**
+
+**Headline finding from Section D: for the new, properly-resolved geometry, sink-OFF sintering stress is DECREASING under capillary relaxation, not loading toward 50MPa.** `ratio=0.185` (initial `sigma_sharp=35.6MPa`) declined smoothly and monotonically to `30.9MPa` by `t=0.325` (a decelerating but still-declining trend, `r_neck` growing 26.2→29.9nm — the neck is blunting, not sharpening). This is the physically-expected direction for ordinary surface-diffusion-driven capillary relaxation (which generally reduces curvature/stress over time), and is the OPPOSITE of the trend the old, unresolved `rho=6.87nm` geometry appeared to show (`sigma` climbing from ~19.5MPa toward ~50MPa over `t=0-8`) throughout the entire M16H-M16M lineage. This raises the possibility that the "loading" narrative built into this project's hazard framework was, at least in part, an artifact of measuring an under-resolved feature with a window/tracker setup that happened to drift in a particular direction as the (poorly-measured) geometry evolved — not necessarily genuine physical stress accumulation. This is flagged prominently rather than pursued further this pass (see Section D below and Remaining limitations).
 
 ## A. Analytic geometry scan (no PF)
 
@@ -48,11 +50,28 @@ Selected 3 candidates spanning the qualified band for Section C/D screening: `ra
 
 ## D. Short sink-off evolution
 
-**In progress at time of writing.** `scripts/m16n_sinkoff_screen.py` uses the path-continuous `NeckTracker` (M16K/M16L/M16M's established convention) rather than naive "first found" candidate selection, tracking `r_neck`/`X_neck`/`sigma_Hussein` via a fixed 12nm window (comfortably inside the Section C plateau for all 3 candidates).
+`scripts/m16n_sinkoff_screen.py` uses the path-continuous `NeckTracker` (M16K/M16L/M16M's established convention) rather than naive "first found" candidate selection, tracking `r_neck`/`X_neck`/`sigma_Hussein` via a fixed 12nm window (comfortably inside the Section C plateau for all 3 candidates).
 
-**Cost note**: the larger `a` (185-215nm vs the old geometry's 100nm) roughly doubles the domain size (`Nz=597, Nr=738` vs `248x413` for `ratio=0.200`), making each short screen substantially more expensive than the M16M continuation's window-convergence runs (~85s per 0.025-time-unit sample vs ~8s previously). A full `t_target=8` run (matching the historical W=10 archive) was not practical within this session; a bounded `t_target=1.0` screen for the cheapest/most-promising candidate (`ratio=0.185`) was run instead.
+**Cost note**: the larger `a` (185-215nm vs the old geometry's 100nm) roughly doubles the domain size (`Nz=597, Nr=738` vs `248x413` for `ratio=0.200`), making each short screen substantially more expensive than the M16M continuation's window-convergence runs (~85-130s per 0.025-time-unit sample vs ~8s previously). A full `t_target=8` run (matching the historical W=10 archive) was not practical within this session.
 
-**Preliminary observation** (from a short `ratio=0.200` probe, `t_target=0.1`): `sigma` drifted slightly DOWN (29.5→27.0MPa) over the first 0.1 time units, and the tracker saw up to 6 simultaneous candidate minima almost immediately (`t=0.025` onward) — consistent with, and not a new problem beyond, M16K's own earlier documented finding of multiple early local minima in this general flat-substrate construction family. This window is too short to characterize the loading trend; the `ratio=0.185` run in progress will be the primary Section D result reported.
+**Result (`ratio=0.185`, `W=6nm`, `dx=0.85nm`, `t=0` to `0.325`, 14 samples):**
+
+| t | X_neck (nm) | r_neck (nm) | sigma (MPa) | n_candidates |
+|---:|---:|---:|---:|---:|
+| 0.000 | 372.99 | 26.17 | 35.58 | 1 |
+| 0.050 | 374.43 | 27.16 | 34.19 | 6 |
+| 0.100 | 374.81 | 27.81 | 33.33 | 4 |
+| 0.150 | 375.08 | 28.36 | 32.64 | 4 |
+| 0.200 | 375.24 | 28.85 | 32.04 | 4 |
+| 0.250 | 375.34 | 29.29 | 31.52 | 5 |
+| 0.300 | 375.40 | 29.69 | 31.06 | 6 |
+| 0.325 | 375.43 | 29.87 | 30.86 | 5 |
+
+**`sigma` declines smoothly and monotonically (35.6→30.9MPa, -13.6% over `t=0-0.325`), while `r_neck` grows (26.2→29.9nm, the neck BLUNTING, not sharpening).** The decline rate is decelerating (successive drops: -1.39, -0.86, -0.69, -0.60, -0.52, -0.46, -0.20MPa per 0.05-time-unit step) but had not yet visibly plateaued within the window run. This is the OPPOSITE direction from Section B's target ("sink-OFF capillary evolution should be capable of sharpening the neck toward ~18-20nm / ~45-50MPa") and from the qualitative trend the OLD, unresolved geometry appeared to show throughout M16H-M16M.
+
+An additional Section D reject criterion is also triggered: the tracker sees 4-6 simultaneous candidate minima from `t=0.05` onward (`n_candidates` column) — the path-continuous selection handles this without erratic jumping (the trajectory above is smooth), but per Section D's own explicit list ("Reject cases showing: ... tracker switching"), this candidate does not cleanly qualify on that criterion either.
+
+**Interpretation, not yet resolved**: this is the physically-expected direction for ordinary capillary/surface-diffusion relaxation (which reduces curvature over time, moving toward a smoother, lower-energy neck shape) — the WELL-RESOLVED measurement is behaving exactly as basic capillary theory predicts. The fact that the OLD, unresolved geometry appeared to show the opposite trend (loading up toward 45-50MPa) throughout the entire M16H-M16M lineage is now a live, unresolved question: was that apparent loading trend a genuine physical effect specific to the very different (rho=6.87nm, deeply under-resolved) geometry, or was it in some part an artifact of measuring an unresolved feature with a tracker/window setup whose apparent value happened to drift upward as that particular geometry evolved? This was not distinguished this pass. Given the wall-clock cost, `ratio=0.200` and `ratio=0.215` were not run to a comparable duration to check whether they show the same declining trend (a very short `ratio=0.200` probe, `t=0-0.1`, showed a consistent decline: 29.5→27.0MPa).
 
 ## E. Energy stress as independent check (not re-validated this pass)
 
@@ -82,16 +101,28 @@ Both functions' docstrings and diag dicts were updated accordingly (`delta_sink_
 
 ## H. Post-event blowup diagnostic
 
-**In progress at time of writing.** `scripts/m16n_post_event_blowup_diagnostic.py` reconstructs the post-event state (via the corrected contract) and runs PF-only continuations (no hazard, no further RBM) at `dt, dt/2, dt/4, dt/8` out to a matched total time (0.5 model-time-units, comfortably past the ~0.446-time-unit interval where the M16M continuation's legacy-control run blew up), tracking `max/min f`, `max|mu_f_gb|`, free energy, mass drift, and the first nonfinite step.
+`scripts/m16n_post_event_blowup_diagnostic.py` reconstructs the post-event state (via the corrected contract) and runs PF-only continuations (no hazard, no further RBM) at `dt, dt/2, dt/4, dt/8` out to a matched total time (0.5 model-time-units, comfortably past the ~0.446-time-unit interval where the M16M continuation's legacy-control run blew up), tracking `max/min f`, `max|mu_f_gb|`, free energy, mass drift, and the first nonfinite step.
 
-**Preliminary result: at the ORIGINAL production `dt=4.8828e-5`, the PF-only continuation ran STABLY through the full matched interval (10240 steps, no blowup)** — meaning the earlier blowup does NOT simply reproduce from "the pre-event `dt` is unstable immediately after the RBM remap" in this simplified reconstruction. **Important caveat**: this microtest's `build_post_event_state()` uses a hardcoded `GB_z_hint=0.0` for the excess-mass redistribution, rather than the real driver's tracker-derived `z_gb` (~3.58nm at this state) — since the redistribution's Gaussian deposit is centered on this hint, the reconstructed post-event field state may not be bit-identical to what the real legacy-control run produced, so a clean "stable" result here does not yet fully rule out the real run's specific blowup cause. `dt/2, dt/4, dt/8` results, and a corrected re-run with the proper `z_gb` hint, will be added once available.
+**Result (first pass, `GB_z_hint=0.0` -- see caveat below): ALL FOUR dt values ran completely STABLY through the full matched interval, with no blowup and floating-point-level mass drift (1e-15 to 1e-16, non-growing) throughout:**
+
+| dt | n_steps | first_nonfinite | final mass_drift | final max\|mu\| |
+|---|---:|---|---:|---:|
+| dt_base (4.8828e-5) | 10240 | none | -7.99e-16 | 2.504e+10 |
+| dt_base/2 (2.4414e-5) | 20480 | none | -1.14e-16 | 2.525e+10 |
+| dt_base/4 (1.2207e-5) | 40960 | none | -2.85e-15 | 2.535e+10 |
+| dt_base/8 (6.1035e-6) | 81920 | none | -4.22e-15 | 2.540e+10 |
+
+**This means the earlier blowup does NOT simply reproduce from "the pre-event `dt` is unstable immediately after the RBM remap"** — even 8x finer than production `dt`, stability holds well past where the real blowup occurred.
+
+**Important caveat (now addressed with a corrected rerun)**: this first pass used a hardcoded `GB_z_hint=0.0` for the excess-mass redistribution rather than the real driver's tracker-derived `z_gb` (~3.58nm at this state) — since the redistribution's Gaussian deposit is centered on this hint, the reconstructed post-event field state may not have been bit-identical to what the real legacy-control run produced. The uncorrected results are preserved in `runs/m16n_post_event_blowup_diagnostic_zgb0_uncorrected/`; a corrected rerun with the proper `z_gb=3.581363283165118e-9` hint was launched and results will be appended once available.
 
 ## Remaining limitations / next steps (per the stop gate)
 
-- Section D's fuller sink-off trend (beyond the short bounded screen) and the resulting geometry/energy comparison (Section E) were not completed this pass due to the substantially higher per-step cost of the larger-domain candidates.
-- Section H's `dt/2, dt/4, dt/8` results and the `GB_z_hint` correction are pending.
+- **Central open question (Section D)**: does the properly-resolved geometry genuinely fail to load toward 45-50MPa under pure sink-off relaxation, or would it eventually turn around and load after an initial blunting transient, or over a longer time than was practical to run this session? Only ~0.325 time units were observed (vs the old geometry's full `t=0-8` trajectory); the decline was decelerating but not yet plateaued. `ratio=0.200`/`0.215` were not run long enough to compare trends. This is the single most consequential open item — it determines whether this geometry family can support the project's existing ~45-50MPa physical target at all, or whether a different geometry, mechanism, or target stress needs to be reconsidered.
+- Section E (energy-vs-local stress comparison for the new candidate, and energy-method analytic validation) was not completed — blocked on first establishing a reference state from Section D.
+- Section H's `GB_z_hint`-corrected rerun was launched but not complete at the time of writing.
 - Sections I (barrier recalibration) and J (Poisson sequential events) were explicitly NOT started, per the stop gate.
 
 ## Recommendation
 
-Per the explicit stop gate ("STOP after: analytic geometry scan, PF representation qualification, one corrected one-b event, post-event stability test, and report before a long multi-event/video campaign"), this report stops here pending completion of Sections D/H's in-progress runs, and does not proceed to barrier recalibration or any multi-event run without further direction.
+Per the explicit stop gate, this report stops before barrier recalibration or any multi-event run. **Beyond the stop gate itself, the Section D finding (sigma declining, not loading, under sink-off relaxation for the first properly-resolved geometry tested) is significant enough that it should be resolved — either by running `ratio=0.185` (or another candidate) substantially longer to see whether it plateaus, turns around, or continues declining, or by reconsidering the geometry/mechanism search — before any further investment in barrier recalibration against this specific candidate.**
