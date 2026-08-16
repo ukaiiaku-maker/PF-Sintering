@@ -2,7 +2,7 @@
 
 **Central question**: Can we predict, from the initial geometry and Hussein analytical mechanics, which resolved morphologies will relax and which will develop rising sintering stress under sink-OFF coarsening?
 
-**Answer: YES, at least for the topology family tested.** A single geometric parameter (`chi`, the neighbor-to-particle curvature ratio) at fixed contact width produces THREE qualitatively distinct, cleanly resolved sintering-stress pathways — relaxing, transitional/near-neutral, and sustained loading — and the analytic Hussein-derivative decomposition (Section 2-3) correctly predicts the sign of `d(sigma)/dt` in every single interval tested (100+ intervals across 4 trajectories). Sink OFF, hazard OFF, RBM OFF throughout — no barrier recalibration or Poisson production has been touched, per the explicit stop gate.
+**Answer: YES, at least for the topology family tested.** A single geometric parameter (`chi`, the neighbor-to-particle curvature ratio) at fixed contact width produces THREE qualitatively distinct, cleanly resolved sintering-stress pathways — relaxing, transitional/near-neutral, and sustained loading — and the analytic Hussein-derivative decomposition (Section 2-3) correctly predicts the sign of `d(sigma)/dt` in every single interval tested (100/100 intervals across all 4 complete trajectories). Sink OFF, hazard OFF, RBM OFF throughout — no barrier recalibration or Poisson production has been touched, per the explicit stop gate.
 
 ## Scope decision: topology family used
 
@@ -37,9 +37,9 @@ A clean monotonic trend already emerges at `t=0` alone: smaller `chi` (sharper r
 | case | sigma(t=0) | sigma(t_end) | trend | r_neck(t=0)->r_neck(t_end) | n_candidates | tracker artifacts |
 |---|---:|---:|---|---|---:|---|
 | flat (M16N, t=0-1.0) | 35.58 | 27.61 | smooth monotonic DECLINE | 26.2->33.1nm (blunting) | up to 9 | some ambiguity, path-continuous tracker handled smoothly |
-| chi=0.5 | 49.29 | ~43.1 (t=0.2, in progress at time of analysis) | smooth monotonic DECLINE | 19.25->~22.0nm (blunting) | 1 throughout | NONE |
-| chi=1.0 | 58.69 | 54.91 | rises briefly (t<0.02) then DECLINES steadily | 16.30->17.37nm (blunting after initial sharpening) | 1 throughout | NONE |
-| chi=1.5 | 69.64 | 73.79 | smooth monotonic RISE, decelerating but sustained through t=0.2 | 13.83->13.08nm (sharpening) | 1 throughout | NONE |
+| chi=0.5 (t=0-0.2) | 49.29 | 43.10 | smooth monotonic DECLINE | 19.25->21.85nm (blunting) | 1 throughout | NONE |
+| chi=1.0 (t=0-0.2) | 58.69 | 54.91 | rises briefly (t<0.02) then DECLINES steadily | 16.30->17.37nm (blunting after initial sharpening) | 1 throughout | NONE |
+| chi=1.5 (t=0-0.2) | 69.64 | 73.79 | smooth monotonic RISE, decelerating but sustained through t=0.2 | 13.83->13.08nm (sharpening) | 1 throughout | NONE |
 
 **Pathway classification (Section 10):**
 - **flat, chi=0.5 -> Class A (SMOOTHING/RELAXING)**: `r` grows, `sigma` decreases, cleanly and monotonically.
@@ -57,10 +57,11 @@ The `chi=0.5/1.0/1.5/flat` sweep at fixed `ratio` is remarkable for how CLEANLY 
 | case | intervals | agree | predicted positive (loading) | predicted negative (relaxing) |
 |---|---:|---:|---:|---:|
 | flat | 40 | 40/40 | 0 | 40 |
+| chi=0.5 | 20 | 20/20 | 0 | 20 |
 | chi=1.0 | 20 | 20/20 | 1 (first interval only) | 19 |
 | chi=1.5 | 20 | 20/20 | 20 | 0 |
 
-This is a strong, direct validation of Hussein Eq. 1b's own mechanics as a genuine PREDICTIVE tool, not just a descriptive fit: `r(t)` and `X(t)` alone (measured independently of `sigma`) correctly forecast the sign of `sigma`'s own time derivative in all 80 tested intervals. For `chi=1.0`, the single early positive-predicted interval correctly corresponds to the brief initial rise before the trajectory turns over -- the criterion even catches the transition, not just the two clean endpoints.
+**100/100 intervals agree across all four complete trajectories.** This is a strong, direct validation of Hussein Eq. 1b's own mechanics as a genuine PREDICTIVE tool, not just a descriptive fit: `r(t)` and `X(t)` alone (measured independently of `sigma`) correctly forecast the sign of `sigma`'s own time derivative in every tested interval. For `chi=1.0`, the single early positive-predicted interval correctly corresponds to the brief initial rise before the trajectory turns over -- the criterion even catches the transition, not just the two clean endpoints.
 
 ## Section 11-12: selected loading trajectory and geometry-to-stress mapping
 
