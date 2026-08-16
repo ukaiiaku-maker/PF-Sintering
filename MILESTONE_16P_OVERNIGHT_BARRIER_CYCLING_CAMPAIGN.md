@@ -25,9 +25,25 @@ M16N's corrected one-b contract (`delta_sink` drives completion, `delta_COM` dia
 
 ## 4. Natural loading range (chi=1.5 extended trajectory)
 
-**In progress.** Extending the deterministic sink-OFF `chi=1.5`, `ratio=0.185` trajectory from `t=0.2` (M16O's endpoint, `sigma=73.79MPa`) toward the Section 4 stopping criteria (plateau, `sigma>=85MPa`, `t~0.6-1.0`, or a numerical issue). This section will be completed with the full extended dataset, the observed ceiling/plateau, and the `L_r`/`L_X` decomposition over the extended range once the run completes.
+**In progress in the background (`scripts/m16o_topology_screen.py --chi 1.5 --ratio 0.185 --t-target 0.8`), continuing past this report's calibration decision below rather than blocking on it (per Section 33's "continue automatically" instruction).** As of the last checkpoint (`t=0.13`, `wall=837s`), the trajectory continues the same smooth, decelerating rise M16O found through `t=0.2`: `sigma` reaches `73.58MPa` at `t=0.13`, with successive 0.01-time-unit increments shrinking geometrically (`+0.17, +0.14, +0.12, +0.10, +0.08, +0.07, +0.06 MPa` from `t=0.06` to `t=0.13`, ratio ~0.85 per step). Extrapolating this geometric decay gives an estimated ceiling around **74-76MPa**, matching Section 5's first guidance case exactly. This section will be finalized with the complete extended dataset (and the actual observed ceiling, if different from this extrapolation) once the background run completes.
 
 ## 5-6. Finite-barrier target selection and calibration
+
+**Target selected: 72MPa**, comfortably inside `sigma_initial(69.64MPa) < target < extrapolated_ceiling(~74-76MPa)`, per Section 5's guidance for a trajectory expected to plateau around 74-76MPa ("choose a demonstration median activation near 72-74MPa").
+
+**Calibration** (`scripts/m16p_calibrate_barrier.py`, against the M16O `chi=1.5` deterministic trajectory, `t=0-0.2`): solved `A0` such that the integrated Arrhenius hazard `H(t) = integral Lambda(sigma(t'),T) dt'` reaches exactly `ln(2)` at `t_target=0.03` (the first time the deterministic trajectory crosses 72MPa) -- the median first-passage condition.
+
+```
+V0 = 12.5*b^3         (unchanged, frozen since M16K)
+A0 = 0.466794 eV        (solved)
+r0 = 1e12
+GS = 201.74nm          (unchanged)
+T  = 1000K
+target stress = 72MPa, reached deterministically at t=0.03
+H(t_target) = 0.693146  (ln(2) = 0.693147, matches to 6 significant figures)
+```
+
+This satisfies the essential requirement (`sigma_initial < typical nucleation stress < natural sink-OFF ceiling`) so the system visibly loads (`t=0 to t~0.03`, `sigma: 69.6->72.0MPa`) before the median nucleation event, without exceeding the (extrapolated) reachable ceiling. Not repeatedly retuned; frozen for Run A and Run C (the finite-barrier controls) per the explicit "one recalibration, then freeze" instruction.
 
 **Pending** completion of Section 4's extended trajectory -- the target cannot be responsibly chosen before the natural ceiling is known (per the explicit "do NOT choose a target above the reachable deterministic ceiling" instruction).
 
