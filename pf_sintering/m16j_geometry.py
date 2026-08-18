@@ -105,6 +105,139 @@ def solve_body_fillet(a: float, m: float, R_body: float, zc_body: float, slope_s
     return dict(r_c=r_c, z_c=z_c, rho=rho, r_tangent=r_tangent, z_tangent=z_tangent, t=t)
 
 
+def _quintic_hermite_coeffs(z0, p0, d0, k0, z1, p1, d1, k1):
+    """Solves for the 6 coefficients of R(z)=sum(c_i*(z-z0)^i, i=0..5)
+    satisfying R(z0)=p0, R'(z0)=d0, R''(z0)=k0, R(z1)=p1, R'(z1)=d1,
+    R''(z1)=k1 -- a direct 6x6 linear solve (transparent, no dependency
+    on an unfamiliar interpolation API)."""
+    L = z1 - z0
+    # work in u=(z-z0)/L in [0,1] for conditioning, then rescale derivatives
+    A = np.zeros((6, 6))
+    b = np.array([p0, d0 * L, k0 * L * L, p1, d1 * L, k1 * L * L], dtype=float)
+    # rows: value/deriv/2nd-deriv of sum(c_i*u^i) at u=0 and u=1
+    # u=0: c0=p0; c1=d0*L; 2*c2=k0*L^2
+    A[0, 0] = 1.0
+    A[1, 1] = 1.0
+    A[2, 2] = 2.0
+    for i in range(6):
+        A[3, i] = 1.0  # value at u=1: sum(c_i)
+        if i >= 1:
+            A[4, i] = i  # derivative at u=1: sum(i*c_i)
+        if i >= 2:
+            A[5, i] = i * (i - 1)  # 2nd derivative at u=1: sum(i*(i-1)*c_i)
+    c = np.linalg.solve(A, b)
+    return c, z0, L
+
+
+def _quintic_hermite_eval(coeffs_pack, z):
+    c, z0, L = coeffs_pack
+    u = (np.asarray(z) - z0) / L
+    R = np.polyval(c[::-1], u)
+    dRdu = np.polyval((c[1:] * np.arange(1, 6))[::-1], u)
+    d2Rdu2 = np.polyval((c[2:] * np.arange(2, 6) * np.arange(1, 5))[::-1], u) if len(c) > 2 else np.zeros_like(u)
+    return R, dRdu / L, d2Rdu2 / (L * L)
+
+
+def solve_body_c2_transition(a: float, m: float, R_body: float, zc_body: float, slope_sign: float,
+                              z1=None, n_search=41):
+    """C2 replacement for `solve_body_fillet`'s circular-arc fillet
+    (kept, unmodified, for reference/backward compatibility -- see its
+    own docstring). A single circular arc can only be tangent (C1:
+    position+slope) to the parent sphere, because a circle has just 2
+    degrees of freedom (center, radius) for what is generally an
+    overdetermined 3-condition (position+slope+curvature) match -- this
+    was confirmed to leave a large, discontinuous curvature jump at the
+    tangent point for the actual production parameters (chi=1.5,
+    ratio=0.185, psi=160deg: 37.6x on the particle side, 92.7x with a
+    SIGN REVERSAL on the substrate side -- see
+    scripts/recovery_geometry_audit.py and
+    MILESTONE_RECOVERY_GEOMETRY_FIX.md), which is a plausible direct
+    cause of the neck groove/bump this milestone investigates.
+
+    Builds a QUINTIC polynomial R(z) on [0, z1] satisfying, EXACTLY:
+      at z=0 (the TJ):    R=a, R'=slope_sign*m           (2 conditions --
+                           Young-Herring fixes the ANGLE, not the local
+                           curvature there, so R'' at the TJ is a free
+                           parameter, not invented arbitrarily -- see below)
+      at z=z1 (body join): R, R', R'' EXACTLY match the parent sphere's
+                           own analytic values there (3 conditions)
+    -- 5 fixed conditions, 1 free parameter (R''(0), the TJ-end
+    curvature). `z1` defaults to `solve_body_fillet`'s own tangent-point
+    z-location purely as an already-vetted transition-LENGTH scale (NOT
+    reusing its circular shape). The free TJ-end curvature is chosen by
+    a small 1-D search (`n_search` trial values spanning a physically
+    reasonable range) minimizing the RMS of dkappa/ds along the
+    transition (Section 11's "minimize integral[dkappa/ds]^2",
+    approximated numerically) while rejecting any candidate whose
+    curvature overshoots beyond the two endpoint values or changes sign
+    within the interior -- both explicit failure criteria in the
+    recovery's geometry audit.
+
+    Returns dict(z1, R1, dRdz1, d2Rdz2_1, k0_chosen, coeffs, r_tangent,
+    z_tangent, overshoot, z1_search_used) -- r_tangent/z_tangent kept with
+    the SAME names `solve_body_fillet` uses so callers
+    (`particle_R_of_z`/`substrate_R_of_z_sphere`) need minimal changes.
+
+    z1 SEARCH (when the caller's `z1` is None): confirmed directly (M16
+    recovery geometry fix) that the ORIGINAL short fillet-scale transition
+    length (~20-30nm) cannot be made smooth at ANY free-curvature choice,
+    in EITHER an R(z) or a fully general parametric quintic -- absorbing
+    a ~40-90x curvature ratio requires a proportionally longer transition
+    arc (the same reason a clothoid/Euler spiral must be long to keep
+    curvature change gradual; this is not a parameterization artifact).
+    Searches increasing z1 (starting from the short fillet-scale value,
+    growing geometrically) and stops at the FIRST (shortest) length whose
+    best-available k0 keeps the geometric-curvature overshoot below 15%
+    of the larger endpoint curvature magnitude, with no interior sign
+    change -- preferring the shortest adequate transition rather than an
+    arbitrarily long one."""
+    if z1 is None:
+        fil_ref = solve_body_fillet(a, m, R_body, zc_body, slope_sign)
+        z1_candidates = fil_ref["z_tangent"] * np.array([1.0, 1.5, 2.0, 3.0, 5.0, 8.0, 12.0, 18.0, 25.0])
+    else:
+        z1_candidates = np.array([z1])
+
+    d0 = slope_sign * m
+    kappa_body_scale = 1.0 / R_body
+    trial_k0 = np.linspace(-30.0 * kappa_body_scale, 30.0 * kappa_body_scale, n_search)
+
+    overall_best = None
+    for z1_try in z1_candidates:
+        dz1 = z1_try - zc_body
+        R1 = math.sqrt(max(R_body * R_body - dz1 * dz1, 1e-12))
+        dRdz1 = -dz1 / R1
+        d2Rdz2_1 = (-1.0 - dRdz1 * dRdz1) / R1
+        kappa1_geom = d2Rdz2_1 / (1.0 + dRdz1 ** 2) ** 1.5  # TRUE geometric curvature at the body end
+
+        this_trial_k0 = np.unique(np.concatenate([trial_k0, [0.0, d2Rdz2_1]]))
+        z_eval = np.linspace(0.0, z1_try, 400)
+        best = None
+        for k0 in this_trial_k0:
+            pack = _quintic_hermite_coeffs(0.0, a, d0, k0, z1_try, R1, dRdz1, d2Rdz2_1)
+            R_e, dR_e, d2R_e = _quintic_hermite_eval(pack, z_eval)
+            kappa_e = d2R_e / (1.0 + dR_e ** 2) ** 1.5  # true geometric curvature along the segment
+            kappa0_geom = k0 / (1.0 + d0 ** 2) ** 1.5  # TRUE geometric curvature at the TJ end (this k0 choice)
+            k_lo, k_hi = min(kappa0_geom, kappa1_geom), max(kappa0_geom, kappa1_geom)
+            overshoot = max(0.0, k_lo - kappa_e.min()) + max(0.0, kappa_e.max() - k_hi)
+            sign_change = int(np.any(np.diff(np.sign(kappa_e)) != 0)) if (k_lo * k_hi >= 0) else 0
+            monotonic = np.all(np.diff(R_e) > 0)
+            dkappa_ds_rms = float(np.sqrt(np.mean(np.gradient(kappa_e, z_eval) ** 2)))
+            penalty = 1e6 * overshoot + 1e6 * sign_change + 1e6 * (not monotonic) + dkappa_ds_rms
+            if best is None or penalty < best[0]:
+                best = (penalty, k0, pack, overshoot, sign_change, monotonic, k_hi - k_lo)
+
+        penalty, k0_chosen, pack, overshoot, sign_change, monotonic, k_span = best
+        adequate = (monotonic and not sign_change and overshoot < 0.15 * max(abs(kappa1_geom), 1e-12))
+        if overall_best is None or penalty < overall_best[0]:
+            overall_best = (penalty, z1_try, R1, dRdz1, d2Rdz2_1, k0_chosen, pack, overshoot)
+        if adequate:
+            break  # shortest adequate z1 found -- stop searching longer ones
+
+    _, z1_final, R1, dRdz1, d2Rdz2_1, k0_chosen, pack, overshoot = overall_best
+    return dict(z1=z1_final, R1=R1, dRdz1=dRdz1, d2Rdz2_1=d2Rdz2_1, k0_chosen=k0_chosen, coeffs=pack,
+                r_tangent=R1, z_tangent=z1_final, overshoot=overshoot)
+
+
 def solve_flat_groove_fillet(a: float, m: float, rho2: float):
     """Height-field H(r) groove fillet for an exact-flat substrate: a
     circular arc through the TJ (a,0) with slope dH/dr=-1/m, with fillet
@@ -141,13 +274,15 @@ def cosine_cap(z, z0, R0, z_end):
 
 
 def particle_R_of_z(z, a, m, R_p, cap_margin_W, W):
-    """R(z) for the particle branch (z>=0): fillet, then sphere cap, then
+    """R(z) for the particle branch (z>=0): C2 quintic TJ-to-body
+    transition (`solve_body_c2_transition`, replacing the old C1-only
+    circular fillet -- see its docstring for why), then sphere cap, then
     a cosine taper closing to 0. `R_p` is the (possibly osculating-sphere-
     equivalent, for AR!=1) particle radius."""
     zc_p = R_p
-    fil = solve_body_fillet(a, m, R_p, zc_p, +1.0)
+    fil = solve_body_c2_transition(a, m, R_p, zc_p, +1.0)
     z_T, r_T = fil["z_tangent"], fil["r_tangent"]
-    crop_margin = max(6.0 * W, 4.0 * fil["rho"])
+    crop_margin = 6.0 * W  # the transition itself is now sized for smoothness (no fillet-radius scale left)
     z_cap0 = z_T + crop_margin
     R_cap0 = math.sqrt(max(R_p * R_p - (z_cap0 - zc_p) ** 2, 0.0))
     if not (R_cap0 > 0 and z_cap0 - zc_p < R_p):
@@ -158,10 +293,9 @@ def particle_R_of_z(z, a, m, R_p, cap_margin_W, W):
     z_end = z_cap0 + max(6.0 * W, 0.5 * R_cap0)
 
     R = np.full_like(z, np.nan)
-    m_fillet = (z >= 0) & (z <= z_T)
-    r_c1, z_c1, rho1 = fil["r_c"], fil["z_c"], fil["rho"]
-    inside = rho1 ** 2 - (z[m_fillet] - z_c1) ** 2
-    R[m_fillet] = r_c1 - np.sqrt(np.clip(inside, 0.0, None))
+    m_transition = (z >= 0) & (z <= z_T)
+    R_tr, _, _ = _quintic_hermite_eval(fil["coeffs"], z[m_transition])
+    R[m_transition] = R_tr
 
     m_sphere = (z > z_T) & (z <= z_cap0)
     R[m_sphere] = np.sqrt(np.clip(R_p ** 2 - (z[m_sphere] - zc_p) ** 2, 0.0, None))
@@ -174,11 +308,12 @@ def particle_R_of_z(z, a, m, R_p, cap_margin_W, W):
 
 def substrate_R_of_z_sphere(z, a, m, R_s, cap_margin_W, W):
     """Mirror of particle_R_of_z for a finite-radius substrate/neighbor
-    (z<=0 branch)."""
+    (z<=0 branch); C2 quintic TJ-to-body transition, see
+    `solve_body_c2_transition`."""
     zc_s = -R_s
-    fil = solve_body_fillet(a, m, R_s, zc_s, -1.0)
+    fil = solve_body_c2_transition(a, m, R_s, zc_s, -1.0)
     z_T, r_T = fil["z_tangent"], fil["r_tangent"]
-    crop_margin = max(6.0 * W, 4.0 * fil["rho"])
+    crop_margin = 6.0 * W
     z_cap0 = z_T - crop_margin
     R_cap0 = math.sqrt(max(R_s * R_s - (z_cap0 - zc_s) ** 2, 0.0))
     if not (R_cap0 > 0 and zc_s - z_cap0 < R_s):
@@ -187,10 +322,9 @@ def substrate_R_of_z_sphere(z, a, m, R_s, cap_margin_W, W):
     z_end = z_cap0 - max(6.0 * W, 0.5 * R_cap0)
 
     R = np.full_like(z, np.nan)
-    m_fillet = (z <= 0) & (z >= z_T)
-    r_c2, z_c2, rho2 = fil["r_c"], fil["z_c"], fil["rho"]
-    inside = rho2 ** 2 - (z[m_fillet] - z_c2) ** 2
-    R[m_fillet] = r_c2 - np.sqrt(np.clip(inside, 0.0, None))
+    m_transition = (z <= 0) & (z >= z_T)
+    R_tr, _, _ = _quintic_hermite_eval(fil["coeffs"], z[m_transition])
+    R[m_transition] = R_tr
 
     m_sphere = (z < z_T) & (z >= z_cap0)
     R[m_sphere] = np.sqrt(np.clip(R_s ** 2 - (z[m_sphere] - zc_s) ** 2, 0.0, None))
