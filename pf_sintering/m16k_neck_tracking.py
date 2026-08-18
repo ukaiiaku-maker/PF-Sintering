@@ -111,7 +111,15 @@ def find_tj_from_contour(f, e1, e2, r_c, z, R_of_z, z_gb_guess, search_frac=0.15
 
     z_tj = float("nan")
     for k in range(len(idx) - 1):
-        if np.isfinite(diff[k]) and np.isfinite(diff[k + 1]) and diff[k] * diff[k + 1] < 0:
+        if not (np.isfinite(diff[k]) and np.isfinite(diff[k + 1])):
+            continue
+        if diff[k] == 0.0:
+            # exact zero at a grid row (e.g. an exactly-symmetric chi=1
+            # construction, where the TJ lands precisely on a row) -- this
+            # IS the TJ itself, not a product-sign test (0*x is never <0).
+            z_tj = z[idx[k]]
+            break
+        if diff[k] * diff[k + 1] < 0:
             z0, z1 = z[idx[k]], z[idx[k + 1]]
             d0, d1 = diff[k], diff[k + 1]
             frac = -d0 / (d1 - d0) if (d1 - d0) != 0 else 0.5
