@@ -20,6 +20,11 @@ campaign manifest through `PRODUCTION_BASELINE_COMMIT` at launch.
 - Explicit fourth-order Courant: `C4 = 0.05`, passed explicitly from each
   worker and asserted against the event integrator's returned diagnostic.
 - Censoring envelope: `V_p/V_p,cycle >= 0.88` and `r_n >= 35 nm`.
+- If hazard and a validity boundary cross within the same 0.25 analysis
+  block, their crossing order is estimated and the preserved valid block-start
+  state is replayed at 0.005 model-time analysis cadence.  The PF timestep and
+  equations are unchanged; this prevents a first-passage event that occurred
+  first from being mislabeled as right-censored at the later saved endpoint.
 - Ensemble: ten independent, recorded OS-derived seeds; at most five complete
   one-b events per realization.
 - `matched_outer_tj.py` is diagnostic only and is not imported or selected by

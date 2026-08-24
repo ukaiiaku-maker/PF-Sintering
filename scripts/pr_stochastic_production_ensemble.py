@@ -35,6 +35,7 @@ OUT=ROOT/"runs/pr_current_head_regression/coarsening_driven_fourier/production_e
 PRE_VERIFICATION_OUT=ROOT/"runs/pr_current_head_regression/coarsening_driven_fourier/production_ensemble_10x5"
 N_REALIZATIONS=10; MAX_EVENTS=5; MAX_WORKERS=4
 V_CUTOFF=.88; RN_CUTOFF_M=35e-9; SAMPLE_DT=.25
+COMPETING_CROSSING_DT=.005
 CLOCK_SCALE=15579943169.55921
 PRODUCTION_C4=0.05
 
@@ -75,28 +76,62 @@ def save_state(path,state,**meta):
 
 def wait_or_censor(state,cycle,completed,t_model,threshold,setup,geom,evaluator,output,out):
     vp0=integral(state[1],setup);H=0.;row,branches=base.measure(state,t_model=t_model,cycle=cycle,sink=0,q=0,qcum=completed,hazard=H,threshold=threshold,clock_scale=CLOCK_SCALE,setup=setup,geom=geom,evaluator=evaluator,vp_cycle0=vp0)
-    output.add(state,row,branches);prev=row["Gamma_per_model_time"]
+    output.add(state,row,branches);prev=row["Gamma_per_model_time"];current=row
     scratches=[NumbaScratch(*state[0].shape),NumbaScratch(*state[0].shape)];which=0;steps=int(round(SAMPLE_DT/setup["dt"]));elapsed=0.
     while True:
+        state_before=tuple(x.copy() for x in state);elapsed_before=elapsed
+        H_before=H;prev_before=prev;current_before=current
         for _ in range(steps):
             dest=0 if which!=0 else 1
             state=axisym_gb_face_projected_step_fast(*state,setup["p"],setup["Wc"],setup["dr"],setup["dz"],setup["r_c"],setup["r_f"],setup["dt"],setup["M_s"],setup["M_eta"],setup["W"],scratches[dest]);which=dest
             f,p,s,_=reservoir_remove_particle(state,setup);state=(f,p,s)
-        elapsed+=steps*setup["dt"]
+        block_dt=steps*setup["dt"];elapsed+=block_dt
         trial,branches=base.measure(state,t_model=t_model+elapsed,cycle=cycle,sink=0,q=0,qcum=completed,hazard=H,threshold=threshold,clock_scale=CLOCK_SCALE,setup=setup,geom=geom,evaluator=evaluator,vp_cycle0=vp0)
-        H+=.5*(prev+trial["Gamma_per_model_time"])*SAMPLE_DT;trial["H"]=H;trial["H_over_threshold"]=H/threshold
+        H+=.5*(prev+trial["Gamma_per_model_time"])*block_dt;trial["H"]=H;trial["H_over_threshold"]=H/threshold
         output.add(state,trial,branches);output.flush();save_state(out/"checkpoints"/f"cycle{cycle}_waiting_latest.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold,Vratio=trial["Vp_over_Vp_cycle"],rn=trial["r_n_m"])
         print(f"R{out.name[-2:]} WAIT c{cycle} t={elapsed:.2f} V={trial['Vp_over_Vp_cycle']:.4f} rn={trial['r_n_m']*1e9:.2f} H/H*={H/threshold:.3f}",flush=True)
         invalid=[]
         if trial["Vp_over_Vp_cycle"]<V_CUTOFF:invalid.append("Vp_over_Vp_cycle_below_0.88")
         if trial["r_n_m"]<RN_CUTOFF_M:invalid.append("r_n_below_35_nm")
+        if invalid and H>=threshold and H_before<threshold:
+            alpha_h=(threshold-H_before)/max(H-H_before,1e-300)
+            alpha_v=(current_before["Vp_over_Vp_cycle"]-V_CUTOFF)/max(current_before["Vp_over_Vp_cycle"]-trial["Vp_over_Vp_cycle"],1e-300)
+            alpha_r=(current_before["r_n_m"]-RN_CUTOFF_M)/max(current_before["r_n_m"]-trial["r_n_m"],1e-300)
+            if alpha_h<min(alpha_v,alpha_r):
+                # Hazard crossed first inside the coarse block.  Discard only
+                # that overshooting analysis row and replay from the preserved
+                # valid state at fine cadence; PF equations and dt are unchanged.
+                output.rows.pop();output.contours.pop();state=state_before
+                elapsed=elapsed_before;H=H_before;prev=prev_before
+                ref_steps=max(1,int(round(COMPETING_CROSSING_DT/setup["dt"])))
+                scratches=[NumbaScratch(*state[0].shape),NumbaScratch(*state[0].shape)];which=0
+                while True:
+                    for _ in range(ref_steps):
+                        dest=0 if which!=0 else 1
+                        state=axisym_gb_face_projected_step_fast(*state,setup["p"],setup["Wc"],setup["dr"],setup["dz"],setup["r_c"],setup["r_f"],setup["dt"],setup["M_s"],setup["M_eta"],setup["W"],scratches[dest]);which=dest
+                        f,p,s,_=reservoir_remove_particle(state,setup);state=(f,p,s)
+                    ref_dt=ref_steps*setup["dt"];elapsed+=ref_dt
+                    refined,branches=base.measure(state,t_model=t_model+elapsed,cycle=cycle,sink=0,q=0,qcum=completed,hazard=H,threshold=threshold,clock_scale=CLOCK_SCALE,setup=setup,geom=geom,evaluator=evaluator,vp_cycle0=vp0)
+                    H+=.5*(prev+refined["Gamma_per_model_time"])*ref_dt;refined["H"]=H;refined["H_over_threshold"]=H/threshold
+                    output.add(state,refined,branches);output.flush();save_state(out/"checkpoints"/f"cycle{cycle}_waiting_latest.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold,Vratio=refined["Vp_over_Vp_cycle"],rn=refined["r_n_m"])
+                    ref_invalid=[]
+                    if refined["Vp_over_Vp_cycle"]<V_CUTOFF:ref_invalid.append("Vp_over_Vp_cycle_below_0.88")
+                    if refined["r_n_m"]<RN_CUTOFF_M:ref_invalid.append("r_n_below_35_nm")
+                    print(f"R{out.name[-2:]} REFINE c{cycle} t={elapsed:.4f} V={refined['Vp_over_Vp_cycle']:.4f} H/H*={H/threshold:.4f}",flush=True)
+                    if H>=threshold and not ref_invalid:
+                        save_state(out/"checkpoints"/f"cycle{cycle}_before_nucleation.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold)
+                        return "nucleated",state,t_model+elapsed,refined,None
+                    if ref_invalid:
+                        save_state(out/"checkpoints"/f"cycle{cycle}_censored.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold,Vratio=refined["Vp_over_Vp_cycle"],rn=refined["r_n_m"])
+                        return "censored",state,t_model+elapsed,refined,ref_invalid
+                    prev=refined["Gamma_per_model_time"]
         if invalid:
             save_state(out/"checkpoints"/f"cycle{cycle}_censored.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold,Vratio=trial["Vp_over_Vp_cycle"],rn=trial["r_n_m"])
             return "censored",state,t_model+elapsed,trial,invalid
         if H>=threshold:
             save_state(out/"checkpoints"/f"cycle{cycle}_before_nucleation.npz",state,t_model=t_model+elapsed,H=H,Hstar=threshold)
             return "nucleated",state,t_model+elapsed,trial,None
-        prev=trial["Gamma_per_model_time"]
+        prev=trial["Gamma_per_model_time"];current=trial
 
 
 def configure_worker(out):
