@@ -305,7 +305,8 @@ def nucleation_hazard_step(sink: AxisymSink, sigma_s: float, dt: float, hp: Haza
 
 
 def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, sigma_s: float, dt: float, dz: float,
-                                r_c, z, GB_z_hint, seconds_per_model_time: float = SECONDS_PER_MODEL_TIME):
+                                r_c, z, GB_z_hint, seconds_per_model_time: float = SECONDS_PER_MODEL_TIME,
+                                debug_capture=None, redistribution_fn=None):
     """M16K/M16L Sections 1-8: propagates an ALREADY-nucleated event by AT
     MOST one physical timestep's worth of Coble-type diffusional
     advection, capped so the event's cumulative displacement
@@ -351,6 +352,18 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
     real, reproducible morphology-response effect, not noise or a bug --
     but the wrong quantity to gate a "one Burgers vector per event"
     contract on).
+
+    `redistribution_fn` (default None, zero behavior change when unused,
+    same opt-in pattern as `debug_capture`): if provided, REPLACES the
+    built-in Gaussian-in-z excess/deficit deposit below with
+    `redistribution_fn(f, e1, e2, r_c, z, GB_z_hint, V_net_correction)
+    -> (f_new, e1_new, e2_new, diag)` -- e.g. the curvature-compatible
+    normal-displacement deposition in
+    `pf_sintering.curvature_compatible_deposition`. `V_net_correction`
+    (== V_excess - V_deficit, identical quantity/sign convention the
+    Gaussian path already computes) is passed in AFTER `f` has already
+    been clipped to [0,1] for this substep, matching the Gaussian path's
+    own base state.
 
     Returns (f, e1, e2, completed, diag) where diag is a dict with
     requested_d_delta (== delta_sink_this_step, what the field was
@@ -411,7 +424,7 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
     com0_substrate = particle_com_z(e2, z, r_c, dz, dz)
     mass_resid_max = 0.0
 
-    for _ in range(n_sub):
+    for _sub_i in range(n_sub):
         v_face = 0.5 * (vz_field + np.roll(vz_field, -1, axis=0))
         f_face = np.maximum(v_face, 0) * f + np.minimum(v_face, 0) * np.roll(f, -1, axis=0)
         f = f - ds * (f_face - np.roll(f_face, 1, axis=0)) / dz
@@ -420,6 +433,13 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
             bw = (arr - np.roll(arr, 1, axis=0)) / dz
             arr -= ds * vz_field * np.where(vz_field >= 0, bw, fw)
             np.clip(arr, 0.0, 1.0, out=arr)
+        if debug_capture is not None:
+            # M16 recovery TJ-lip investigation: opt-in instrumentation
+            # hook, no change to the arithmetic above. Fires once per
+            # substep, immediately after advection but BEFORE the
+            # excess/deficit mass redistribution below -- state "B" in
+            # MILESTONE_TJ_SURFACE_RELAXATION_TEST.md's A/B/C/D scheme.
+            debug_capture("post_advection", _sub_i, n_sub, f.copy(), e1.copy(), e2.copy())
         # M16P Section 7 fix: `np.clip(f, 0.0, 1.0)` below clips BOTH
         # bounds, but only the f>1 side (`excess`) was ever compensated
         # by the redistribution step -- small negative undershoots from
@@ -439,7 +459,18 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
         V_excess = _axisym_weighted_sum(excess, r_c)  # volume-weighted, not raw np.sum
         V_deficit = _axisym_weighted_sum(deficit, r_c)
         V_net_correction = V_excess - V_deficit
-        if abs(V_net_correction) > 1e-30:
+        if redistribution_fn is not None:
+            if abs(V_net_correction) > 1e-30:
+                # `ds` (this SUBSTEP's own physical duration), not the
+                # full step's dt_seconds -- redistribution is applied
+                # once per substep, and the Gaussian deposition's
+                # diffusion-length width must reflect the real time THIS
+                # call's deposit actually had to spread (see
+                # curvature_compatible_deposition.py's correction note).
+                f, e1, e2, redist_diag = redistribution_fn(f, e1, e2, r_c, z, GB_z_hint, V_net_correction,
+                                                             dt_seconds=ds)
+                mass_resid_max = max(mass_resid_max, abs(redist_diag.get("closure_error", 0.0)))
+        elif abs(V_net_correction) > 1e-30:
             surf_weight = 16.0 * f * f * (1.0 - f) ** 2
             j_gb = int(np.argmin(np.abs(z - GB_z_hint)))
             sigma_cells = max(3.0, 2.0)
@@ -454,6 +485,10 @@ def active_sink_transport_step(f, e1, e2, sink: AxisymSink, hp: HazardParams, si
                 mass_resid_max = max(mass_resid_max,
                                       abs(_axisym_weighted_sum(dep / V_dep * V_net_correction, r_c)
                                           - V_net_correction) / max(V_excess, V_deficit, 1e-30))
+        if debug_capture is not None:
+            # state "C" -- immediately after excess/deficit mass is
+            # deposited/transferred near the TJ, same substep as "B" above.
+            debug_capture("post_redistribution", _sub_i, n_sub, f.copy(), e1.copy(), e2.copy())
 
     com1_particle = particle_com_z(e1, z, r_c, dz, dz)
     com1_substrate = particle_com_z(e2, z, r_c, dz, dz)

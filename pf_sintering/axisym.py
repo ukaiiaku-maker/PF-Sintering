@@ -458,6 +458,27 @@ def axisym_free_energy_gb(f, e1, e2, p, Wc, dr, dz, r_c, r_f, bc_z="periodic"):
     return 2 * math.pi * float(np.sum(r_c[None, :] * density)) * dr * dz
 
 
+def axisym_free_energy_gb_components(f, e1, e2, p, Wc, dr, dz, r_c, r_f, bc_z="periodic"):
+    """Component ledger for :func:`axisym_free_energy_gb`.
+
+    Uses the identical clipped coupling convention and exact discrete-adjoint
+    Laplacians.  Callers must pass the same ``bc_z`` as the evolution operator.
+    """
+    fb = np.clip(f, 0.0, 1.0)
+    density = {
+        "F_bulk": 0.5 * p.W_f * f * f * (1 - f) ** 2,
+        "F_grad_f": -0.5 * p.k_f * f * axisym_laplacian(f, dr, dz, r_c, r_f, bc_z=bc_z),
+        "F_coupling": Wc * (e1 * e1 + e2 * e2) * (0.5 * fb * fb - fb),
+        "F_grad_eta": -0.5 * p.k_eta * (
+            e1 * axisym_laplacian(e1, dr, dz, r_c, r_f, bc_z=bc_z)
+            + e2 * axisym_laplacian(e2, dr, dz, r_c, r_f, bc_z=bc_z)),
+    }
+    factor = 2 * math.pi * dr * dz
+    out = {name: factor * float(np.sum(r_c[None, :] * value)) for name, value in density.items()}
+    out["F_total"] = sum(out.values())
+    return out
+
+
 def axisym_constrained_tangent_cone_eta_update(e1, e2, f, Wc, p, dr, dz, r_c, r_f, dt, M_eta,
                                                 active_tol=1e-4, bc_z="periodic"):
     """Axisymmetric port of constrained_eta.constrained_tangent_cone_eta_
