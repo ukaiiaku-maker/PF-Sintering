@@ -294,7 +294,13 @@ def run_always_on(main: dict) -> None:
                         explicit_max_fourth_order_courant=renewal.PRODUCTION_C4)
                     actual_c4 = result[4].get(
                         "explicit_max_fourth_order_courant")
-                    assert actual_c4 == renewal.PRODUCTION_C4
+                    if actual_c4 != renewal.PRODUCTION_C4:
+                        raise RuntimeError(
+                            "event integrator C4 mismatch: "
+                            f"received={actual_c4!r}, "
+                            f"required={renewal.PRODUCTION_C4!r}, "
+                            f"success={result[3]!r}, "
+                            f"stop_reason={result[4].get('stop_reason')!r}")
                     if not result[3]:
                         raise RuntimeError(
                             f"always-on event {event_number} failed at "
