@@ -48,22 +48,20 @@ from pr_tj_node_coupling_gate import make_evaluator  # noqa: E402
 
 OUT = ROOT / (
     "runs/pr_current_head_regression/coarsening_driven_fourier/"
-    "avalanche_renewal_five_target5")
-PREFLIGHT = ROOT / (
-    "runs/pr_current_head_regression/coarsening_driven_fourier/"
-    "avalanche_v1_target5_preflight/barrier_preflight.json")
+    "avalanche_renewal_five_deltaG0p300_taucorr9ms")
 TEMPERATURE_K = 1830.15
 SECONDS_PER_MODEL_TIME = 0.01557994316955921
 CLOCK_SCALE = 15579943169.55921
 B_EVENT_M = 0.25e-9
 PRODUCTION_C4 = 0.05
-G0_STEP_EV = 3.775043876296807
-TAU_CORR_S = 1.947861854319964e-06
+DELTA_G_STEP_EV = 0.300000
+TAU_CORR_S = 9.0e-3
 V_CUTOFF = 0.88
 RN_CUTOFF_M = 35e-9
 ROOT_ANALYSIS_DT = 0.25
 ROOT_MOVIE_DT = 0.025
 COMPETING_CROSSING_DT = 0.005
+FACILITATED_MOVIE_DT = 0.025
 EVENT_MOVIE_DQ = 0.02
 N_BRANCH = 256
 AVALANCHES_REQUESTED = 5
@@ -402,6 +400,163 @@ def wait_for_root_or_censor(
         current = trial
 
 
+def wait_for_descendant_or_extinction(
+        state, *, avalanche_id: int, event_number: int, t_model: float,
+        total_completed: int, root_hazard: float, root_threshold: float,
+        vp_cycle0: float, setup, geom, evaluator, scalar, movie, controller,
+        descendant_trace: list[dict]):
+    """Evolve sink-OFF PF physics during one facilitated-source window."""
+    if not math.isfinite(controller.state.descendant_threshold):
+        raise RuntimeError("descendant window was not reset after the event")
+    if controller.state.window_triggered:
+        raise RuntimeError("cannot wait on an already-triggered source")
+
+    current, branches = measure(
+        state, t_model=t_model, cycle=avalanche_id, sink=0, q=0.0,
+        qcum=total_completed, hazard=root_hazard, threshold=root_threshold,
+        setup=setup, geom=geom, evaluator=evaluator, vp_cycle0=vp_cycle0)
+    rate_previous = controller.rate(
+        current["sigma_local_Pa"], current["r_n_m"])
+    scratches = [NumbaScratch(*state[0].shape), NumbaScratch(*state[0].shape)]
+    which = 0
+    movie_steps = max(1, int(round(FACILITATED_MOVIE_DT / setup["dt"])))
+    sample_index = 0
+
+    while True:
+        time_s = t_model * SECONDS_PER_MODEL_TIME
+        remaining_s = controller.state.window_deadline_s - time_s
+        tolerance_s = 64.0 * math.ulp(max(abs(time_s), 1.0))
+        if remaining_s <= tolerance_s:
+            controller.expire_window(controller.state.window_deadline_s)
+            t_model = controller.state.window_deadline_s / SECONDS_PER_MODEL_TIME
+            current, branches = measure(
+                state, t_model=t_model, cycle=avalanche_id, sink=0, q=0.0,
+                qcum=total_completed, hazard=root_hazard,
+                threshold=root_threshold, setup=setup, geom=geom,
+                evaluator=evaluator, vp_cycle0=vp_cycle0)
+            scalar.add(
+                current, branches, **output_extra(
+                    avalanche_id=avalanche_id, event_number=event_number,
+                    avalanche_active=0, q_event=0.0,
+                    Q_avalanche=controller.state.S_completed,
+                    Q_cumulative=total_completed,
+                    S_completed=controller.state.S_completed,
+                    controller=controller, frame_type="avalanche_extinction"))
+            append_movie(
+                movie, branches, current, frame_type="avalanche_extinction",
+                avalanche_id=avalanche_id, event_number=event_number,
+                avalanche_active=0, sink_state=0, q_event_over_b=0.0,
+                Q_avalanche_over_b=controller.state.S_completed,
+                Q_cumulative_over_b=total_completed,
+                S_completed=controller.state.S_completed,
+                controller=controller, flush=True)
+            scalar.flush()
+            return "extinct", state, t_model, current, branches, None
+
+        remaining_model = remaining_s / SECONDS_PER_MODEL_TIME
+        remaining_steps = int(math.floor(
+            remaining_model / setup["dt"] + 1.0e-12))
+        if remaining_steps <= 0:
+            result = controller.accumulate_window_segment(
+                rate_start_per_s=rate_previous,
+                rate_end_per_s=rate_previous,
+                start_time_s=time_s,
+                end_time_s=controller.state.window_deadline_s)
+            if result["crossed"]:
+                t_model = (float(result["crossing_time_s"])
+                           / SECONDS_PER_MODEL_TIME)
+                current["t_model"] = t_model
+                frame_type = "correlation_window"
+                scalar.add(
+                    current, branches, **output_extra(
+                        avalanche_id=avalanche_id,
+                        event_number=event_number,
+                        avalanche_active=1, q_event=0.0,
+                        Q_avalanche=controller.state.S_completed,
+                        Q_cumulative=total_completed,
+                        S_completed=controller.state.S_completed,
+                        controller=controller, frame_type=frame_type))
+                append_movie(
+                    movie, branches, current, frame_type=frame_type,
+                    avalanche_id=avalanche_id, event_number=event_number,
+                    avalanche_active=1, sink_state=0, q_event_over_b=0.0,
+                    Q_avalanche_over_b=controller.state.S_completed,
+                    Q_cumulative_over_b=total_completed,
+                    S_completed=controller.state.S_completed,
+                    controller=controller, flush=True)
+                scalar.flush()
+                return "continued", state, t_model, current, branches, None
+            t_model = controller.state.window_deadline_s / SECONDS_PER_MODEL_TIME
+            continue
+
+        step_count = min(movie_steps, remaining_steps)
+        segment_start_s = time_s
+        state, which = advance_pf_steps(
+            state, step_count, setup=setup, scratches=scratches, which=which)
+        t_model += step_count * setup["dt"]
+        trial, branches = measure(
+            state, t_model=t_model, cycle=avalanche_id, sink=0, q=0.0,
+            qcum=total_completed, hazard=root_hazard,
+            threshold=root_threshold, setup=setup, geom=geom,
+            evaluator=evaluator, vp_cycle0=vp_cycle0)
+        rate_trial = controller.rate(
+            trial["sigma_local_Pa"], trial["r_n_m"])
+        result = controller.accumulate_window_segment(
+            rate_start_per_s=rate_previous, rate_end_per_s=rate_trial,
+            start_time_s=segment_start_s,
+            end_time_s=t_model * SECONDS_PER_MODEL_TIME)
+        crossed = bool(result["crossed"])
+        trace = controller._trace_row(
+            descendant_sample(trial), rate_trial, int(crossed))
+        descendant_trace.append(dict(
+            trace, avalanche_id=avalanche_id, event_number=event_number,
+            phase="facilitated_sink_off"))
+        write_csv(OUT / "descendant_hazard_trace.csv", descendant_trace)
+        invalid = geometry_invalid(trial)
+        frame_type = "correlation_window"
+        append_movie(
+            movie, branches, trial, frame_type=frame_type,
+            avalanche_id=avalanche_id, event_number=event_number,
+            avalanche_active=1, sink_state=0, q_event_over_b=0.0,
+            Q_avalanche_over_b=controller.state.S_completed,
+            Q_cumulative_over_b=total_completed,
+            S_completed=controller.state.S_completed,
+            controller=controller,
+            flush=crossed or bool(invalid) or sample_index % 10 == 0)
+        sample_index += 1
+        if crossed or invalid or sample_index % 10 == 0:
+            scalar.add(
+                trial, branches, **output_extra(
+                    avalanche_id=avalanche_id,
+                    event_number=event_number,
+                    avalanche_active=1, q_event=0.0,
+                    Q_avalanche=controller.state.S_completed,
+                    Q_cumulative=total_completed,
+                    S_completed=controller.state.S_completed,
+                    controller=controller, frame_type=frame_type))
+            scalar.flush()
+        save_state(
+            OUT / "checkpoints"
+            / f"avalanche{avalanche_id}_facilitated_wait_latest.npz",
+            state, t_model=t_model,
+            descendant_hazard=controller.state.descendant_hazard,
+            descendant_threshold=controller.state.descendant_threshold,
+            window_deadline_s=controller.state.window_deadline_s,
+            Vp_over_Vp_cycle=trial["Vp_over_Vp_cycle"],
+            r_n_m=trial["r_n_m"])
+        if invalid:
+            return "invalid", state, t_model, trial, branches, invalid
+        if crossed:
+            save_state(
+                OUT / "checkpoints"
+                / f"avalanche{avalanche_id}_event{event_number + 1}_before_descendant.npz",
+                state, t_model=t_model,
+                descendant_hazard=controller.state.descendant_hazard,
+                descendant_threshold=controller.state.descendant_threshold)
+            return "continued", state, t_model, trial, branches, None
+        rate_previous = rate_trial
+
+
 def descendant_sample(row: dict) -> dict:
     return dict(
         t_s=float(row["t_model"] * SECONDS_PER_MODEL_TIME),
@@ -491,8 +646,10 @@ def run_one_b_event(
 
 
 def controller_trace_rows(trace: list[dict], *, avalanche_id: int,
-                          event_number: int) -> list[dict]:
-    return [dict(item, avalanche_id=avalanche_id, event_number=event_number)
+                          event_number: int,
+                          phase: str = "active_1b_frozen") -> list[dict]:
+    return [dict(item, avalanche_id=avalanche_id,
+                 event_number=event_number, phase=phase)
             for item in trace]
 
 
@@ -619,11 +776,8 @@ def main() -> None:
     (OUT / "checkpoints").mkdir()
     set_num_threads(8)
     assert PRODUCTION_C4 == 0.05
-    calibration = json.loads(PREFLIGHT.read_text())
-    assert calibration["target_reduced_median_S"] == 5.0
-    assert math.isclose(calibration["G0_step_eV"], G0_STEP_EV,
-                        rel_tol=0.0, abs_tol=1e-14)
-    g0_step = G0_STEP_EV
+    assert DELTA_G_STEP_EV == 0.300000
+    assert TAU_CORR_S == 9.0e-3
     exported, root_slice = authoritative.configure_barrier()
     assert base.BARRIER.G0_eV == root_slice["G0_eV"]
     base.OUT = OUT
@@ -650,7 +804,7 @@ def main() -> None:
     state = (geom["f"].copy(), geom["e1"].copy(), geom["e2"].copy())
     root_params = base.BARRIER
     controller = AvalancheController(
-        barrier=DescendantBarrier(root_params, g0_step),
+        barrier=DescendantBarrier(root_params, DELTA_G_STEP_EV),
         temperature_K=TEMPERATURE_K,
         attempt_frequency_per_s=float(exported["constants"]["nu0_sinv"]),
         b_m=B_EVENT_M,
@@ -660,8 +814,10 @@ def main() -> None:
         accepted_architecture="D2 serialized finite-1b avalanche renewal",
         production_parent_commit="d2aafbf7df99728acb67af941f2c078126455e1f",
         implementation_commit=os.popen("git rev-parse HEAD").read().strip(),
-        temperature_K=TEMPERATURE_K, G0_step_eV=g0_step,
-        scalar_calibration=calibration,
+        temperature_K=TEMPERATURE_K,
+        descendant_delta_G_step_eV=DELTA_G_STEP_EV,
+        descendant_barrier_definition=(
+            "max(G_floor, G_root_star(sigma_local)-delta_G_step)"),
         tau_corr_s=controller.correlation_time_s,
         root_barrier_export=str(authoritative.EXPORT),
         root_barrier_export_sha256=hashlib.sha256(
@@ -672,6 +828,10 @@ def main() -> None:
         root_analysis_dt_model=ROOT_ANALYSIS_DT,
         loading_movie_dt_model=ROOT_MOVIE_DT,
         event_movie_dq_over_b=EVENT_MOVIE_DQ, N_branch=N_BRANCH,
+        facilitated_movie_dt_model=FACILITATED_MOVIE_DT,
+        descendant_clock_frozen_during_active_1b=True,
+        descendant_pending_queue_enabled=False,
+        correlation_window_evolves_sink_off_PF=True,
         no_descendant_memory_between_avalanches=True,
         no_elastic_facilitation=True, no_parameter_retuning=True,
         grid_shape=list(state[0].shape), dr_m=setup["dr"], dz_m=setup["dz"],
@@ -747,9 +907,6 @@ def main() -> None:
                 avalanche_blocker = None
 
                 while controller.state.avalanche_active:
-                    if controller.state.S_completed > 0:
-                        if not controller.launch_pending_child():
-                            raise RuntimeError("empty descendant queue at child launch")
                     event_number += 1
                     controller.begin_transit()
                     event_start_model = t_model
@@ -776,7 +933,7 @@ def main() -> None:
                     trace = controller.integrate_transit_samples(samples)
                     descendant_trace.extend(controller_trace_rows(
                         trace, avalanche_id=avalanche_id,
-                        event_number=event_number))
+                        event_number=event_number, phase="active_1b_frozen"))
                     controller.complete_transit(t_model * SECONDS_PER_MODEL_TIME)
                     total_completed += 1
                     completion_local = current_row["sigma_local_Pa"]
@@ -794,8 +951,7 @@ def main() -> None:
                         sigma_end_local_Pa=completion_local,
                         delta_sigma_local_Pa=pre_local - completion_local,
                         delta_sigma_integral_Pa=pre_integral - completion_integral,
-                        descendants_committed_during_transit=sum(
-                            item["crossings_in_segment"] for item in trace),
+                        descendants_committed_during_transit=0,
                         pending_children_after=controller.state.pending_children,
                         C4=restart["explicit_max_fourth_order_courant"]))
                     write_csv(OUT / "one_b_subevents.csv", subevents)
@@ -828,45 +984,28 @@ def main() -> None:
                             Vp_over_Vp_cycle=current_row["Vp_over_Vp_cycle"],
                             r_n_m=current_row["r_n_m"])
                         break
-                    if controller.state.pending_children > 0:
-                        continue
-
-                    correlation_start_s = t_model * SECONDS_PER_MODEL_TIME
-                    correlation = controller.correlation_window(
-                        sigma_local_Pa=current_row["sigma_local_Pa"],
-                        r_TJ_m=current_row["r_n_m"],
-                        start_time_s=correlation_start_s)
-                    t_model += (float(correlation["elapsed_s"])
-                                / SECONDS_PER_MODEL_TIME)
-                    current_row, current_branches = measure(
-                        state, t_model=t_model, cycle=avalanche_id,
-                        sink=0, q=0.0, qcum=total_completed,
-                        hazard=root_row["H"], threshold=root_threshold,
-                        setup=setup, geom=geom, evaluator=evaluator,
-                        vp_cycle0=vp_cycle0)
-                    continued = bool(correlation["continued"])
-                    frame_type = ("correlation_window" if continued
-                                  else "avalanche_extinction")
-                    scalar.add(
-                        current_row, current_branches, **output_extra(
+                    (window_status, state, t_model, current_row,
+                     current_branches, window_reasons) = (
+                        wait_for_descendant_or_extinction(
+                            state, avalanche_id=avalanche_id,
+                            event_number=event_number, t_model=t_model,
+                            total_completed=total_completed,
+                            root_hazard=root_row["H"],
+                            root_threshold=root_threshold,
+                            vp_cycle0=vp_cycle0, setup=setup, geom=geom,
+                            evaluator=evaluator, scalar=scalar, movie=movie,
+                            controller=controller,
+                            descendant_trace=descendant_trace))
+                    if window_status == "invalid":
+                        avalanche_blocker = dict(
+                            reason="geometry_validity_boundary_during_avalanche",
                             avalanche_id=avalanche_id,
                             event_number=event_number,
-                            avalanche_active=int(continued), q_event=0.0,
-                            Q_avalanche=controller.state.S_completed,
-                            Q_cumulative=total_completed,
-                            S_completed=controller.state.S_completed,
-                            controller=controller, frame_type=frame_type))
-                    append_movie(
-                        movie, current_branches, current_row,
-                        frame_type=frame_type, avalanche_id=avalanche_id,
-                        event_number=event_number,
-                        avalanche_active=int(continued), sink_state=0,
-                        q_event_over_b=0.0,
-                        Q_avalanche_over_b=controller.state.S_completed,
-                        Q_cumulative_over_b=total_completed,
-                        S_completed=controller.state.S_completed,
-                        controller=controller, flush=True)
-                    scalar.flush()
+                            reasons=window_reasons,
+                            Vp_over_Vp_cycle=current_row["Vp_over_Vp_cycle"],
+                            r_n_m=current_row["r_n_m"])
+                        break
+                    continued = window_status == "continued"
                     if not continued:
                         avalanches.append(dict(
                             avalanche_id=avalanche_id,
@@ -941,7 +1080,8 @@ def main() -> None:
         avalanches_requested=AVALANCHES_REQUESTED,
         total_one_b_events=total_completed, censor=censor, blocker=blocker,
         seed=seed, root_thresholds=seed_record["root_thresholds"],
-        G0_step_eV=g0_step, tau_corr_s=controller.correlation_time_s,
+        descendant_delta_G_step_eV=DELTA_G_STEP_EV,
+        tau_corr_s=controller.correlation_time_s,
         C4_received_and_asserted=PRODUCTION_C4,
         movie=movie_result, wall_seconds=time.monotonic() - started,
         avalanches=avalanches)
