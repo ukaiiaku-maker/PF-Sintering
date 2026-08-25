@@ -50,7 +50,7 @@ BARRIER_EXPORT = Path(
     "/Volumes/Data/Data/INRL_lambert_onsager/Forward_Model/data/zro2/"
     "bicrystal_creep_barrier_export.json")
 MAX_TRANSITS_DEFAULT = 50
-TARGET_REDUCED_MEDIAN_S = 7.0
+TARGET_REDUCED_MEDIAN_S = 5.0
 REDUCED_CALIBRATION_REPLICATES_PER_ROOT = 256
 REDUCED_CALIBRATION_CAP = 100
 REDUCED_CALIBRATION_SEED = 20260824
@@ -708,6 +708,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--g0-step-eV", type=float)
+    parser.add_argument("--preflight-source", type=Path,
+                        help="reuse a completed scalar-calibration JSON without recalibrating")
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--aggregate-only", action="store_true",
                         help="rebuild statistics/figures from existing result.json files")
@@ -740,7 +742,12 @@ def main():
             "mean_S_complete", "median_S_complete", "S95_complete",
             "observed_lower_bound_median_S", "kaplan_meier_median_S")}, indent=2))
         return
-    preflight = barrier_preflight(args.out)
+    if args.preflight_source is not None:
+        preflight = json.loads(args.preflight_source.read_text())
+        (args.out / "barrier_preflight.json").write_text(
+            json.dumps(preflight, indent=2) + "\n")
+    else:
+        preflight = barrier_preflight(args.out)
     if args.preflight_only:
         print(json.dumps(preflight, indent=2))
         return
