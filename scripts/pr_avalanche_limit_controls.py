@@ -260,13 +260,17 @@ def run_always_on(main: dict) -> None:
         movie_add(movie, branches, row, frame_type="active_1b_transit",
                   sink=1, event_number=0, q_event=0.0,
                   q_cumulative=0.0, flush=True)
+        wait_scratches = [
+            NumbaScratch(*state[0].shape), NumbaScratch(*state[0].shape)]
+        wait_which = 0
+        wait_steps = max(1, int(round(MOVIE_DT_MODEL / setup["dt"])))
         try:
             while True:
                 event_number += 1
-                event_start_model = t_model
                 callback_elapsed = 0.0
                 next_movie_q = renewal.EVENT_MOVIE_DQ
                 restart = None
+                event_start_model = t_model
 
                 def accepted(packet, accepted_state):
                     nonlocal callback_elapsed, next_movie_q
@@ -287,25 +291,74 @@ def run_always_on(main: dict) -> None:
                     while next_movie_q <= q + 1e-12:
                         next_movie_q += renewal.EVENT_MOVIE_DQ
 
-                for target in renewal.EVENT_CHECKPOINTS:
+                first_result = None
+                while first_result is None:
+                    event_start_model = t_model
                     result = event_call(
-                        state, setup, geom, evaluator, transport, target,
-                        event_restart=restart, state_callback=accepted,
+                        state, setup, geom, evaluator, transport,
+                        renewal.EVENT_CHECKPOINTS[0],
+                        event_restart=None, state_callback=accepted,
                         explicit_max_fourth_order_courant=renewal.PRODUCTION_C4)
+                    if result[3]:
+                        first_result = result
+                        break
+                    reason = result[4].get("stop_reason")
+                    if reason != "nonpositive instantaneous GB-to-TJ-node affinity":
+                        raise RuntimeError(
+                            f"always-on event {event_number} could not start: "
+                            f"{reason}")
+                    state, wait_which = renewal.advance_pf_steps(
+                        state, wait_steps, setup=setup,
+                        scratches=wait_scratches, which=wait_which)
+                    t_model += wait_steps * setup["dt"]
+                    row, branches = measure(
+                        state, t_model=t_model, sink=1, q=0.0,
+                        qcum=q_cumulative, setup=setup, geom=geom,
+                        evaluator=evaluator, vp0=vp0)
+                    rows.append(scalar_row(
+                        row, mode="always_on_diffusion",
+                        event_number=event_number, q_event=0.0,
+                        q_cumulative=q_cumulative))
+                    movie_add(
+                        movie, branches, row, frame_type="loading", sink=1,
+                        event_number=event_number, q_event=0.0,
+                        q_cumulative=q_cumulative, flush=len(rows) % 10 == 0)
+                    invalid = renewal.geometry_invalid(row)
+                    print(
+                        f"ALWAYS_ON AVAILABLE_WAIT e={event_number} "
+                        f"t={t_model:.3f} sigL={row['sigma_local_Pa']/1e6:.3f}",
+                        flush=True)
+                    if invalid:
+                        outcome = "EXISTING_GEOMETRY_VALIDITY_BOUNDARY"
+                        blocker = invalid
+                        break
+                    if t_model >= main["t_end_model"]:
+                        outcome = "MATCHED_MAIN_PHYSICAL_HORIZON"
+                        break
+                if first_result is None:
+                    break
+
+                for target_index, target in enumerate(renewal.EVENT_CHECKPOINTS):
+                    if target_index == 0:
+                        result = first_result
+                    else:
+                        result = event_call(
+                            state, setup, geom, evaluator, transport, target,
+                            event_restart=restart, state_callback=accepted,
+                            explicit_max_fourth_order_courant=(
+                                renewal.PRODUCTION_C4))
                     actual_c4 = result[4].get(
                         "explicit_max_fourth_order_courant")
-                    if actual_c4 != renewal.PRODUCTION_C4:
-                        raise RuntimeError(
-                            "event integrator C4 mismatch: "
-                            f"received={actual_c4!r}, "
-                            f"required={renewal.PRODUCTION_C4!r}, "
-                            f"success={result[3]!r}, "
-                            f"stop_reason={result[4].get('stop_reason')!r}")
                     if not result[3]:
                         raise RuntimeError(
                             f"always-on event {event_number} failed at "
                             f"q/b={result[4].get('event_progress_over_b')}: "
                             f"{result[4].get('stop_reason')}")
+                    if actual_c4 != renewal.PRODUCTION_C4:
+                        raise RuntimeError(
+                            "event integrator C4 mismatch: "
+                            f"received={actual_c4!r}, "
+                            f"required={renewal.PRODUCTION_C4!r}")
                     state = tuple(field.copy() for field in result[:3])
                     restart = result[4]["event_restart"]
                     restart["explicit_max_fourth_order_courant"] = actual_c4
