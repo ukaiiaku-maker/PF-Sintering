@@ -936,6 +936,16 @@ def main() -> None:
                         event_number=event_number, phase="active_1b_frozen"))
                     controller.complete_transit(t_model * SECONDS_PER_MODEL_TIME)
                     total_completed += 1
+                    # The production validity ratio is referenced to the
+                    # start of each new post-event waiting interval.  Reset
+                    # only that diagnostic reference at exactly q=b; the PF
+                    # state and every event/clock parameter are unchanged.
+                    vp_cycle0 = integral(state[1], setup)
+                    current_row, current_branches = measure(
+                        state, t_model=t_model, cycle=avalanche_id, sink=1,
+                        q=1.0, qcum=total_completed, hazard=root_row["H"],
+                        threshold=root_threshold, setup=setup, geom=geom,
+                        evaluator=evaluator, vp_cycle0=vp_cycle0)
                     completion_local = current_row["sigma_local_Pa"]
                     completion_integral = current_row["sigma_integral_Pa"]
                     subevents.append(dict(

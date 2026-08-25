@@ -93,8 +93,39 @@ class MovieGeometryArchive:
         self.nbranch = int(nbranch)
         self.seconds_per_model_time = float(seconds_per_model_time)
         self.file = h5py.File(self.path, mode)
-        self._create(metadata or {})
-        self.last_t_model = -np.inf
+        if mode == "a" and "time" in self.file:
+            self._validate_append_target()
+            self.last_t_model = (
+                float(self.file["time/t_model"][-1])
+                if self.nframe else -np.inf)
+        else:
+            self._create(metadata or {})
+            self.last_t_model = -np.inf
+
+    def _validate_append_target(self) -> None:
+        file = self.file
+        if file.attrs.get("format") != "axisymmetric_pr_movie_geometry_v1":
+            raise ValueError("cannot append to an incompatible movie archive")
+        if int(file.attrs["N_branch"]) != self.nbranch:
+            raise ValueError("movie archive branch size does not match")
+        required = [
+            "geometry/z_negative_m", "geometry/r_negative_m",
+            "geometry/z_positive_m", "geometry/r_positive_m",
+            "time/t_model", "time/t_s", "state/frame_id",
+            "state/frame_type",
+        ]
+        required.extend(f"state/{name}" for name in FLOAT_STATE_FIELDS)
+        required.extend(f"state/{name}" for name in INT_STATE_FIELDS)
+        missing = [name for name in required if name not in file]
+        if missing:
+            raise ValueError(f"movie archive is missing datasets: {missing}")
+        lengths = {int(file[name].shape[0]) for name in required}
+        if len(lengths) != 1:
+            raise ValueError("movie archive datasets have inconsistent lengths")
+        times = np.asarray(file["time/t_model"], dtype=float)
+        if (not np.all(np.isfinite(times))
+                or (times.size > 1 and np.any(np.diff(times) <= 0.0))):
+            raise ValueError("movie archive time is not finite and increasing")
 
     def _create(self, metadata: Mapping) -> None:
         file = self.file

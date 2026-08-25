@@ -53,3 +53,21 @@ def test_archive_is_fixed_size_append_only_and_strict_time(tmp_path):
         assert np.allclose(file["time/t_s"][:], [0.0, 0.05])
         assert file["state/frame_id"][:].tolist() == [0, 1]
         assert file["state/r_GB_m"][0] == 1.0
+
+
+def test_archive_can_reopen_and_append_for_exact_checkpoint_continuation(tmp_path):
+    path = tmp_path / "movie_resume.h5"
+    with MovieGeometryArchive(
+            path, nbranch=16, seconds_per_model_time=0.5) as archive:
+        archive.append(branches(), frame(0.0), frame_type="root_nucleation")
+    with MovieGeometryArchive(
+            path, nbranch=16, seconds_per_model_time=0.5,
+            mode="a") as archive:
+        assert archive.nframe == 1
+        assert archive.last_t_model == 0.0
+        archive.append(
+            branches(), frame(0.1), frame_type="active_1b_transit",
+            flush=True)
+    with h5py.File(path, "r") as file:
+        assert file["state/frame_id"][:].tolist() == [0, 1]
+        assert np.allclose(file["time/t_model"][:], [0.0, 0.1])
