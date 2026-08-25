@@ -93,3 +93,21 @@ def test_correlation_window_crosses_once_or_extinguishes():
     assert not result["continued"]
     assert not extinct.state.avalanche_active
     assert math.isclose(extinct.state.descendant_hazard, 2.0)
+
+
+def test_correlation_exact_crossing_is_roundoff_safe():
+    barrier = DescendantBarrier(ROOT, G0_step_eV=3.0)
+    controller = AvalancheController(
+        barrier=barrier, temperature_K=1800.0,
+        attempt_frequency_per_s=1e12, b_m=0.25e-9,
+        correlation_time_s=1.0, rng=SequenceRNG([1.0, 2.0]))
+    controller.start(avalanche_id=1, root_cycle=1, start_time_s=0.0)
+    controller.state.descendant_hazard = 0.9
+    controller.rate = lambda sigma, radius: 1.0
+    controller.correlation_time_s = 2.0 * (
+        controller.state.descendant_threshold
+        - controller.state.descendant_hazard)
+    result = controller.correlation_window(
+        sigma_local_Pa=80e6, r_TJ_m=50e-9, start_time_s=0.0)
+    assert result["continued"]
+    assert controller.state.pending_children == 1

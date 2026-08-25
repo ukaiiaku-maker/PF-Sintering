@@ -243,8 +243,11 @@ class AvalancheController:
         residual = self.state.descendant_threshold - self.state.descendant_hazard
         dt_cross = residual / gamma if gamma > 0.0 else math.inf
         if dt_cross <= self.correlation_time_s:
+            # Adding a rounded subtraction back to the existing hazard can
+            # land one ulp below an analytically exact first passage.
+            crossing_increment = math.nextafter(residual, math.inf)
             crossed = self._consume_hazard(
-                residual, t_start_s=start_time_s,
+                crossing_increment, t_start_s=start_time_s,
                 t_end_s=start_time_s + dt_cross,
                 source="correlation_window")
             if crossed != 1:
