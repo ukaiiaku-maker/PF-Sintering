@@ -96,6 +96,30 @@ def test_completed_event_restarts_one_source_window():
     assert ctl.state.window_deadline_s == 2.009
 
 
+def test_descendant_facilitation_decays_after_children_not_root():
+    barrier = DescendantBarrier(ROOT, delta_G_step_eV=0.3)
+    ctl = AvalancheController(
+        barrier=barrier, temperature_K=1800.0,
+        attempt_frequency_per_s=1e12, b_m=0.25e-9,
+        correlation_time_s=9e-3, rng=SequenceRNG([0.5, 0.6, 0.7]),
+        facilitation_decay_alpha=0.6)
+    ctl.start(avalanche_id=1, root_cycle=1, start_time_s=0.0)
+    ctl.complete_transit(1.0)
+    assert ctl.state.source_amplitude == 1.0
+    assert math.isclose(
+        ctl.barrier_eV(100e6), barrier.barrier_eV(100e6, 1.0))
+    ctl.begin_transit()
+    ctl.complete_transit(2.0)
+    assert math.isclose(ctl.state.source_amplitude, 0.6)
+    assert math.isclose(
+        ctl.barrier_eV(100e6), barrier.barrier_eV(100e6, 0.6))
+    ctl.begin_transit()
+    ctl.complete_transit(3.0)
+    assert math.isclose(ctl.state.source_amplitude, 0.36)
+    assert math.isclose(
+        ctl.state.source_amplitude * barrier.delta_G_step_eV, 0.108)
+
+
 def test_window_extinction_after_exact_nine_ms():
     barrier = DescendantBarrier(ROOT, delta_G_step_eV=0.3)
     ctl = AvalancheController(

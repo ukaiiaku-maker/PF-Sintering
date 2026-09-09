@@ -24,6 +24,8 @@ import math
 
 import numpy as np
 from scipy import sparse
+from scipy.ndimage import gaussian_filter1d
+from scipy.spatial import cKDTree
 from scipy.sparse import linalg as sparse_linalg
 
 
@@ -423,6 +425,142 @@ def _solve_row_volume_shift(f_row, r_c, target_weighted, W, relative_tolerance):
     raise RuntimeError("signed row-volume solve did not converge")
 
 
+def _apply_branch_normal_phase_displacement(
+        f, branch, r_c, dr, dz, normal_displacements_m, target_volume_m3,
+        axisym_cell_factor_m2, W, relative_tolerance):
+    """Translate the diffuse interface in its local normal phase coordinate.
+
+    ``atanh(1-2f)`` is the dimensionless tanh phase ``d/W`` for a resolved
+    signed-distance interface.  Subtracting ``h/W`` therefore advances the
+    interface by the signed normal distance ``h``; it is not a radial motion
+    of the contour intersection in an axial grid row.
+
+    The finite-volume displacements already contain the desired spatial
+    distribution.  A single uniform normal null-mode correction is solved for
+    each branch to remove the finite-shift quadrature error while preserving
+    that distribution and the exact integrated branch volume.
+    """
+    values = np.asarray(f, dtype=float)
+    rows = np.asarray(branch.row_indices, dtype=int)
+    h_base = np.asarray(normal_displacements_m, dtype=float)
+    radii = np.asarray(r_c, dtype=float)
+    target = float(target_volume_m3)
+    factor = float(axisym_cell_factor_m2)
+    if values.ndim != 2 or len(rows) != len(h_base):
+        raise ValueError("normal displacement must match the branch rows")
+    if not np.all(np.isfinite(h_base)):
+        raise ValueError("normal displacements must be finite")
+
+    base_rows = values[rows].copy()
+    active = (base_rows > 0.0) & (base_rows < 1.0)
+    # Extend each interfacial v_n off the contour along its nearest normal.
+    # A constant value on an axial row is not a normal extension when the
+    # free surface is sloped, especially in the first few W from the TJ.
+    contour_points = np.column_stack([
+        rows.astype(float) * float(dz), branch.r_centers_m])
+    active_local_row, active_radial = np.nonzero(active)
+    active_points = np.column_stack([
+        rows[active_local_row].astype(float) * float(dz),
+        radii[active_radial]])
+    nearest = cKDTree(contour_points).query(active_points, k=1)[1]
+    extended_h = np.zeros_like(base_rows)
+    extended_h[active_local_row, active_radial] = h_base[nearest]
+    weighted_r = np.asarray(radii, dtype=np.longdouble)[None, :]
+
+    def evaluate(correction_m):
+        shifts = extended_h[active] + float(correction_m)
+        shifted_rows = base_rows.copy()
+        clipped_active = np.clip(
+            base_rows[active], np.finfo(float).eps,
+            1.0 - np.finfo(float).eps)
+        phase = np.arctanh(1.0 - 2.0 * clipped_active)
+        shifted_rows[active] = 0.5 * (
+            1.0 - np.tanh(phase - shifts / W))
+        added = factor * float(np.sum(
+            weighted_r
+            * (np.asarray(shifted_rows, dtype=np.longdouble)
+               - np.asarray(base_rows, dtype=np.longdouble)),
+            dtype=np.longdouble))
+        return shifted_rows, added
+
+    shifted, added = evaluate(0.0)
+    closure_scale = max(abs(target), float(np.sum(np.abs(
+        np.asarray(normal_displacements_m)
+        * (2.0 * math.pi * radii.mean())))), 1e-300)
+    absolute_tolerance = max(
+        relative_tolerance * max(abs(target), 1e-300),
+        0.25 * np.finfo(float).eps * closure_scale)
+    residual = added - target
+    if abs(residual) <= absolute_tolerance:
+        correction = 0.0
+    else:
+        clipped = np.clip(base_rows, 0.0, 1.0)
+        derivative = factor * float(np.sum(
+            radii[None, :] * (2.0 / W) * clipped * (1.0 - clipped)))
+        if derivative <= 0.0:
+            raise ValueError("branch contains no resolved normal translation mode")
+        estimate = -residual / derivative
+        lo = min(0.0, estimate)
+        hi = max(0.0, estimate)
+        _, added_lo = evaluate(lo)
+        _, added_hi = evaluate(hi)
+        step = max(abs(estimate), np.finfo(float).eps * W)
+        for _ in range(80):
+            if added_lo <= target <= added_hi:
+                break
+            if target < added_lo:
+                hi, added_hi = lo, added_lo
+                lo -= step
+                _, added_lo = evaluate(lo)
+            else:
+                lo, added_lo = hi, added_hi
+                hi += step
+                _, added_hi = evaluate(hi)
+            step *= 2.0
+        else:
+            raise RuntimeError("normal phase-volume correction cannot be bracketed")
+
+        correction = min(max(estimate, lo), hi)
+        for _ in range(80):
+            shifted, added = evaluate(correction)
+            residual = added - target
+            if abs(residual) <= absolute_tolerance:
+                break
+            if residual < 0.0:
+                lo = correction
+            else:
+                hi = correction
+            shifted_clipped = np.clip(shifted, 0.0, 1.0)
+            slope = factor * float(np.sum(
+                radii[None, :] * (2.0 / W)
+                * shifted_clipped * (1.0 - shifted_clipped)))
+            newton = correction - residual / slope if slope > 0.0 else math.nan
+            correction = newton if lo < newton < hi else 0.5 * (lo + hi)
+        else:
+            raise RuntimeError("normal phase-volume correction did not converge")
+    shifted, added = evaluate(correction)
+    row_changes = factor * np.asarray([
+        float(np.sum(
+            np.asarray(radii, dtype=np.longdouble)
+            * (np.asarray(new, dtype=np.longdouble)
+               - np.asarray(old, dtype=np.longdouble)),
+            dtype=np.longdouble))
+        for new, old in zip(shifted, base_rows)])
+    return shifted, dict(
+        requested_normal_displacements_m=h_base,
+        applied_normal_displacements_m=h_base + correction,
+        uniform_normal_closure_correction_m=float(correction),
+        added_cell_volume_changes_m3=row_changes,
+        requested_branch_volume_m3=target,
+        added_branch_volume_m3=float(added),
+        closure_error_m3=float(added - target),
+        geometry_realization=(
+            "signed tanh phase-coordinate translation with nearest-contour "
+            "normal-ray velocity extension"),
+        normal_extension_mode="nearest-contour normal coordinate",
+        radial_row_displacement_used=False)
+
+
 def apply_axisymmetric_branch_boundary_flux_step(
         f, grain1, grain2, r_c, dr, dz, W,
         branches, surface_flux_mobility_m6_per_J_model_time,
@@ -431,15 +569,19 @@ def apply_axisymmetric_branch_boundary_flux_step(
         relative_tolerance=2e-10,
         implicit_mullins_B_m4_per_model_time=None,
         branch_volume_rates_m3_per_model_time=None,
-        mass_closure_relative_tolerance=1e-8):
+        mass_closure_relative_tolerance=1e-8,
+        chemical_potential_filter_length_m=None,
+        normal_displacement_diffusion_B_m4_per_model_time=None):
     """Advance two branches over one model-time finite-volume step.
 
     The scientific path supplies the two signed rates from a zero-storage TJ
     node; ``branch_fractions`` remains available for manufactured tests.
     Conservative ``-d(rQ)/ds`` supplies a volume increment for every contour
-    cell, and each row receives the corresponding exact signed tanh-phase
-    shift.  One branch may feed the node while the other carries that exchange
-    plus the net GB delivery.
+    cell.  Dividing by its true axisymmetric surface area gives its normal
+    displacement, which translates the local signed tanh phase coordinate.
+    The old independent radial-row volume solve is not used.  One branch may
+    feed the node while the other carries that exchange plus the net GB
+    delivery.
     Ordinary volumetric ``M_s`` evolution must not also be applied over this
     interval; this operator already represents event-time surface transport.
     """
@@ -499,44 +641,108 @@ def apply_axisymmetric_branch_boundary_flux_step(
                     fractions[0] if branch.side == "positive" else fractions[1])
         owner = (positive_branch_grain if branch.side == "positive"
                  else 3 - positive_branch_grain)
+        flux_branch = branch
+        if chemical_potential_filter_length_m is not None:
+            filter_length = float(chemical_potential_filter_length_m)
+            spacing = float(np.median(np.diff(branch.s_centers_m)))
+            if not math.isfinite(filter_length) or filter_length <= 0.0:
+                raise ValueError("chemical-potential filter length must be positive")
+            flux_branch = AxisymmetricSurfaceBranch(
+                side=branch.side, row_indices=branch.row_indices,
+                s_centers_m=branch.s_centers_m, s_faces_m=branch.s_faces_m,
+                r_centers_m=branch.r_centers_m, r_faces_m=branch.r_faces_m,
+                mu_Pa=gaussian_filter1d(
+                    branch.mu_Pa, sigma=filter_length/spacing, mode="nearest"))
         flux = axisymmetric_branch_flux_fv(
-            branch, surface_flux_mobility_m6_per_J_model_time,
+            flux_branch, surface_flux_mobility_m6_per_J_model_time,
             branch_rates[branch.side])
         implicit = None
         if implicit_mullins_B_m4_per_model_time is None:
             targets_m3 = flux["cell_volume_rate_m3_per_model_time"] * dt_model
         else:
             implicit = linearly_implicit_mullins_branch_increment(
-                branch, flux, dt_model, implicit_mullins_B_m4_per_model_time)
+                flux_branch, flux, dt_model, implicit_mullins_B_m4_per_model_time)
             targets_m3 = implicit["cell_volume_changes_m3"]
-        shifts = []
-        added_rows_m3 = []
-        for row, target_m3 in zip(branch.row_indices, targets_m3):
-            try:
-                shifted, shift, added_weighted = _solve_row_volume_shift(
-                    f_new[row], r_c, target_m3 / factor, W, relative_tolerance)
-            except RuntimeError as error:
-                raise RuntimeError(
-                    f"{branch.side} branch row={int(row)} target={target_m3:.9e} m3: {error}"
-                ) from error
-            delta = shifted - f_new[row]
-            f_new[row] = shifted
-            if owner == 1:
-                g1_new[row] += delta
-            else:
-                g2_new[row] += delta
-            shifts.append(shift)
-            added_rows_m3.append(added_weighted * factor)
+        if implicit is None:
+            normal_displacements = (
+                targets_m3 / flux["cell_area_m2"])
+        else:
+            normal_displacements = np.asarray(
+                implicit["normal_displacements_m"], dtype=float)
+        # The FV divergence is cell conservative, but the diffuse interface
+        # cannot realize alternating normal motions on a scale below W as
+        # independent sharp corners.  Project the displacement (not the
+        # source or boundary flux) onto the resolved W-scale interface
+        # coordinate, then restore its exact axisymmetric volume moment.
+        spacing = float(np.median(np.diff(branch.s_centers_m)))
+        # The tanh profile f=(1-tanh(d/W))/2 spans 5--95% over
+        # 2*atanh(0.9)*W.  Normal-displacement detail below that physical
+        # diffuse thickness is not representable as a smooth PF interface.
+        diffuse_resolution_length_m = 2.0 * math.atanh(0.9) * float(W)
+        if normal_displacement_diffusion_B_m4_per_model_time is None:
+            ell_SD_m = 0.0
+        else:
+            B_event = float(normal_displacement_diffusion_B_m4_per_model_time)
+            if not math.isfinite(B_event) or B_event <= 0.0:
+                raise ValueError("normal-displacement diffusion B must be positive")
+            ell_SD_m = (B_event * float(dt_model)) ** 0.25
+        reconstruction_length_m = max(
+            ell_SD_m, diffuse_resolution_length_m)
+        reconstruction_sigma_cells = reconstruction_length_m / spacing
+        resolved_normal_displacements = gaussian_filter1d(
+            normal_displacements, sigma=reconstruction_sigma_cells,
+            mode="nearest")
+        area = np.asarray(flux["cell_area_m2"], dtype=float)
+        resolved_normal_displacements += (
+            float(np.sum(targets_m3))
+            - float(np.sum(area * resolved_normal_displacements))
+        ) / float(np.sum(area))
+        try:
+            shifted_rows, normal_diag = _apply_branch_normal_phase_displacement(
+                f_new, branch, r_c, dr, dz, resolved_normal_displacements,
+                float(np.sum(targets_m3)), factor, W, relative_tolerance)
+        except RuntimeError as error:
+            raise RuntimeError(
+                f"{branch.side} branch normal phase update: {error}") from error
+        delta = shifted_rows - f_new[branch.row_indices]
+        f_new[branch.row_indices] = shifted_rows
+        if owner == 1:
+            g1_new[branch.row_indices] += delta
+        else:
+            g2_new[branch.row_indices] += delta
+        applied_normal = np.asarray(
+            normal_diag["applied_normal_displacements_m"], dtype=float)
+        added_rows_m3 = np.asarray(
+            normal_diag["added_cell_volume_changes_m3"], dtype=float)
         branch_diags[branch.side] = dict(
             owner_grain=owner,
             fraction=fraction,
             row_indices=branch.row_indices.tolist(),
-            radial_phase_shifts_m=shifts,
+            normal_phase_displacements_m=applied_normal.tolist(),
+            raw_fv_normal_displacements_m=(
+                np.asarray(normal_displacements, dtype=float).tolist()),
+            normal_displacement_reconstruction_length_m=reconstruction_length_m,
+            packet_surface_diffusion_length_m=ell_SD_m,
+            diffuse_interface_5_95_resolution_length_m=(
+                diffuse_resolution_length_m),
+            redistribution_length_control=(
+                "packet_surface_diffusion" if ell_SD_m >= diffuse_resolution_length_m
+                else "diffuse_interface_5_95_resolution"),
+            normal_displacement_reconstruction=(
+                "conservative max(ell_SD, tanh 5-95% thickness) projection"),
+            radial_phase_shifts_m=None,
+            radial_row_displacement_used=False,
+            uniform_normal_closure_correction_m=normal_diag[
+                "uniform_normal_closure_correction_m"],
             requested_cell_volume_changes_m3=targets_m3.tolist(),
-            added_cell_volume_changes_m3=added_rows_m3,
+            added_cell_volume_changes_m3=added_rows_m3.tolist(),
             fv=flux,
+            chemical_potential_filter_length_m=(
+                None if chemical_potential_filter_length_m is None
+                else float(chemical_potential_filter_length_m)),
             requested_branch_volume_m3=float(np.sum(targets_m3)),
-            added_branch_volume_m3=float(np.sum(added_rows_m3)))
+            added_branch_volume_m3=float(np.sum(added_rows_m3)),
+            geometry_realization=normal_diag["geometry_realization"])
         branch_diags[branch.side]["time_integration"] = (
             dict(time_integrator="explicit Euler", endpoint_regularization_used=False)
             if implicit is None else implicit)
@@ -614,4 +820,6 @@ def apply_axisymmetric_branch_boundary_flux_step(
         branch_time_integrator=(
             "explicit Euler" if implicit_mullins_B_m4_per_model_time is None
             else "linearly implicit Mullins Rosenbrock step"),
-        surface_operator="axisymmetric 1-D FV TJ boundary flux")
+        surface_operator=(
+            "axisymmetric 1-D FV TJ boundary flux with conservative normal "
+            "signed-phase displacement"))

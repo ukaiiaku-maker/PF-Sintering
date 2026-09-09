@@ -47,11 +47,21 @@ def _surface_only_node(terms):
 
 
 def _finish_node(mu_node, gb_rate, terms, *, mode, mu_gb=None,
-                 gb_conductance=None, nonlinear=False):
+                 gb_conductance=None, nonlinear=False,
+                 exact_prescribed_rate=False):
     branch_rates = {
         side: row["conductance_m3_per_Pa_model_time"]
         * (mu_node - row["first_cell_mu_Pa"])
         for side, row in terms.items()}
+    raw_surface_sum = sum(branch_rates.values())
+    raw_closure = raw_surface_sum - gb_rate
+    if exact_prescribed_rate:
+        # When GB delivery is many orders smaller than the surface exchange,
+        # adding its node-potential increment to an O(MPa) chemical potential
+        # loses a few low bits. Restore only that floating-point remainder in
+        # the branch-rate partition while retaining the solved node potential.
+        positive = branch_rates["positive"]
+        branch_rates["negative"] = float(gb_rate) - positive
     for side, row in terms.items():
         row["one_sided_node_gradient_Pa_per_m"] = (
             (mu_node - row["first_cell_mu_Pa"])
@@ -79,6 +89,8 @@ def _finish_node(mu_node, gb_rate, terms, *, mode, mu_gb=None,
         surface_rate_sum_m3_per_model_time=float(surface_sum),
         zero_storage_closure_m3_per_model_time=float(closure),
         zero_storage_closure_relative=float(closure / scale),
+        raw_roundoff_closure_m3_per_model_time=float(raw_closure),
+        prescribed_rate_roundoff_closure_corrected=bool(exact_prescribed_rate),
         L_GB_m3_per_Pa_model_time=gb_conductance,
         nonlinear_tau_ex_solve=bool(nonlinear),
         imposed_half_partition=False,
@@ -99,7 +111,8 @@ def solve_prescribed_rate_tj_node(
     mu_off, total_conductance = _surface_only_node(terms)
     mu_node = mu_off + incoming / total_conductance
     return _finish_node(
-        mu_node, incoming, terms, mode="prescribed total GB rate")
+        mu_node, incoming, terms, mode="prescribed total GB rate",
+        exact_prescribed_rate=True)
 
 
 def solve_model_time_tj_node(

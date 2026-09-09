@@ -152,6 +152,33 @@ def test_sink_off_node_exchange_closes_each_grain_and_zero_net_mass():
     assert max(abs(value) for value in diag["grain_flux_closure_relative"].values()) < 1e-8
 
 
+def test_normal_reconstruction_uses_physical_tanh_resolution_floor():
+    z = (np.arange(12) + 0.5) - 6.0
+    r_c = np.arange(10) + 0.5
+    W = 1.2
+    f = np.broadcast_to(
+        planar_tanh_profile(r_c[None, :] - 4.0, W=W), (12, 10)).copy()
+    grain1 = np.where(z[:, None] > 0.0, f, 0.0)
+    grain2 = f - grain1
+    branches = (
+        _straight_branch("positive", [6, 7, 8, 9, 10, 11], 4.0, np.zeros(6)),
+        _straight_branch("negative", [5, 4, 3, 2, 1, 0], 4.0, np.zeros(6)))
+    _, _, _, diag = apply_axisymmetric_branch_boundary_flux_step(
+        f, grain1, grain2, r_c, 1.0, 1.0, W=W, branches=branches,
+        surface_flux_mobility_m6_per_J_model_time=0.0,
+        incoming_volume_rate_m3_per_model_time=1e-3, dt_model=0.1,
+        normal_displacement_diffusion_B_m4_per_model_time=1e-8)
+    expected_floor = 2.0 * math.atanh(0.9) * W
+    for side in ("negative", "positive"):
+        branch = diag["branch"][side]
+        np.testing.assert_allclose(
+            branch["normal_displacement_reconstruction_length_m"],
+            expected_floor)
+        assert branch["redistribution_length_control"] == (
+            "diffuse_interface_5_95_resolution")
+        assert branch["packet_surface_diffusion_length_m"] < expected_floor
+
+
 def test_outer_branch_limit_excludes_core_and_does_not_use_endpoint_cells():
     s = np.arange(0.5, 10.0, 1.0)
     mu = 7.0 + 2.0 * s + 0.25 * s ** 2

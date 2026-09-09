@@ -43,6 +43,18 @@ def test_manufactured_asymmetric_prescribed_rate_recovers_exact_node():
     assert node["imposed_half_partition"] is False
 
 
+def test_prescribed_tiny_rate_closes_after_node_potential_roundoff():
+    branches = (
+        _branch("positive", 5.0e-8, 4.0e7),
+        _branch("negative", 4.8e-8, 4.0e7 - 2.0e3))
+    incoming = 2.6178241302607806e-26
+    node = solve_prescribed_rate_tj_node(branches, 2.5e-30, incoming)
+    rates = node["branch_volume_rates_m3_per_model_time"]
+    assert sum(rates.values()) == incoming
+    assert node["zero_storage_closure_m3_per_model_time"] == 0.0
+    assert node["prescribed_rate_roundoff_closure_corrected"] is True
+
+
 def test_manufactured_linear_gb_coupling_recovers_analytical_node():
     branches = (_branch("positive", 2.0, 3.0), _branch("negative", 1.0, 1.0))
     mobility = 1.0 / (4.0 * math.pi)

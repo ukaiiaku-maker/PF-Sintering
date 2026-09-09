@@ -59,6 +59,7 @@ def _side_first_stresses(geometry, particle_shape):
     k_mw = 2.0/particle_shape["w_bar_2D_particle_m"]
     k_n = 2.0/particle_shape["w_N_particle_m"]
     families = {name: [] for name in ("local", "integral", "MW", "N")}
+    continuous_integral = []
     side_output = {}
     for side in ("negative", "positive"):
         theta = geometry[f"theta_{side}_rad"]
@@ -68,17 +69,26 @@ def _side_first_stresses(geometry, particle_shape):
         k_integral = (
             geometry[f"delta_phi_f_{side}_rad"]
             / geometry[f"L_f_{side}_m"])
+        k_integral_continuous = (
+            geometry[f"delta_phi_f_continuous_{side}_rad"]
+            / geometry[f"L_f_{side}_m"])
         for label, curvature in (
                 ("local", k_local), ("integral", k_integral),
                 ("MW", k_mw), ("N", k_n)):
             sigma = gamma*(-curvature+contact+line)
             families[label].append(sigma)
             side_output[f"sigma_{label}_{side}_Pa"] = float(sigma)
+        sigma_continuous = gamma * (
+            -k_integral_continuous + contact + line)
+        continuous_integral.append(sigma_continuous)
+        side_output[f"sigma_integral_continuous_{side}_Pa"] = float(
+            sigma_continuous)
         side_output[f"contact_{side}_per_m"] = float(contact)
         side_output[f"line_3D_{side}_per_m"] = float(line)
     side_output.update(
         sigma_local_Pa=float(np.mean(families["local"])),
         sigma_integral_Pa=float(np.mean(families["integral"])),
+        sigma_integral_continuous_Pa=float(np.mean(continuous_integral)),
         sigma_MW_Pa=float(np.mean(families["MW"])),
         sigma_N_Pa=float(np.mean(families["N"])),
         k_MW_per_m=float(k_mw), k_N_per_m=float(k_n))
@@ -108,9 +118,13 @@ def _local_curvatures(z, radius, indices, half_window_m):
 def capillary_neck_particle_drive(state, setup, geometry, branches):
     """Neck-minus-broad-particle chemical potential outside the TJ core."""
     f, particle, substrate = state
-    mu = axisym_mu_f_gb(
-        f, particle, substrate, setup["p"], setup["Wc"], setup["dr"],
-        setup["dz"], setup["r_c"], setup["r_f"], bc_z="noflux")
+    chemical_potential_evaluator = setup.get("chemical_potential_evaluator")
+    if chemical_potential_evaluator is None:
+        mu = axisym_mu_f_gb(
+            f, particle, substrate, setup["p"], setup["Wc"], setup["dr"],
+            setup["dz"], setup["r_c"], setup["r_f"], bc_z="noflux")
+    else:
+        mu = np.asarray(chemical_potential_evaluator(state, setup), dtype=float)
     radius, mu_contour = _outer_contour_and_sample(f, mu, setup["r_c"])
     z = np.asarray(setup["z"])
     positive = np.where(np.isfinite(radius) & (z >= geometry["z_TJ_m"]))[0]
@@ -173,8 +187,10 @@ def capillary_neck_particle_drive(state, setup, geometry, branches):
 
 def measure_experimental_pr_state(state, setup, evaluator):
     node = evaluator(*state)
+    local_window_m = float(setup.get("local_metrology_window_m", 15e-9))
     geometry, branches = experimental_geometry_record(
-        state, setup, z_tj_m=node["z_TJ_m"], r_tj_m=node["r_TJ_m"])
+        state, setup, z_tj_m=node["z_TJ_m"], r_tj_m=node["r_TJ_m"],
+        local_window_m=local_window_m)
     particle_shape = _particle_silhouette(branches["positive"])
     stresses = _side_first_stresses(geometry, particle_shape)
     capillary = capillary_neck_particle_drive(

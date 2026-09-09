@@ -152,18 +152,36 @@ def measure(state, *, t_model, cycle, sink, q, qcum, hazard, threshold,
             clock_scale, setup, geom, evaluator, vp_cycle0):
     base = observe(state, 0.0, 0, setup, geom, evaluator, vp_cycle0, 0.0)
     measured, branches, _ = measure_experimental_pr_state(state, setup, evaluator)
-    barrier, gamma = rate(base["sigma_local_Pa"], base["r_n_m"], clock_scale)
+    # The activation stress is the side-resolved geometric measurement from
+    # the instantaneous contour.  No equilibrium/reference angle is used.
+    sigma_local = float(measured["sigma_local_Pa"])
+    sigma_integral_raw = float(measured["sigma_integral_Pa"])
+    sigma_integral = float(measured.get(
+        "sigma_integral_continuous_Pa", sigma_integral_raw))
+    barrier, gamma = rate(sigma_local, measured["r_n_m"], clock_scale)
     row = dict(
         t_model=float(t_model), cycle=int(cycle), sink_state=int(sink),
         q_over_b=float(q), q_cumulative_over_b=float(qcum),
         Vp_over_Vp_cycle=float(base["Vp_over_Vp0"]),
-        r_n_m=float(base["r_n_m"]), z_TJ_m=float(measured["z_TJ_m"]),
-        sigma_local_Pa=float(base["sigma_local_Pa"]),
-        sigma_integral_Pa=float(base["sigma_integral_Pa"]),
+        r_n_m=float(measured["r_n_m"]), z_TJ_m=float(measured["z_TJ_m"]),
+        sigma_local_Pa=sigma_local,
+        sigma_integral_Pa=sigma_integral,
+        sigma_integral_continuous_Pa=sigma_integral,
+        sigma_integral_polyline_raw_Pa=sigma_integral_raw,
+        psi_measured_deg=float(measured["psi_measured_deg"]),
+        psi_equilibrium_deg=float(measured["psi_equilibrium_deg"]),
+        herring_residual_magnitude=float(
+            measured["herring_residual_magnitude"]),
+        herring_residual_r_J_per_m2=float(
+            measured["herring_residual_r_J_per_m2"]),
+        herring_residual_z_J_per_m2=float(
+            measured["herring_residual_z_J_per_m2"]),
+        herring_balance_imposed=0,
+        G_phasefield_J=float(measured["G_phasefield_J"]),
         G_star_eV=float(barrier), Gamma_per_model_time=float(0.0 if sink else gamma),
         H=float(hazard), H_threshold=float(threshold),
         H_over_threshold=float(hazard/threshold),
-        N_sites=float(tj_site_count(base["r_n_m"], B_M)),
+        N_sites=float(tj_site_count(measured["r_n_m"], B_M)),
         Eq4_lambda_over_lambda_c=float(base["Eq4_lambda_over_lambda_c"]),
         lambda_min_H=float(base["lambda_min_H"]))
     return row, branches

@@ -19,6 +19,7 @@ def frame(t):
     return dict(
         t_model=t, cycle=1, avalanche_id=1, event_number=1,
         sink_state=1, avalanche_active=1, q_event_over_b=0.5,
+        source_alive=1, event_transport_active=1,
         Q_avalanche_over_b=0.5, Q_cumulative_over_b=0.5,
         sigma_local_Pa=80e6, sigma_integral_Pa=75e6,
         r_neck_m=1.0, Vp_over_Vp_cycle=0.95,

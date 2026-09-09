@@ -126,16 +126,31 @@ def make_transport(geom):
 
 def event_call(state, setup, geom, evaluator, transport, quota_fraction_b,
                *, event_restart=None, state_callback=None,
-               explicit_max_fourth_order_courant=LONG_EXPLICIT_COURANT):
+               max_increment_fraction_b=0.0025,
+               explicit_max_fourth_order_courant=LONG_EXPLICIT_COURANT,
+               surface_flux_mobility_m6_per_J_model_time=SURFACE_MOBILITY_MODEL,
+               explicit_stability_B_m4_per_model_time=B_PF_MODEL,
+               implicit_mullins_B_m4_per_model_time=None,
+               branch_mu_filter_length_m=None,
+               implicit_max_normal_displacement_m=None,
+               implicit_max_tj_displacement_m=None):
     return representation_corrected_model_time_boundary_flux_event(
         *state, transport,
         dr=setup["dr"], dz=setup["dz"], r_c=setup["r_c"], z=setup["z"],
         GB_z_hint=geom["z1"], W=setup["W"], state_evaluator=evaluator,
-        surface_flux_mobility_m6_per_J_model_time=SURFACE_MOBILITY_MODEL,
-        max_increment_fraction_b=0.0025,
+        surface_flux_mobility_m6_per_J_model_time=(
+            surface_flux_mobility_m6_per_J_model_time),
+        max_increment_fraction_b=max_increment_fraction_b,
         event_quota_m=quota_fraction_b * B_M,
         max_subincrements=1_000_000,
-        explicit_stability_B_m4_per_model_time=B_PF_MODEL,
+        explicit_stability_B_m4_per_model_time=(
+            explicit_stability_B_m4_per_model_time),
+        implicit_mullins_B_m4_per_model_time=(
+            implicit_mullins_B_m4_per_model_time),
+        branch_mu_filter_length_m=branch_mu_filter_length_m,
+        implicit_max_normal_displacement_m=(
+            implicit_max_normal_displacement_m),
+        implicit_max_tj_displacement_m=implicit_max_tj_displacement_m,
         explicit_max_fourth_order_courant=(
             explicit_max_fourth_order_courant),
         branch_mass_closure_relative_tolerance=1e-5,
@@ -206,7 +221,7 @@ def append_measurement(rows, *, phase, model_time, q_over_b, sink_state,
 
 
 def restart_arrays(state, restart):
-    return dict(
+    arrays = dict(
         current_f=state[0], current_particle=state[1],
         current_neighbor=state[2],
         base_f=restart["base_fields"][0],
@@ -225,8 +240,29 @@ def restart_arrays(state, restart):
             restart["cumulative_grain_flux_volume_m3"][1]),
         cumulative_grain2_m3=np.array(
             restart["cumulative_grain_flux_volume_m3"][2]),
+        quasistatic_trial_rejections_total=np.array(
+            restart.get("quasistatic_trial_rejections_total", 0)),
+        restart_fast_precondition_calls_total=np.array(
+            restart.get("restart_fast_precondition_calls_total", 0)),
+        slow_clock_quadrature_refinements_total=np.array(
+            restart.get("slow_clock_quadrature_refinements_total", 0)),
+        active_minimum_step_over_b=np.array(
+            restart.get("active_minimum_step_over_b", float("nan"))),
+        ordinary_fixed_q_calls_total=np.array(
+            restart.get("ordinary_fixed_q_calls_total", 0)),
         explicit_max_fourth_order_courant=np.array(
             restart.get("explicit_max_fourth_order_courant", float("nan"))))
+    if "event_branch_time_integrator" in restart:
+        arrays["event_branch_time_integrator"] = np.array(
+            restart["event_branch_time_integrator"])
+    decision = restart.get("event_integrator_decision")
+    if decision is not None:
+        for key, value in decision.items():
+            arrays[f"event_selection_{key}"] = np.array(value)
+    if "event_origin_row" in restart:
+        arrays["event_origin_row_json"] = np.array(json.dumps(
+            restart["event_origin_row"]))
+    return arrays
 
 
 def load_event_save(path):
@@ -246,7 +282,46 @@ def load_event_save(path):
             mass_initial_weighted=float(saved["mass_initial_weighted"]),
             cumulative_grain_flux_volume_m3={
                 1: float(saved["cumulative_grain1_m3"]),
-                2: float(saved["cumulative_grain2_m3"])})
+                2: float(saved["cumulative_grain2_m3"])},
+            quasistatic_trial_rejections_total=int(
+                saved["quasistatic_trial_rejections_total"])
+            if "quasistatic_trial_rejections_total" in saved.files else 0)
+        restart["restart_fast_precondition_calls_total"] = (
+            int(saved["restart_fast_precondition_calls_total"])
+            if "restart_fast_precondition_calls_total" in saved.files else 0)
+        restart["slow_clock_quadrature_refinements_total"] = (
+            int(saved["slow_clock_quadrature_refinements_total"])
+            if "slow_clock_quadrature_refinements_total" in saved.files else 0)
+        if "active_minimum_step_over_b" in saved.files:
+            active_minimum = float(saved["active_minimum_step_over_b"])
+            if math.isfinite(active_minimum):
+                restart["active_minimum_step_over_b"] = active_minimum
+        restart["ordinary_fixed_q_calls_total"] = (
+            int(saved["ordinary_fixed_q_calls_total"])
+            if "ordinary_fixed_q_calls_total" in saved.files else 0)
+        if "event_branch_time_integrator" in saved.files:
+            restart["event_branch_time_integrator"] = str(
+                saved["event_branch_time_integrator"].item())
+        if "explicit_max_fourth_order_courant" in saved.files:
+            restart["explicit_max_fourth_order_courant"] = float(
+                saved["explicit_max_fourth_order_courant"])
+        selection_names = [
+            name for name in saved.files if name.startswith("event_selection_")]
+        if selection_names:
+            decision = {
+                name.removeprefix("event_selection_"): saved[name].item()
+                for name in selection_names}
+            required = {
+                "event_integrator_requested", "event_integrator_selected",
+                "tau_GB_estimate", "tau_surface_estimate", "timescale_ratio",
+                "selection_threshold_low", "selection_threshold_high",
+                "intermediate_timescale_warning"}
+            if not required.issubset(decision):
+                raise RuntimeError("event checkpoint has incomplete integrator decision")
+            restart["event_integrator_decision"] = decision
+        if "event_origin_row_json" in saved.files:
+            restart["event_origin_row"] = json.loads(
+                saved["event_origin_row_json"].item())
     return state, restart
 
 

@@ -64,36 +64,47 @@ IMPLICIT_LOCAL_PACKET_FRACTIONS_B = (1e-6, 5e-7, 2.5e-7)
 IMPLICIT_SCOUT_PACKET_FRACTIONS_B = (0.0025, 0.001, 0.0005, 0.00025, 0.0001)
 
 
-def make_evaluator(setup, geom, fixed_z_tj=None):
+def make_evaluator(setup, geom, fixed_z_tj=None, tj_tracker=None):
     """Return only the instantaneous quantities used by the TJ node."""
     Z = setup["z"][:, None]
     RC = setup["r_c"][None, :]
 
     def evaluate(f, particle, neighbor):
         radius = measure_R_of_z(f, setup["r_c"])
-        if fixed_z_tj is None:
+        tracker_record = None
+        if tj_tracker is not None:
+            tracker_record = tj_tracker.locate(f, particle, neighbor)
+            z_tj = float(tracker_record["z_TJ_m"])
+            r_tj = float(tracker_record["r_TJ_m"])
+        elif fixed_z_tj is None:
             z_tj, _ = find_gb_trough(
                 radius, setup["z"], geom["z1"], lam=setup["lam"])
+            r_tj = None
         else:
             z_tj = float(fixed_z_tj)
+            r_tj = None
         contour = pf_contour_estimators(
             radius, setup["z"], z_tj, gamma_s=setup["gamma_s"],
             psi_reference_deg=160.0)
         mu = axisym_mu_f_gb(
             f, particle, neighbor, setup["p"], setup["Wc"], setup["dr"],
             setup["dz"], setup["r_c"], setup["r_f"], bc_z="noflux")
+        if r_tj is None:
+            r_tj = float(contour["r_neck"])
+        contact_area = math.pi * r_tj * r_tj
         gb_raw = (
             np.maximum(particle * neighbor, 0.0)
             * (np.abs(Z - z_tj) <= 2.0 * setup["W"])
-            * (RC <= contour["r_neck"] + setup["W"]))
+            * (RC <= r_tj + setup["W"]))
         gb_support = normalized_axisym_support(gb_raw, setup["r_c"])
         return dict(
             mu_GB_source_Pa=float(
                 _axisym_weighted_sum(mu * gb_support, setup["r_c"])),
-            contact_area_m2=float(contour["contact_area"]),
+            contact_area_m2=float(contact_area),
             mu_field_Pa=mu,
             z_TJ_m=float(z_tj),
-            r_TJ_m=float(contour["r_neck"]),
+            r_TJ_m=float(r_tj),
+            tj_tracking=(None if tracker_record is None else tracker_record),
             X_Sigma_diffuse_MPa=float(
                 contour["local_reference"]["sigma_3D_local_MPa"]))
 

@@ -113,6 +113,32 @@ def _branch_integrals(branch):
         delta_phi_f_rad=float(value["turning_angle"]))
 
 
+def _continuous_endpoint_turning(branch, slope_dr_dz_at_tj):
+    """Turning using the fitted TJ tangent and the resolved far tangent.
+
+    ``_branch`` inserts the continuously located field TJ ahead of the first
+    row-centered contour point.  Using that single first chord as the initial
+    tangent therefore jumps whenever the TJ crosses a z-row.  The already
+    qualified local fit supplies a continuous one-sided TJ tangent without
+    fitting across the junction.  The raw polyline turning is retained beside
+    this value for exact contour provenance.
+    """
+    z = np.asarray(branch["z_m"], dtype=float)
+    r = np.asarray(branch["r_m"], dtype=float)
+    side = int(branch["side"])
+    slope = float(slope_dr_dz_at_tj)
+    if side > 0:
+        start_angle = math.atan2(slope, 1.0)
+    else:
+        start_angle = math.atan2(-slope, -1.0)
+    dz = float(z[-1] - z[-2])
+    dr = float(r[-1] - r[-2])
+    end_angle = math.atan2(dr, dz)
+    delta = math.atan2(
+        math.sin(end_angle-start_angle), math.cos(end_angle-start_angle))
+    return float(delta)
+
+
 def _axisymmetric_surface_area(branch):
     z = branch["z_m"]
     r = branch["r_m"]
@@ -143,6 +169,10 @@ def experimental_geometry_record(state, setup, *, z_tj_m, r_tj_m,
     fit_positive = _local_fit(positive, z_tj_m, local_window_m)
     int_negative = _branch_integrals(negative)
     int_positive = _branch_integrals(positive)
+    continuous_turning_negative = _continuous_endpoint_turning(
+        negative, fit_negative["slope_dr_dz"])
+    continuous_turning_positive = _continuous_endpoint_turning(
+        positive, fit_positive["slope_dr_dz"])
 
     theta_negative = fit_negative["theta_side_equiv_rad"]
     theta_positive = fit_positive["theta_side_equiv_rad"]
@@ -169,10 +199,32 @@ def experimental_geometry_record(state, setup, *, z_tj_m, r_tj_m,
     A_GB = math.pi * r_tj_m * r_tj_m
     kappa_2_neck = math.sin(0.5 * theta_average) / r_tj_m
     s_line = 2.0 * r_tj_m * math.sin(0.5 * theta_average)
-    G_phasefield = float(axisym_free_energy_gb(
-        f, e1, e2, setup["p"], setup["Wc"], setup["dr"], setup["dz"],
-        r_c, setup["r_f"], bc_z="noflux"))
+    energy_evaluator = setup.get("interfacial_energy_evaluator")
+    if energy_evaluator is None:
+        G_phasefield = float(axisym_free_energy_gb(
+            f, e1, e2, setup["p"], setup["Wc"], setup["dr"], setup["dz"],
+            r_c, setup["r_f"], bc_z="noflux"))
+        energy_formulation = "legacy_eta_coupled"
+    else:
+        G_phasefield = float(energy_evaluator(state, setup))
+        energy_formulation = "normalized_ownership_corrected"
     G_gamma = float(setup["gamma_s"] * A_free + setup["gamma_gb"] * A_GB)
+
+    # Outgoing interface tangents in (r,z), evaluated independently on the
+    # two sides.  This is a measurement of the current nonequilibrium TJ, not
+    # a projection onto Young--Herring balance.
+    slope_negative = fit_negative["slope_dr_dz"]
+    slope_positive = fit_positive["slope_dr_dz"]
+    t_negative = np.asarray([-slope_negative, -1.0], dtype=float)
+    t_positive = np.asarray([slope_positive, 1.0], dtype=float)
+    t_negative /= np.linalg.norm(t_negative)
+    t_positive /= np.linalg.norm(t_positive)
+    t_gb = np.asarray([-1.0, 0.0], dtype=float)
+    herring = (
+        setup["gamma_s"] * (t_negative + t_positive)
+        + setup["gamma_gb"] * t_gb)
+    ratio = setup["gamma_gb"] / (2.0 * setup["gamma_s"])
+    psi_equilibrium = 2.0 * math.acos(float(np.clip(ratio, -1.0, 1.0)))
 
     scalar = dict(
         d_center_m=abs(zc2 - zc1),
@@ -187,6 +239,12 @@ def experimental_geometry_record(state, setup, *, z_tj_m, r_tj_m,
         theta_negative_deg=math.degrees(theta_negative),
         theta_positive_deg=math.degrees(theta_positive),
         theta_average_deg=math.degrees(theta_average),
+        psi_measured_deg=math.degrees(theta_average),
+        psi_equilibrium_deg=math.degrees(psi_equilibrium),
+        herring_residual_r_J_per_m2=float(herring[0]),
+        herring_residual_z_J_per_m2=float(herring[1]),
+        herring_residual_magnitude=float(np.linalg.norm(herring)),
+        herring_balance_imposed=0.0,
         kappa1_negative_per_m=fit_negative["kappa_m_per_m"],
         kappa1_positive_per_m=fit_positive["kappa_m_per_m"],
         kappa1_average_per_m=0.5 * (
@@ -210,6 +268,10 @@ def experimental_geometry_record(state, setup, *, z_tj_m, r_tj_m,
         delta_phi_f_positive_rad=int_positive["delta_phi_f_rad"],
         delta_phi_f_combined_rad=(
             int_negative["delta_phi_f_rad"] + int_positive["delta_phi_f_rad"]),
+        delta_phi_f_continuous_negative_rad=continuous_turning_negative,
+        delta_phi_f_continuous_positive_rad=continuous_turning_positive,
+        delta_phi_f_continuous_combined_rad=(
+            continuous_turning_negative + continuous_turning_positive),
         P_h_m=float(mean_width["convex_hull_perimeter"]),
         w_bar_2D_m=float(mean_width["mean_width_2D"]),
         w_N_m=normal_width,

@@ -43,11 +43,31 @@ def integral(field, setup):
         setup["r_c"][None, :]*field)*setup["dr"]*setup["dz"])
 
 
+def closed_surface_diffusion_only(state, setup):
+    """Production-closed coarsening callback: no explicit solid source.
+
+    Exterior morphology evolves only through the conservative no-flux PF
+    surface-diffusion operator that precedes this callback.  Grain ownership
+    continues to evolve through the existing eta/GB operator.  The fourth
+    return value retains callback compatibility and is identically zero.
+    """
+    f, particle, substrate = (np.asarray(field) for field in state)
+    closure = float(np.max(np.abs(particle+substrate-f)))
+    if closure > 5e-15:
+        raise RuntimeError(
+            f"closed surface-diffusion callback received broken partition: {closure}")
+    return f, particle, substrate, 0.0
+
+
 def reservoir_remove_particle(state, setup):
     """Prescribe only net particle loss; no neck mask or preferred region."""
     f, particle, substrate = state
     vp = integral(particle, setup)
-    target = vp*(1.0-math.exp(-setup["dt"]/TAU_COARSEN_MODEL))
+    tau_coarsen_model = float(setup.get(
+        "tau_coarsen_model", TAU_COARSEN_MODEL))
+    if not math.isfinite(tau_coarsen_model) or tau_coarsen_model <= 0.0:
+        raise ValueError("tau_coarsen_model must be positive and finite")
+    target = vp*(1.0-math.exp(-setup["dt"]/tau_coarsen_model))
     fb = np.clip(f, 0.0, 1.0)
     surface = 16.0*fb*fb*(1.0-fb)*(1.0-fb)
     ownership = particle/np.maximum(particle+substrate, 1e-30)
@@ -63,6 +83,104 @@ def reservoir_remove_particle(state, setup):
     if abs(achieved/target-1.0) > 1e-8:
         raise RuntimeError(f"reservoir removal cap active: {achieved/target}")
     return f-remove, particle-remove, substrate, achieved
+
+
+def reservoir_remove_continuous_surface(state, setup):
+    """Apply the external-reservoir recession continuously across the TJ.
+
+    The particle depletion quota remains ``Vp*(1-exp(-dt/tau))``.  A uniform
+    normal-recession source is placed on the *connected* free surface and is
+    normalized so its particle-owned share equals that quota.  Removal is
+    split between grain fields in their existing local ownership ratio, so
+    ``particle/f`` and ``substrate/f`` are unchanged algebraically and
+    ``particle+substrate=f`` remains exact.  The returned amount is the total
+    local solid transferred to the external-reservoir ledger.
+
+    This is the continuous-source correction for the branchwise velocity jump
+    diagnosed by ``pr_reservoir_tj_continuity_audit.py``.
+    """
+    f, particle, substrate = state
+    vp = integral(particle, setup)
+    tau_coarsen_model = float(setup.get(
+        "tau_coarsen_model", TAU_COARSEN_MODEL))
+    if not math.isfinite(tau_coarsen_model) or tau_coarsen_model <= 0.0:
+        raise ValueError("tau_coarsen_model must be positive and finite")
+    target_particle = vp*(1.0-math.exp(-setup["dt"]/tau_coarsen_model))
+    fb = np.clip(f, 0.0, 1.0)
+    surface = 16.0*fb*fb*(1.0-fb)*(1.0-fb)
+    ownership = np.clip(
+        particle/np.maximum(particle+substrate, 1e-30), 0.0, 1.0)
+    particle_norm = integral(surface*ownership, setup)
+    if particle_norm <= 0.0:
+        raise RuntimeError("continuous particle-owned surface support vanished")
+    remove_f = surface*(target_particle/particle_norm)
+    cap = 0.25*np.maximum(f, 0.0)
+    if np.any(remove_f > cap):
+        raise RuntimeError("continuous-surface reservoir removal cap active")
+    remove_particle = ownership*remove_f
+    remove_substrate = (1.0-ownership)*remove_f
+    achieved_particle = integral(remove_particle, setup)
+    if abs(achieved_particle/target_particle-1.0) > 1e-8:
+        raise RuntimeError(
+            "continuous-surface reservoir particle quota mismatch: "
+            f"{achieved_particle/target_particle}")
+    total_external = integral(remove_f, setup)
+    return (f-remove_f, particle-remove_particle,
+            substrate-remove_substrate, total_external)
+
+
+def reservoir_transfer_particle_to_substrate_closed(state, setup):
+    """Closed-domain Ostwald transfer from particle to substrate surface.
+
+    This is the conservative replacement for the historical external-reservoir
+    recession.  It preserves the same particle depletion clock, but the exact
+    removed particle volume is deposited on the substrate-owned diffuse free
+    surface.  Both supports vary continuously with diffuse ownership, phase
+    closure is algebraic, and the total axisymmetric solid volume is unchanged.
+    """
+    f, particle, substrate = (np.asarray(field, dtype=float) for field in state)
+    vp = integral(particle, setup)
+    tau_coarsen_model = float(setup.get(
+        "tau_coarsen_model", TAU_COARSEN_MODEL))
+    if not math.isfinite(tau_coarsen_model) or tau_coarsen_model <= 0.0:
+        raise ValueError("tau_coarsen_model must be positive and finite")
+    target = vp * (1.0 - math.exp(-setup["dt"] / tau_coarsen_model))
+    fb = np.clip(f, 0.0, 1.0)
+    surface = 16.0 * fb * fb * (1.0 - fb) * (1.0 - fb)
+    ownership = np.clip(
+        particle / np.maximum(particle + substrate, 1e-30), 0.0, 1.0)
+    remove_support = surface * ownership
+    deposit_support = surface * (1.0 - ownership)
+    remove_norm = integral(remove_support, setup)
+    deposit_norm = integral(deposit_support, setup)
+    if min(remove_norm, deposit_norm) <= 0.0:
+        raise RuntimeError("closed reservoir has no donor or receiver support")
+    remove = remove_support * (target / remove_norm)
+    deposit = deposit_support * (target / deposit_norm)
+    if np.any(remove > 0.25 * np.minimum(np.maximum(particle, 0.0), fb)):
+        raise RuntimeError("closed reservoir donor cap active")
+    if np.any(deposit > 0.25 * np.minimum(1.0 - fb, 1.0 - substrate)):
+        raise RuntimeError("closed reservoir receiver cap active")
+    f_new = f - remove + deposit
+    particle_new = particle - remove
+    substrate_new = substrate + deposit
+    removed = integral(remove, setup)
+    deposited = integral(deposit, setup)
+    total_before = integral(f, setup)
+    total_after = integral(f_new, setup)
+    relative = (total_after - total_before) / max(abs(total_before), 1e-300)
+    closure = float(np.max(np.abs(particle_new + substrate_new - f_new)))
+    if abs(removed / target - 1.0) > 1e-10:
+        raise RuntimeError("closed reservoir particle quota mismatch")
+    if abs(deposited / target - 1.0) > 1e-10 or abs(relative) > 5e-13:
+        raise RuntimeError("closed reservoir total-volume closure failure")
+    if closure > 5e-15:
+        raise RuntimeError("closed reservoir phase-partition closure failure")
+    return f_new, particle_new, substrate_new, dict(
+        particle_removed_m3=removed, substrate_deposited_m3=deposited,
+        total_volume_relative_error=relative, partition_closure=closure,
+        external_reservoir_m3=0.0,
+        definition="closed particle-to-substrate diffuse free-surface transfer")
 
 
 def instantaneous_hessian(radius, z, zgb):

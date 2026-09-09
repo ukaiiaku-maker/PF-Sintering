@@ -11,8 +11,10 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
 from pf_sintering.axisym_branch_boundary_flux import (
+    AxisymmetricSurfaceBranch,
     apply_axisymmetric_branch_boundary_flux_step,
     extract_axisymmetric_surface_branches,
 )
@@ -21,7 +23,10 @@ from pf_sintering.rigid_rbm_deposition import (
     _axisym_weighted_sum,
     representation_corrected_union_transfer,
 )
-from pf_sintering.tj_transport_node import solve_model_time_tj_node
+from pf_sintering.tj_transport_node import (
+    solve_model_time_tj_node,
+    solve_prescribed_rate_tj_node,
+)
 
 
 def _diagnostic_coordinates(record):
@@ -30,18 +35,61 @@ def _diagnostic_coordinates(record):
             if key not in ("mu_field_Pa",)}
 
 
-def _node_state(record, f, r_c, z, transport, surface_mobility, *, active):
+def _node_state(record, f, r_c, z, transport, surface_mobility, *, active,
+                chemical_potential_filter_length_m=None):
     mu_field = np.asarray(record["mu_field_Pa"], dtype=float)
     if mu_field.shape != np.asarray(f).shape:
         raise ValueError("mu_field_Pa must have the phase-field shape")
     branches = extract_axisymmetric_surface_branches(
         f, mu_field, r_c, z, z_tj=float(record["z_TJ_m"]),
         r_tj=float(record["r_TJ_m"]))
-    node = solve_model_time_tj_node(
-        branches, surface_mobility,
-        mu_GB_Pa=float(record["mu_GB_source_Pa"]),
-        contact_area_m2=float(record["contact_area_m2"]),
-        transport=transport, gb_path_active=active)
+    if chemical_potential_filter_length_m is not None:
+        length = float(chemical_potential_filter_length_m)
+        if not math.isfinite(length) or length <= 0.0:
+            raise ValueError("chemical-potential filter length must be positive")
+        branches = tuple(AxisymmetricSurfaceBranch(
+            side=branch.side, row_indices=branch.row_indices,
+            s_centers_m=branch.s_centers_m, s_faces_m=branch.s_faces_m,
+            r_centers_m=branch.r_centers_m, r_faces_m=branch.r_faces_m,
+            mu_Pa=gaussian_filter1d(
+                branch.mu_Pa,
+                sigma=length/float(np.median(np.diff(branch.s_centers_m))),
+                mode="nearest")) for branch in branches)
+    if "mu_TJ_local_Pa" in record:
+        # Corrected formulation: the thermodynamic GB delivery drive is the
+        # field-derived GB-to-local-TJ difference.  The zero-storage node is
+        # then solved only to partition that already-known total delivery
+        # asymmetrically between the two branches.  Its potential is not
+        # promoted into the fundamental densification affinity.
+        mu_gb = float(record["mu_GB_source_Pa"])
+        mu_tj_local = float(record["mu_TJ_local_Pa"])
+        affinity = mu_gb - mu_tj_local
+        volume_rate = (
+            transport.volume_rate_m3_per_model_time(
+                affinity, float(record["contact_area_m2"]))
+            if active and affinity > 0.0 else 0.0)
+        node = solve_prescribed_rate_tj_node(
+            branches, surface_mobility, volume_rate)
+        node.update(
+            node_mode=(
+                "corrected local-affinity delivery with zero-storage partition"
+                if active else
+                "sink OFF zero-storage surface partition"),
+            mu_GB_Pa=mu_gb,
+            mu_TJ_local_Pa=mu_tj_local,
+            transport_affinity_Pa=affinity,
+            Vdot_GB_m3_per_model_time=volume_rate,
+            L_GB_m3_per_Pa_model_time=(
+                float(record["contact_area_m2"]) * transport.b_m
+                / transport.K_gb_Pa_model_time if active else 0.0),
+            fundamental_drive_definition="mu_GB_Pa-mu_TJ_local_Pa",
+            node_is_kinetic_partition_only=True)
+    else:
+        node = solve_model_time_tj_node(
+            branches, surface_mobility,
+            mu_GB_Pa=float(record["mu_GB_source_Pa"]),
+            contact_area_m2=float(record["contact_area_m2"]),
+            transport=transport, gb_path_active=active)
     coordinates = _diagnostic_coordinates(record)
     coordinates.update(
         mu_TJ_Pa=node["mu_TJ_Pa"],
@@ -91,6 +139,7 @@ def adaptive_explicit_sink_off_surface_step(
         positive_branch_grain=positive_branch_grain,
         branch_volume_rates_m3_per_model_time=(
             node_before["branch_volume_rates_m3_per_model_time"]),
+        normal_displacement_diffusion_B_m4_per_model_time=B_m4_per_model_time,
         mass_closure_relative_tolerance=(
             branch_mass_closure_relative_tolerance))
     state = tuple(np.asarray(field, dtype=float) for field in attached[:3])
@@ -149,8 +198,11 @@ def representation_corrected_model_time_boundary_flux_event(
         implicit_mullins_B_m4_per_model_time: float | None = None,
         explicit_stability_B_m4_per_model_time: float | None = None,
         explicit_max_fourth_order_courant: float = 0.05,
+        branch_mu_filter_length_m: float | None = None,
         branch_mass_closure_relative_tolerance: float = 1e-8,
         packet_diagnostic_stride: int = 1,
+        implicit_max_normal_displacement_m: float | None = None,
+        implicit_max_tj_displacement_m: float | None = None,
         accepted_step_callback=None,
         accepted_state_callback=None,
         event_restart=None):
@@ -194,6 +246,14 @@ def representation_corrected_model_time_boundary_flux_event(
         if (explicit_max_fourth_order_courant <= 0.0
                 or not math.isfinite(explicit_max_fourth_order_courant)):
             raise ValueError("explicit fourth-order Courant limit must be positive")
+    if implicit_mullins_B_m4_per_model_time is not None:
+        if implicit_max_normal_displacement_m is None:
+            implicit_max_normal_displacement_m = 0.5 * min(dr, dz)
+        if implicit_max_tj_displacement_m is None:
+            implicit_max_tj_displacement_m = min(dr, dz)
+        if (implicit_max_normal_displacement_m <= 0.0
+                or implicit_max_tj_displacement_m <= 0.0):
+            raise ValueError("implicit geometric step limits must be positive")
     quota = transport.b_m if event_quota_m is None else float(event_quota_m)
     if not 0.0 < quota <= transport.b_m:
         raise ValueError("event_quota_m must lie in (0,b]")
@@ -251,6 +311,10 @@ def representation_corrected_model_time_boundary_flux_event(
             raise ValueError("event restart progress must lie in [0, quota)")
     packets = []
     accepted_steps = 0
+    implicit_adaptive_rejections = 0
+    implicit_clean_steps = 0
+    nominal_max_dq = max_increment_fraction_b * transport.b_m
+    adaptive_max_dq = nominal_max_dq
     last_packet = None
     cached_state = None
     integrator_label = (
@@ -295,7 +359,8 @@ def representation_corrected_model_time_boundary_flux_event(
                 raise ValueError(f"state_evaluator omitted {missing}")
             branches, node_before, before_coordinates = _node_state(
                 before, state[0], r_c, z, transport,
-                surface_flux_mobility_m6_per_J_model_time, active=True)
+                surface_flux_mobility_m6_per_J_model_time, active=True,
+                chemical_potential_filter_length_m=branch_mu_filter_length_m)
         else:
             before, branches, node_before, before_coordinates = cached_state
         affinity = float(node_before["transport_affinity_Pa"])
@@ -314,7 +379,10 @@ def representation_corrected_model_time_boundary_flux_event(
                 packets=packet_samples_with_last(),
                 event_restart=make_restart_state(),
                 stop_state=before_coordinates,
-                stop_reason="nonpositive instantaneous GB-to-TJ-node affinity",
+                stop_reason="nonpositive_transport_affinity",
+                stop_detail=(
+                    "nonpositive instantaneous GB-to-TJ-node affinity"),
+                implicit_adaptive_rejections=implicit_adaptive_rejections,
                 kinetic_time_basis=transport.kinetic_time_basis,
                 physical_seconds_conversion=None,
                 branch_time_integrator=integrator_label,
@@ -323,7 +391,7 @@ def representation_corrected_model_time_boundary_flux_event(
         if volume_rate <= 0.0:
             raise RuntimeError("positive affinity produced no GB delivery")
 
-        dq = min(remaining, max_increment_fraction_b * transport.b_m)
+        dq = min(remaining, adaptive_max_dq)
         explicit_adaptive_reductions = 0
         while True:
             q_next = cumulative_q + dq
@@ -371,9 +439,21 @@ def representation_corrected_model_time_boundary_flux_event(
                     implicit_mullins_B_m4_per_model_time),
                 branch_volume_rates_m3_per_model_time=(
                     node_before["branch_volume_rates_m3_per_model_time"]),
+                normal_displacement_diffusion_B_m4_per_model_time=(
+                    explicit_stability_B_m4_per_model_time),
                 mass_closure_relative_tolerance=(
                     branch_mass_closure_relative_tolerance))
         except RuntimeError as error:
+            if (implicit_mullins_B_m4_per_model_time is not None
+                    and dq > 1.0e-12 * transport.b_m):
+                # The branch/profile mapping is nonlinear even though the
+                # Mullins stabilization is implicit. A failed mapping is a
+                # rejected trial: the input state is untouched, physical time
+                # is not advanced, and the q/time packet is bisected.
+                adaptive_max_dq = 0.5 * dq
+                implicit_adaptive_rejections += 1
+                implicit_clean_steps = 0
+                continue
             return *state, False, dict(
                 completed=False, paused=False, numerical_failure=True,
                 event_progress_m=cumulative_q,
@@ -392,9 +472,45 @@ def representation_corrected_model_time_boundary_flux_event(
                 kinetic_time_basis=transport.kinetic_time_basis,
                 physical_seconds_conversion=None,
                 branch_time_integrator=integrator_label,
+                implicit_adaptive_rejections=implicit_adaptive_rejections,
                 ordinary_M_s_step_applied=False)
-        state = tuple(np.asarray(field, dtype=float) for field in attached[:3])
+        candidate_state = tuple(
+            np.asarray(field, dtype=float) for field in attached[:3])
         attachment = attached[3]
+        try:
+            after = state_evaluator(*candidate_state)
+            branches_after, node_after, after_coordinates = _node_state(
+                after, candidate_state[0], r_c, z, transport,
+                surface_flux_mobility_m6_per_J_model_time, active=True,
+                chemical_potential_filter_length_m=branch_mu_filter_length_m)
+        except (RuntimeError, ValueError) as error:
+            if (implicit_mullins_B_m4_per_model_time is not None
+                    and dq > 1.0e-12 * transport.b_m):
+                adaptive_max_dq = 0.5 * dq
+                implicit_adaptive_rejections += 1
+                implicit_clean_steps = 0
+                continue
+            raise RuntimeError(
+                "accepted event trial lost a valid TJ/branch state") from error
+        if implicit_mullins_B_m4_per_model_time is not None:
+            maximum_normal_displacement = max(
+                float(np.max(np.abs(
+                    attachment["branch"][side][
+                        "normal_phase_displacements_m"])))
+                for side in ("positive", "negative"))
+            tj_displacement = math.hypot(
+                float(after_coordinates["z_TJ_m"])
+                - float(before_coordinates["z_TJ_m"]),
+                float(after_coordinates["r_TJ_m"])
+                - float(before_coordinates["r_TJ_m"]))
+            if (maximum_normal_displacement
+                    > implicit_max_normal_displacement_m
+                    or tj_displacement > implicit_max_tj_displacement_m):
+                adaptive_max_dq = 0.5 * dq
+                implicit_adaptive_rejections += 1
+                implicit_clean_steps = 0
+                continue
+        state = candidate_state
         grain_before_m3 = grain_volumes_m3(state_before_step)
         grain_after_union_m3 = grain_volumes_m3(state_after_union)
         grain_after_flux_m3 = grain_volumes_m3(state)
@@ -416,10 +532,6 @@ def representation_corrected_model_time_boundary_flux_event(
             cumulative_grain_flux_volume_m3[owner] += (
                 expected_grain_flux_change_m3[owner])
         mass_weighted = _axisym_weighted_sum(state[0], r_c)
-        after = state_evaluator(*state)
-        branches_after, node_after, after_coordinates = _node_state(
-            after, state[0], r_c, z, transport,
-            surface_flux_mobility_m6_per_J_model_time, active=True)
         packet = dict(
             q_start_m=cumulative_q, q_end_m=q_next,
             q_start_over_b=cumulative_q / transport.b_m,
@@ -444,6 +556,10 @@ def representation_corrected_model_time_boundary_flux_event(
             transport_dt_model=packet_time_model,
             explicit_fourth_order_courant=explicit_courant,
             explicit_adaptive_reductions=explicit_adaptive_reductions,
+            implicit_max_normal_displacement_m=(
+                implicit_max_normal_displacement_m),
+            implicit_max_tj_displacement_m=implicit_max_tj_displacement_m,
+            implicit_adaptive_rejections_total=implicit_adaptive_rejections,
             coordinates_before=before_coordinates,
             coordinates_after_boundary_flux=after_coordinates,
             node_before=node_before,
@@ -470,6 +586,11 @@ def representation_corrected_model_time_boundary_flux_event(
         if accepted_state_callback is not None:
             accepted_state_callback(packet, state)
         accepted_steps += 1
+        if implicit_mullins_B_m4_per_model_time is not None:
+            implicit_clean_steps += 1
+            if implicit_clean_steps >= 4 and adaptive_max_dq < nominal_max_dq:
+                adaptive_max_dq = min(nominal_max_dq, 2.0 * adaptive_max_dq)
+                implicit_clean_steps = 0
         if (accepted_steps == 1
                 or accepted_steps % packet_diagnostic_stride == 0):
             packets.append(packet)
@@ -491,7 +612,8 @@ def representation_corrected_model_time_boundary_flux_event(
         final = state_evaluator(*state)
         _, final_node, final_coordinates = _node_state(
             final, state[0], r_c, z, transport,
-            surface_flux_mobility_m6_per_J_model_time, active=True)
+            surface_flux_mobility_m6_per_J_model_time, active=True,
+            chemical_potential_filter_length_m=branch_mu_filter_length_m)
     else:
         _, _, final_node, final_coordinates = cached_state
     return *state, completed, dict(
@@ -503,6 +625,9 @@ def representation_corrected_model_time_boundary_flux_event(
         event_time_model=total_time_model,
         n_subincrements=accepted_steps, packets=packets,
         n_subincrements_total=accepted_steps_before + accepted_steps,
+        implicit_adaptive_rejections=implicit_adaptive_rejections,
+        final_adaptive_max_increment_fraction_b=(
+            adaptive_max_dq / transport.b_m),
         packet_diagnostic_stride=packet_diagnostic_stride,
         cumulative_source_weighted=cumulative_source_weighted,
         transported_volume_m3=cumulative_source_weighted * factor,

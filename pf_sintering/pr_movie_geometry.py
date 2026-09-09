@@ -47,6 +47,8 @@ INT_STATE_FIELDS = (
     "event_number",
     "sink_state",
     "avalanche_active",
+    "source_alive",
+    "event_transport_active",
     "S_completed",
     "pending_children",
 )
@@ -161,7 +163,9 @@ class MovieGeometryArchive:
             state.create_dataset(name, shape=(0,), maxshape=(None,), dtype="f8",
                                  chunks=(256,), compression="gzip", compression_opts=4)
         for name in INT_STATE_FIELDS:
-            dtype = "i1" if name in ("sink_state", "avalanche_active") else "i4"
+            dtype = "i1" if name in (
+                "sink_state", "avalanche_active", "source_alive",
+                "event_transport_active") else "i4"
             state.create_dataset(name, shape=(0,), maxshape=(None,), dtype=dtype,
                                  chunks=(256,), compression="gzip", compression_opts=4)
         file.flush()

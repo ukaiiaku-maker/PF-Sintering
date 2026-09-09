@@ -141,7 +141,7 @@ def test_model_time_boundary_flux_event_stops_on_current_nonpositive_affinity():
     assert not event[3]
     assert event[4]["paused"]
     assert event[4]["event_progress_m"] == 0.0
-    assert event[4]["stop_reason"].startswith("nonpositive instantaneous")
+    assert event[4]["stop_reason"] == "nonpositive_transport_affinity"
 
 
 def test_sink_off_surface_step_has_zero_gb_input_and_preserves_mass():
