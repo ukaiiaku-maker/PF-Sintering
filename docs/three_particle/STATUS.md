@@ -1,5 +1,23 @@
 # Three-particle ripening development
 
+## Refined shared-physics objective
+
+The PF stationary-null study is preserved validation and **no longer gates Phase B**.
+Both contacts now reuse the exact bicrystal local and continuous-integral stress
+formulas and live root law, with four passing contact/kinetics regressions
+(37 focused tests total). The 15-geometry screen has seven cleanup/topology
+passes, including two reversed-curvature controls. Two shortlisted reloads
+reach the unchanged field guard before appreciable root hazard; no geometry
+is yet qualified for stochastic three-grain events.
+
+See [shared-physics report](production_screen/REPORT.md),
+[exact production call-path audit](production_screen/PHYSICS_AUDIT.md) and
+[plots](production_screen/screen_plots.pdf).
+Phase B remains disabled pending viable reload and event validation, not a
+stationary-null construction. Unequal 0.70 case and field guard unchanged;
+no clipping, fitted correction, null subtraction or kinetic retuning.
+Historical qualification statements below describe their own studies.
+
 ```text
 PF-native stationary null: NOT YET FOUND
 Phase A: NOT FULLY QUALIFIED

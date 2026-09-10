@@ -1,0 +1,97 @@
+[
+  {
+    "path": "runs/three_particle_production_screen/continuation_0.65_119.999/checkpoint.npz",
+    "bytes": 1539766,
+    "sha256": "b7677553fbdee12b8c8f36484a9aeb27e99741d9988b3c6f5e9ed9f5331c7dc5"
+  },
+  {
+    "path": "runs/three_particle_production_screen/continuation_0.74_81.850/checkpoint.npz",
+    "bytes": 1056772,
+    "sha256": "1cb9429a680e7dc42cff263f5c24c18a3dc7f2c1c1433d67aff55481678887ec"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.40_Ro_509.500nm.npz",
+    "bytes": 12633675,
+    "sha256": "2fd66dbba1ccdf7d90ef75ab4b8e2175bba3330fda6ec896b56d8b82fca0cf57"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.40_Ro_646.195nm.npz",
+    "bytes": 16204272,
+    "sha256": "cac03727cc410733fbc2ba7ea6a48343f4e9e7f9bd028e5a918c56d753950c53"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.50_Ro_261.671nm.npz",
+    "bytes": 6368752,
+    "sha256": "8a49fe64d2e56e24ee45d230a425260372bad3424c59747f00eb73ef80485f04"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.50_Ro_331.876nm.npz",
+    "bytes": 8186641,
+    "sha256": "837efce981e4a9f613063cadf8a90b4879eb885e57ca4f1984c93d7b07686238"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.60_Ro_152.124nm.npz",
+    "bytes": 3658929,
+    "sha256": "e8c9d5ac26a1c985b38019de724cca8d73df77b61d9233b9940a31c22f3f89cc"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.60_Ro_192.937nm.npz",
+    "bytes": 4750110,
+    "sha256": "d4ea5fe9b04f27b4190aa49b60e421d4ffe5f10ada4452761664a42779b2b124"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.65_Ro_119.999nm.npz",
+    "bytes": 2884712,
+    "sha256": "5346fef588c082ef2b5ab92176f0a648e01d4e1f6237bcbfad016ca272b09dd5"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.65_Ro_152.194nm.npz",
+    "bytes": 3719485,
+    "sha256": "7979cfab8d05fbc3f9a347d7e7f1fa865da1662ff7fc30b2a92607b25de1fd7a"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.70_Ro_100.000nm.npz",
+    "bytes": 2463766,
+    "sha256": "56da00b9f458eb34565223f049970383a6c4d26ce85446f6b7cea020c64f7ea5"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.70_Ro_122.268nm.npz",
+    "bytes": 2992128,
+    "sha256": "cde0a372ad6232b48a826d56ccb38e6141baa54fe4049191ab5e0d614b856dc4"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.70_Ro_96.403nm.npz",
+    "bytes": 2315530,
+    "sha256": "260039a2746beae749a7e821f36800ba05246b24ae6bb30833b1d42beeb826be"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.74_Ro_103.810nm.npz",
+    "bytes": 2544560,
+    "sha256": "383954a7b31059c2c3a6600d9e726926a13ec4f1a4e89a5d7b9583bf92326be7"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.74_Ro_81.850nm.npz",
+    "bytes": 1966266,
+    "sha256": "80c28e5684d87a654c1009cfc4c89f8945cc07b36e85095cc8aa0941b6070119"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.80_Ro_100.000nm.npz",
+    "bytes": 2515054,
+    "sha256": "5e16426a727372bef7a704c5a5e639a28104d138f9ece84c64d6bf5874cbfeeb"
+  },
+  {
+    "path": "runs/three_particle_production_screen/ratio_0.80_Ro_65.118nm.npz",
+    "bytes": 1549069,
+    "sha256": "38438fc391ebcb58ed07c09f1c2ecb7ba4d84b720d3f28301a9d779ebb593a1d"
+  },
+  {
+    "path": "runs/three_particle_production_screen/rejected_global_orientation_continuation_0.65_119.999/checkpoint.npz",
+    "bytes": 1531893,
+    "sha256": "90501d3adae1d5de91760b6c05f49deed7536e2050649b8c239536957cacabb0"
+  },
+  {
+    "path": "runs/three_particle_production_screen/rejected_global_orientation_continuation_0.74_81.850/checkpoint.npz",
+    "bytes": 1056772,
+    "sha256": "1cb9429a680e7dc42cff263f5c24c18a3dc7f2c1c1433d67aff55481678887ec"
+  }
+]

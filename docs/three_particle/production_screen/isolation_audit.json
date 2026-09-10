@@ -1,0 +1,70 @@
+{
+  "production_head": "0023db8509df151622ae94fec140e714b967ef31",
+  "production_diff_sha256": "ae7ec5aa058325a6f93dbf04308f60c573637422a13f2270861b7d7dddd99a2c",
+  "source_parity": [
+    {
+      "path": "pf_sintering/experimental_pr_metrology.py",
+      "sha256": "c3528240ee74c4ffc925316473eb0dfa3abc11c341c31e8f6c96176258ca94c7",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/pr_experimental_geometry.py",
+      "sha256": "9ef0887e127c27088e696eb17d2d53f6c3e5e8f15220e2b647273b46b15d04c2",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/exp_barrier_nucleation.py",
+      "sha256": "1fb5a9c2043963fa216292688749e4f2ad80ca1ccc9ee8d9bec77685816b9e19",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/corrected_pr_thermodynamics.py",
+      "sha256": "d5c915836faf358abb9398ca5718b8efa878259cd2860ff5fc2935180f64b751",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/production_mass_transfer_event.py",
+      "sha256": "d7600722c7fa4a5a2b8a9bf9beec9384f6a31aec81f07b89f73a0ec227849db7",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/current_state_mass_transfer.py",
+      "sha256": "f317bea0b6e7af88eaa3693291be1e73505f80196817b0ab6396c18760c74a12",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "pf_sintering/pr_avalanche.py",
+      "sha256": "5640bd8752fb9f7b6248f0a8afca9e3c71f7d3e608ba00432f11cd0a64177dd8",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "scripts/pr_coarsening_stochastic_two_event.py",
+      "sha256": "b7ae8d4ac17b65d3ce100c0955e9d980d01850495e5da2ec14fefdf1950c6138",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "scripts/pr_avalanche_renewal_five.py",
+      "sha256": "6a34984e58e5b88814838ed86793a4ac2b4b27e264f022540fd62731072a51f5",
+      "live_and_isolated_identical": true
+    },
+    {
+      "path": "scripts/pr_large_avalanche_resume13_alpha0p70_enospc.py",
+      "sha256": "f14d0ab5181a39e221dd901621dea88d588652e807dec991e9bdbc4da6b05bbe",
+      "live_and_isolated_identical": true
+    }
+  ],
+  "verified_utc": "2026-09-10T18:54:45.094402+00:00",
+  "stationary_null_is_gate": false,
+  "events_enabled": false,
+  "previous_run_files_verified": {
+    "implicit": 52,
+    "stationary_null": 26
+  },
+  "tests_passed": 37,
+  "worker_pid": 49267,
+  "monitor_pid": 49324,
+  "both_alive": true,
+  "unequal_case_unchanged": true,
+  "field_guard_unchanged": true,
+  "live_field_clipping": false
+}
