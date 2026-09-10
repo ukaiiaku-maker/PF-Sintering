@@ -1,0 +1,541 @@
+{
+  "null_transient": {
+    "t_start_model": 25.6,
+    "t_start_s": 0.39884654514071577,
+    "limits": {
+      "CC_stress_Pa": 50000.0,
+      "PF_geometric_stress_Pa": 50000.0,
+      "psi_deg": 0.05,
+      "kappa_per_m": 50000.0
+    },
+    "intervals": [
+      {
+        "start_model": 0.1,
+        "end_model": 0.2,
+        "changes": {
+          "CC_stress_Pa": 113736.68987995852,
+          "PF_geometric_stress_Pa": 111669.49153800309,
+          "psi_deg": 0.1571468847828612,
+          "kappa_per_m": 115803.89452034608
+        },
+        "passed": false
+      },
+      {
+        "start_model": 0.2,
+        "end_model": 0.4,
+        "changes": {
+          "CC_stress_Pa": 223474.39966658317,
+          "PF_geometric_stress_Pa": 224714.02346517146,
+          "psi_deg": 0.014381683208227969,
+          "kappa_per_m": 222234.7790118605
+        },
+        "passed": false
+      },
+      {
+        "start_model": 0.4,
+        "end_model": 0.8,
+        "changes": {
+          "CC_stress_Pa": 251080.90482787252,
+          "PF_geometric_stress_Pa": 254034.73632730544,
+          "psi_deg": 0.061096236302176976,
+          "kappa_per_m": 248127.08628178388
+        },
+        "passed": false
+      },
+      {
+        "start_model": 0.8,
+        "end_model": 1.6,
+        "changes": {
+          "CC_stress_Pa": 217412.6671417181,
+          "PF_geometric_stress_Pa": 220574.15727370977,
+          "psi_deg": 0.07409015258795648,
+          "kappa_per_m": 214251.18551431596
+        },
+        "passed": false
+      },
+      {
+        "start_model": 1.6,
+        "end_model": 3.2,
+        "changes": {
+          "CC_stress_Pa": 146560.30497978022,
+          "PF_geometric_stress_Pa": 149194.52743158862,
+          "psi_deg": 0.06417884132036988,
+          "kappa_per_m": 143926.36098060757
+        },
+        "passed": false
+      },
+      {
+        "start_model": 3.2,
+        "end_model": 6.4,
+        "changes": {
+          "CC_stress_Pa": 60350.48787561641,
+          "PF_geometric_stress_Pa": 62266.127651739866,
+          "psi_deg": 0.05587282662216353,
+          "kappa_per_m": 58437.1688893307
+        },
+        "passed": false
+      },
+      {
+        "start_model": 6.4,
+        "end_model": 12.8,
+        "changes": {
+          "CC_stress_Pa": 9238.042505045887,
+          "PF_geometric_stress_Pa": 8025.128082755953,
+          "psi_deg": 0.04761327443799246,
+          "kappa_per_m": 10448.809520883486
+        },
+        "passed": true
+      },
+      {
+        "start_model": 12.8,
+        "end_model": 25.6,
+        "changes": {
+          "CC_stress_Pa": 41866.88901462336,
+          "PF_geometric_stress_Pa": 41174.77080204338,
+          "psi_deg": 0.03603336803092816,
+          "kappa_per_m": 42560.469126567245
+        },
+        "passed": true
+      },
+      {
+        "start_model": 25.6,
+        "end_model": 51.2,
+        "changes": {
+          "CC_stress_Pa": 42766.2715970336,
+          "PF_geometric_stress_Pa": 42333.64967845753,
+          "psi_deg": 0.023497883332936453,
+          "kappa_per_m": 43201.70764388703
+        },
+        "passed": true
+      }
+    ]
+  },
+  "common_end_model": 56.17329290942463,
+  "common_end_s": 0.8751767111758391,
+  "phase_b_authorized": false,
+  "full_phase_a_qualified": false,
+  "cases": {
+    "unequal": {
+      "center_volume_change_relative": -0.00080668252688465,
+      "grain_volume_changes_m3": [
+        5.800739055760639e-25,
+        -1.1601478111519398e-24,
+        5.800739055753116e-25
+      ],
+      "total_volume_max_relative_error": 4.440892098500626e-16,
+      "maximum_mirror_error": 3.22741833258533e-13,
+      "minimum_center_GB_separation_over_W": 8.50593509484057,
+      "minimum_axis_core_f": 1.0,
+      "termination_status": "failed_timestep_floor",
+      "last_accepted_model_time": 60.111984427747,
+      "coarse_total_wall_s": 421.53439700003946,
+      "equivalent_native_steps": 53851153.00488298,
+      "estimated_native_wall_s": 164405.36200591378,
+      "estimated_speedup": 390.01648068567556,
+      "accepted_steps": 125,
+      "rejected_steps": 26,
+      "post_transient": {
+        "LEFT_CC_stress_Pa": {
+          "start": 834006.6754110347,
+          "end": 930163.8387064382,
+          "change": 96157.16329540347,
+          "slope_per_s": 199654.60594560765,
+          "three_window_slopes_per_s": [
+            237032.0920299423,
+            196758.94239692262,
+            170978.60667751657
+          ]
+        },
+        "LEFT_PF_geometric_stress_Pa": {
+          "start": 17984427.10173319,
+          "end": 18082382.436733436,
+          "change": 97955.33500024676,
+          "slope_per_s": 203471.39569207068,
+          "three_window_slopes_per_s": [
+            240553.35729032443,
+            200628.00282043705,
+            174930.08815152087
+          ]
+        },
+        "LEFT_kappa_per_m": {
+          "start": 16316734.1941067,
+          "end": 16222491.959482301,
+          "change": -94242.23462439887,
+          "slope_per_s": -195595.4125599734,
+          "three_window_slopes_per_s": [
+            -233224.26586744303,
+            -192650.96917013437,
+            -166818.36019345545
+          ]
+        },
+        "LEFT_neck_r_m": {
+          "start": 1.151556810305892e-07,
+          "end": 1.1514288565435474e-07,
+          "change": -1.279537623445826e-11,
+          "slope_per_s": -2.6791134977766246e-11,
+          "three_window_slopes_per_s": [
+            -2.86975206726738e-11,
+            -2.6697929181006262e-11,
+            -2.5162463563581445e-11
+          ]
+        },
+        "delta_mu_projected_Pa": {
+          "start": 927766.4835263123,
+          "end": 908108.3192186311,
+          "change": -19658.164307681145,
+          "slope_per_s": -42931.3044573028,
+          "three_window_slopes_per_s": [
+            -28392.45494608463,
+            -45008.70251238032,
+            -51031.0101105497
+          ]
+        },
+        "V_center_m3": {
+          "start": 1.4374173183220767e-21,
+          "end": 1.4370113415756305e-21,
+          "change": -4.0597674644622754e-25,
+          "slope_per_s": -8.481499082963072e-25,
+          "three_window_slopes_per_s": [
+            -9.365195457945419e-25,
+            -8.427218559728765e-25,
+            -7.759334740316132e-25
+          ]
+        }
+      }
+    },
+    "null": {
+      "center_volume_change_relative": 0.00027829263767031875,
+      "grain_volume_changes_m3": [
+        -2.3919991110046414e-25,
+        4.783998221986713e-25,
+        -2.3919991110121646e-25
+      ],
+      "total_volume_max_relative_error": 4.440892098500626e-16,
+      "maximum_mirror_error": 2.999822612537173e-13,
+      "minimum_center_GB_separation_over_W": 10.133826507632119,
+      "minimum_axis_core_f": 1.0,
+      "termination_status": "failed_timestep_floor",
+      "last_accepted_model_time": 56.364604815209645,
+      "coarse_total_wall_s": 465.0757948339451,
+      "equivalent_native_steps": 47195224.42411171,
+      "estimated_native_wall_s": 148008.7911119561,
+      "estimated_speedup": 318.2466014271985,
+      "accepted_steps": 129,
+      "rejected_steps": 25,
+      "post_transient": {
+        "LEFT_CC_stress_Pa": {
+          "start": 1426948.755123371,
+          "end": 1474665.1868296517,
+          "change": 47716.43170628068,
+          "slope_per_s": 97605.28583931604,
+          "three_window_slopes_per_s": [
+            137164.62950987995,
+            94048.13695052508,
+            68524.28217994212
+          ]
+        },
+        "LEFT_PF_geometric_stress_Pa": {
+          "start": 18572072.299058083,
+          "end": 18619305.96724778,
+          "change": 47233.66818969697,
+          "slope_per_s": 96632.39751595494,
+          "three_window_slopes_per_s": [
+            135750.2274867998,
+            93125.6415417894,
+            67836.70648248956
+          ]
+        },
+        "LEFT_kappa_per_m": {
+          "start": 15718178.104479173,
+          "end": 15669975.865698889,
+          "change": -48202.2387802843,
+          "slope_per_s": -98584.51361651934,
+          "three_window_slopes_per_s": [
+            -138588.45882388816,
+            -94976.86445296342,
+            -69215.37240916735
+          ]
+        },
+        "LEFT_neck_r_m": {
+          "start": 1.1517197452027592e-07,
+          "end": 1.1517105781023257e-07,
+          "change": -9.16710043355078e-13,
+          "slope_per_s": -1.8129709927352157e-12,
+          "three_window_slopes_per_s": [
+            -3.3800077997212403e-12,
+            -1.658015994379851e-12,
+            -7.024703472847587e-13
+          ]
+        },
+        "delta_mu_projected_Pa": {
+          "start": -339922.1179765751,
+          "end": -233539.3215758663,
+          "change": 106382.79640070879,
+          "slope_per_s": 219591.92718105888,
+          "three_window_slopes_per_s": [
+            283869.8071293886,
+            214493.3222745368,
+            170442.74685198045
+          ]
+        },
+        "V_center_m3": {
+          "start": 1.719281656021518e-21,
+          "end": 1.719531502353491e-21,
+          "change": 2.498463319728619e-25,
+          "slope_per_s": 5.220915711245657e-25,
+          "three_window_slopes_per_s": [
+            6.009306055084085e-25,
+            5.185365341065133e-25,
+            4.534178871136899e-25
+          ]
+        }
+      }
+    }
+  },
+  "refinement": {
+    "null_plateau": {
+      "t_start_model": 25.6,
+      "t_start_s": 0.39884654514071577,
+      "limits": {
+        "CC_stress_Pa": 50000.0,
+        "PF_geometric_stress_Pa": 50000.0,
+        "psi_deg": 0.05,
+        "kappa_per_m": 50000.0
+      },
+      "intervals": [
+        {
+          "start_model": 0.1,
+          "end_model": 0.2,
+          "changes": {
+            "CC_stress_Pa": 116267.88186097844,
+            "PF_geometric_stress_Pa": 114265.29599191621,
+            "psi_deg": 0.15420810190389034,
+            "kappa_per_m": 118270.47403517552
+          },
+          "passed": false
+        },
+        {
+          "start_model": 0.2,
+          "end_model": 0.4,
+          "changes": {
+            "CC_stress_Pa": 223949.46731244028,
+            "PF_geometric_stress_Pa": 225202.97502409294,
+            "psi_deg": 0.013753050275312262,
+            "kappa_per_m": 222695.96315454133
+          },
+          "passed": false
+        },
+        {
+          "start_model": 0.4,
+          "end_model": 0.8,
+          "changes": {
+            "CC_stress_Pa": 250972.35105797346,
+            "PF_geometric_stress_Pa": 253933.93418865278,
+            "psi_deg": 0.06154454569789891,
+            "kappa_per_m": 248010.780536931
+          },
+          "passed": false
+        },
+        {
+          "start_model": 0.8,
+          "end_model": 1.6,
+          "changes": {
+            "CC_stress_Pa": 218544.96282068337,
+            "PF_geometric_stress_Pa": 221722.55597119778,
+            "psi_deg": 0.07448998121361683,
+            "kappa_per_m": 215367.37857401557
+          },
+          "passed": false
+        },
+        {
+          "start_model": 1.6,
+          "end_model": 3.2,
+          "changes": {
+            "CC_stress_Pa": 146117.3636608608,
+            "PF_geometric_stress_Pa": 148746.69971071556,
+            "psi_deg": 0.0640291925988663,
+            "kappa_per_m": 143488.29857881367
+          },
+          "passed": false
+        },
+        {
+          "start_model": 3.2,
+          "end_model": 6.4,
+          "changes": {
+            "CC_stress_Pa": 59779.383111856645,
+            "PF_geometric_stress_Pa": 61688.66803280637,
+            "psi_deg": 0.0557525379039987,
+            "kappa_per_m": 57872.435680566356
+          },
+          "passed": false
+        },
+        {
+          "start_model": 6.4,
+          "end_model": 12.8,
+          "changes": {
+            "CC_stress_Pa": 9554.335907843197,
+            "PF_geometric_stress_Pa": 8345.071334857494,
+            "psi_deg": 0.047561946706963454,
+            "kappa_per_m": 10761.448937201872
+          },
+          "passed": true
+        },
+        {
+          "start_model": 12.8,
+          "end_model": 25.6,
+          "changes": {
+            "CC_stress_Pa": 41975.51389559964,
+            "PF_geometric_stress_Pa": 41285.480836924165,
+            "psi_deg": 0.035988304690391715,
+            "kappa_per_m": 42667.01972789876
+          },
+          "passed": true
+        },
+        {
+          "start_model": 25.6,
+          "end_model": 51.2,
+          "changes": {
+            "CC_stress_Pa": 42794.14672863879,
+            "PF_geometric_stress_Pa": 42361.955329898745,
+            "psi_deg": 0.023485555897167387,
+            "kappa_per_m": 43229.15974977054
+          },
+          "passed": true
+        }
+      ]
+    },
+    "cases": {
+      "unequal": {
+        "comparison_times_model": [
+          25.845495819216072,
+          27.801222324630935,
+          29.844613782672454,
+          31.986188480418416,
+          34.241890891770154,
+          36.615031829481175,
+          39.096434238014105,
+          41.68678456974487,
+          44.404550340732776,
+          47.26416406948243,
+          50.246475981495955,
+          53.349571051797945
+        ],
+        "uniform_grid_linear_interpolation_center_volume_error_relative": 1.0034508652883386e-07,
+        "maximum_post_transient_metric_errors": {
+          "LEFT_CC_stress_Pa": 28.23744572722353,
+          "RIGHT_CC_stress_Pa": 28.23743622994516,
+          "LEFT_PF_geometric_stress_Pa": 27.64092419669032,
+          "RIGHT_PF_geometric_stress_Pa": 27.640914533287287,
+          "LEFT_kappa_per_m": 28.784352276474237,
+          "RIGHT_kappa_per_m": 28.784342953935266,
+          "LEFT_neck_r_m": 4.717295625150853e-16,
+          "RIGHT_neck_r_m": 4.717295492801955e-16,
+          "delta_mu_projected_Pa": 46.31461240584031,
+          "V_left_m3_relative": 4.95596863096939e-09,
+          "V_center_m3_relative": 2.8941698045450198e-08,
+          "V_right_m3_relative": 4.955968810122522e-09
+        },
+        "limits": {
+          "LEFT_CC_stress_Pa": 20000.0,
+          "RIGHT_CC_stress_Pa": 20000.0,
+          "LEFT_PF_geometric_stress_Pa": 20000.0,
+          "RIGHT_PF_geometric_stress_Pa": 20000.0,
+          "LEFT_kappa_per_m": 20000.0,
+          "RIGHT_kappa_per_m": 20000.0,
+          "LEFT_neck_r_m": 2e-12,
+          "RIGHT_neck_r_m": 2e-12,
+          "delta_mu_projected_Pa": 5000.0,
+          "V_left_m3_relative": 1e-07,
+          "V_center_m3_relative": 1e-07,
+          "V_right_m3_relative": 1e-07
+        },
+        "pass_check": true
+      },
+      "null": {
+        "comparison_times_model": [
+          27.338553270793916,
+          29.367182775030926,
+          31.49329032577076,
+          33.73431056564141,
+          36.110715264035555,
+          38.599127813084905,
+          41.20608052619023,
+          43.95676774136835,
+          46.86956873776912,
+          49.9295477672361,
+          53.12757916507291,
+          53.79579327356744,
+          55.1322214905565,
+          55.66679277735213,
+          55.88062129207038
+        ],
+        "uniform_grid_linear_interpolation_center_volume_error_relative": 1.1348496709140086e-07,
+        "maximum_post_transient_metric_errors": {
+          "LEFT_CC_stress_Pa": 26.095632199198008,
+          "RIGHT_CC_stress_Pa": 26.095631659030914,
+          "LEFT_PF_geometric_stress_Pa": 25.637600749731064,
+          "RIGHT_PF_geometric_stress_Pa": 25.63760020211339,
+          "LEFT_kappa_per_m": 26.553153295069933,
+          "RIGHT_kappa_per_m": 26.553152764216065,
+          "LEFT_neck_r_m": 4.960336906288898e-16,
+          "RIGHT_neck_r_m": 4.960336376893306e-16,
+          "delta_mu_projected_Pa": 42.50757708927267,
+          "V_left_m3_relative": 1.0167912963616874e-08,
+          "V_center_m3_relative": 4.967623364019633e-08,
+          "V_right_m3_relative": 1.0167912963616872e-08
+        },
+        "limits": {
+          "LEFT_CC_stress_Pa": 20000.0,
+          "RIGHT_CC_stress_Pa": 20000.0,
+          "LEFT_PF_geometric_stress_Pa": 20000.0,
+          "RIGHT_PF_geometric_stress_Pa": 20000.0,
+          "LEFT_kappa_per_m": 20000.0,
+          "RIGHT_kappa_per_m": 20000.0,
+          "LEFT_neck_r_m": 2e-12,
+          "RIGHT_neck_r_m": 2e-12,
+          "delta_mu_projected_Pa": 5000.0,
+          "V_left_m3_relative": 1e-07,
+          "V_center_m3_relative": 1e-07,
+          "V_right_m3_relative": 1e-07
+        },
+        "pass_check": true
+      }
+    }
+  },
+  "paired_stress_increment_difference_Pa": {
+    "LEFT_CC_stress_Pa": 48440.73158912279,
+    "LEFT_PF_geometric_stress_Pa": 50721.666810549796
+  },
+  "status": "LONG_TIME_COMPARISON_COMPLETE",
+  "exact_time_refinement_checks": {
+    "unequal": {
+      "t_model": 60.111984427747,
+      "errors": {
+        "LEFT_CC_stress_Pa": 36.58219047635794,
+        "LEFT_PF_geometric_stress_Pa": 36.2706053853035,
+        "LEFT_kappa_per_m": 36.86053304001689,
+        "LEFT_neck_r_m": 6.553035323974922e-16,
+        "delta_mu_projected_Pa": 53.80008690431714,
+        "V_center_relative": 4.578233730194835e-09
+      }
+    },
+    "null": {
+      "t_model": 56.17329290942463,
+      "errors": {
+        "LEFT_CC_stress_Pa": 15.200842034071684,
+        "LEFT_PF_geometric_stress_Pa": 14.796456407755613,
+        "LEFT_kappa_per_m": 15.605430901050568,
+        "LEFT_neck_r_m": 3.1801830828839025e-16,
+        "delta_mu_projected_Pa": 41.881258107721806,
+        "V_center_relative": 4.9724853702838273e-08
+      }
+    }
+  },
+  "unequal_refined_target": {
+    "status": "failed_timestep_floor",
+    "t_model": 60.456579964718294,
+    "t_s": 0.9419100800762229,
+    "center_volume_change_relative": -0.0008409567567243537,
+    "wall_s": 39.95007908297703
+  }
+}

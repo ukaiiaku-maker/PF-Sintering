@@ -1,6 +1,19 @@
 # Three-particle ripening development
 
-## Current CMC follow-up
+## Current implicit follow-up
+
+The current-field implicit solver passes both the initial and late native
+PF overlaps. The paired long-time comparison observes sustained additional
+stress loading after the null's local relaxation criterion, in minutes of
+wall time. However, the sharp-CMC matched-potential null develops finite-width
+material transfer, and both trajectories reach the existing native f upper
+bound before the 0.1% target. Full Phase A and Phase B remain gated.
+
+See [implicit results](implicit/RESULTS.md), [plots](implicit/long_time_plots.pdf),
+and [solver validation](implicit/README.md). No physical parameters, accepted
+CMC checkpoints, production source, worker or watcher were changed.
+
+## Previous CMC follow-up
 
 The CMC initializer and short events-off ripening-direction/control tests now pass.
 Full Phase A and Phase B remain gated. See [CMC report](cmc/REPORT.md),

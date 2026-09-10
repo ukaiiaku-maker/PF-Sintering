@@ -1,0 +1,14 @@
+{
+  "verified_utc": "2026-09-10T05:46:05.940016+00:00",
+  "production_head": "0023db8509df151622ae94fec140e714b967ef31",
+  "production_tracked_diff_sha256": "ae7ec5aa058325a6f93dbf04308f60c573637422a13f2270861b7d7dddd99a2c",
+  "production_diff_matches_preexisting_snapshot": true,
+  "worker_pid": 49267,
+  "watcher_pid": 49324,
+  "both_processes_alive": true,
+  "experimental_run_processes_remaining": 0,
+  "production_sources_modified": false,
+  "accepted_cmc_parameters_modified": false,
+  "events_enabled": false,
+  "final_publication_blocked_by_automatic_review": true
+}

@@ -9,13 +9,16 @@ Step doubling in the driver controls the omitted nonlinear terms.
 """
 import numpy as np
 from scipy import sparse
-from scipy.sparse.linalg import spilu, gmres, LinearOperator
+from scipy.sparse.linalg import spilu, splu, gmres, LinearOperator
 from .axisym_numba_kernel import flux_kernel, div_and_update_kernel
 
 
 class ImplicitSurfaceDiffusion:
     def __init__(self, op):
         self.op = op
+        self._preconditioner = None
+        self._preconditioner_h = 0.
+        self._preconditioner_field = None
         g = op.g
         nz, nr = g['f'].shape
         self.shape = (nz, nr)
@@ -75,10 +78,21 @@ class ImplicitSurfaceDiffusion:
         rhs=h*(A@mu.ravel())
         # Dropping is ONLY in the preconditioner; the solved operator retains
         # every native coefficient, including arbitrarily small mobilities.
-        pre=lhs.copy(); pre.data[np.abs(pre.data)<1e-7]=0; pre.eliminate_zeros()
-        lu=spilu(pre,drop_tol=1e-3,fill_factor=15)
-        d,info=gmres(lhs,rhs,M=LinearOperator(lhs.shape,lu.solve),
-                     rtol=1e-11,atol=1e-15,restart=40,maxiter=10)
+        reuse=(h>.05 and self._preconditioner is not None
+               and .3<h/self._preconditioner_h<3.
+               and np.max(np.abs(f-self._preconditioner_field))<.005)
+        for attempt in range(2):
+            if reuse and attempt==0:
+                lu=self._preconditioner
+            else:
+                pre=lhs.copy(); pre.data[np.abs(pre.data)<1e-7]=0; pre.eliminate_zeros()
+                lu=splu(pre) if h>.05 else spilu(pre,drop_tol=1e-3,fill_factor=15)
+                if h>.05:
+                    self._preconditioner=lu;self._preconditioner_h=h
+                    self._preconditioner_field=f.copy()
+            d,info=gmres(lhs,rhs,M=LinearOperator(lhs.shape,lu.solve),
+                         rtol=(1e-9 if h>.05 else 1e-11),atol=0.,restart=40,maxiter=3)
+            if not info:break
         if info: raise FloatingPointError('implicit Krylov convergence')
         relative_residual=np.linalg.norm(lhs@d-rhs)/max(np.linalg.norm(rhs),1e-300)
         if relative_residual>1e-8: raise FloatingPointError('implicit linear residual')

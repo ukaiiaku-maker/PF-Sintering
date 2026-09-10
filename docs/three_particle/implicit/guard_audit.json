@@ -1,0 +1,102 @@
+{
+  "coarse": {
+    "unequal": {
+      "checkpoint": "runs/three_particle_implicit/target_v2_unequal/checkpoint.npz",
+      "t_model": 60.111984427747,
+      "native_dt_model": 1.1162617896462925e-06,
+      "native_next_step_rejected": true,
+      "current_f_min": -2.3689534369075745e-92,
+      "current_f_max": 1.0000000099988968,
+      "native_next_f_max": 1.000000010001707,
+      "maximum_location_z_r_nm": [
+        -19.199110642640147,
+        100.25
+      ],
+      "topology": {
+        "stop": false,
+        "reasons": [],
+        "center_span_m": 3.4023740379362285e-08,
+        "center_min_radius_m": 1.1604394040962185e-07
+      },
+      "center_GB_separation_over_W": 8.50593509484057,
+      "outer_ownership_core_overlap": 0.0,
+      "clipping_used": false,
+      "bounds_relaxed": false,
+      "interpretation": "Existing native bounds guard, not a GB-core-overlap stop; the tiny overshoot is not evidence of physical failure."
+    },
+    "null": {
+      "checkpoint": "runs/three_particle_implicit/target_v2_null/checkpoint.npz",
+      "t_model": 56.364604815209645,
+      "native_dt_model": 1.194286191092109e-06,
+      "native_next_step_rejected": true,
+      "current_f_min": -1.7619725802341588e-92,
+      "current_f_max": 1.0000000099996658,
+      "native_next_f_max": 1.0000000100015423,
+      "maximum_location_z_r_nm": [
+        -18.537487513961196,
+        99.25
+      ],
+      "topology": {
+        "stop": false,
+        "reasons": [],
+        "center_span_m": 4.0535306030528474e-08,
+        "center_min_radius_m": 1.1618385160625153e-07
+      },
+      "center_GB_separation_over_W": 10.133826507632119,
+      "outer_ownership_core_overlap": 0.0,
+      "clipping_used": false,
+      "bounds_relaxed": false,
+      "interpretation": "Existing native bounds guard, not a GB-core-overlap stop; the tiny overshoot is not evidence of physical failure."
+    }
+  },
+  "refined": {
+    "unequal": {
+      "checkpoint": "runs/three_particle_implicit/target_refined_v2_unequal/checkpoint.npz",
+      "t_model": 60.456579964718294,
+      "native_dt_model": 1.1162617896462925e-06,
+      "native_next_step_rejected": true,
+      "current_f_min": -2.4107064299341795e-92,
+      "current_f_max": 1.0000000099997368,
+      "native_next_f_max": 1.0000000100023743,
+      "maximum_location_z_r_nm": [
+        -19.199110642640147,
+        100.25
+      ],
+      "topology": {
+        "stop": false,
+        "reasons": [],
+        "center_span_m": 3.4023740379362285e-08,
+        "center_min_radius_m": 1.1604380690070293e-07
+      },
+      "center_GB_separation_over_W": 8.50593509484057,
+      "outer_ownership_core_overlap": 0.0,
+      "clipping_used": false,
+      "bounds_relaxed": false,
+      "interpretation": "Existing native bounds guard, not a GB-core-overlap stop; the tiny overshoot is not evidence of physical failure."
+    },
+    "null": {
+      "checkpoint": "runs/three_particle_implicit/refine_target_v2_null/checkpoint.npz",
+      "t_model": 56.17329290942463,
+      "native_dt_model": 1.194286191092109e-06,
+      "native_next_step_rejected": true,
+      "current_f_min": -1.7446129907589072e-92,
+      "current_f_max": 1.0000000099998305,
+      "native_next_f_max": 1.0000000100016397,
+      "maximum_location_z_r_nm": [
+        18.537487513961196,
+        99.25
+      ],
+      "topology": {
+        "stop": false,
+        "reasons": [],
+        "center_span_m": 4.0535306030528474e-08,
+        "center_min_radius_m": 1.1618380989396553e-07
+      },
+      "center_GB_separation_over_W": 10.133826507632119,
+      "outer_ownership_core_overlap": 0.0,
+      "clipping_used": false,
+      "bounds_relaxed": false,
+      "interpretation": "Existing native bounds guard, not a GB-core-overlap stop; the tiny overshoot is not evidence of physical failure."
+    }
+  }
+}

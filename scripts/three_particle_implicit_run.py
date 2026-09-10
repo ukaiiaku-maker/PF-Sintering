@@ -59,7 +59,7 @@ def main():
             f=d['f'].copy();t=float(d['t_model']);h=float(d['next_h']) if 'next_h' in d else h
     out=Path(f'runs/three_particle_implicit/{args.label}_{args.case}');out.mkdir(parents=True,exist_ok=False)
     end=args.end_native_steps*meta['dt_model'];start=time.perf_counter();rows=[record(f,op,meta,t,step)]
-    rejected=0;status='running';last_print=start;next_native=(np.floor(t/(1000*meta['dt_model']))+1)*1000*meta['dt_model']
+    rejected=0;rejection_reasons={};status='running';last_print=start;next_native=(np.floor(t/(1000*meta['dt_model']))+1)*1000*meta['dt_model']
     native_end=10000*meta['dt_model'];frames=[f.copy()];frame_t=[t];next_frame=max(native_end,t*1.25)
     def save():
         with (out/'history.csv').open('w',newline='') as stream:
@@ -67,16 +67,18 @@ def main():
         temp=out/'checkpoint.tmp.npz'
         np.savez_compressed(temp,f=f,ownership=g['ownership'],z=g['z'],r_c=g['r_c'],gb=g['gb'],t_model=t,next_h=h,metadata_json=json.dumps(meta),events_enabled=False)
         os.replace(temp,out/'checkpoint.npz')
-        report=dict(case=args.case,status=status,wall_s=time.perf_counter()-start,accepted=step,rejected=rejected,t_model=t,t_s=t*op.physics.seconds_per_model_time,initial=rows[0],final=rows[-1],grain_volume_relative_changes=(grain_volumes(f,g)/v0-1).tolist(),settings=vars(args)|{'resume':str(args.resume)},phase_b_authorized=False)
+        report=dict(case=args.case,status=status,wall_s=time.perf_counter()-start,accepted=step,rejected=rejected,rejection_reasons=rejection_reasons,t_model=t,t_s=t*op.physics.seconds_per_model_time,initial=rows[0],final=rows[-1],grain_volume_relative_changes=(grain_volumes(f,g)/v0-1).tolist(),settings=vars(args)|{'resume':str(args.resume)},phase_b_authorized=False)
         (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
     while t<end*(1-1e-13):
         h=min(h,end-t,args.max_step_native*meta['dt_model'])
         if t<native_end*(1-1e-12):h=min(h,next_native-t)
+        reason='nonlinear_error_estimate'
         try:
             trial,err=advance(f,h,it,meta['rule'],args.field_tol)
         except (FloatingPointError,RuntimeError) as exc:
-            err=np.inf
+            err=np.inf;reason=str(exc)
         if err>1:
+            rejection_reasons[reason]=rejection_reasons.get(reason,0)+1
             rejected+=1;h*=max(.2,.8/np.sqrt(err))
             if h<meta['dt_model']/8:status='failed_timestep_floor';break
             continue

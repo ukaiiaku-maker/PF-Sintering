@@ -2,7 +2,10 @@
 
 The new solver advances the full current PF field on the accepted CMC grid.
 The short native overlap passes for both the unequal chain and matched-μ null.
-Long-time qualification is in progress; Phase B remains disabled.
+The long-time comparison is complete through the existing native bounds guards.
+Sustained additional stress loading is observed, but the analytical null
+develops material transfer. Full Phase A and Phase B remain gated. See
+[results](RESULTS.md) and [long-time plots](long_time_plots.pdf).
 
 For fixed ownership, write the native semidiscrete equations as
 
@@ -32,9 +35,17 @@ geometry and chemical potential are measured again after each accepted step.
 The error estimator also compares TJ angle and meridional curvature using
 the unchanged frozen CMC calibration rule.
 
-Sparse ILU is only a preconditioner. Entries below 1e-7 may be removed from
-that preconditioner, never from the solved matrix. GMRES uses rtol=1e-11,
-atol=1e-15, plus an independently checked residual. See the official
+The sparse preconditioner uses ILU for h≤0.05 model time, and LU of a
+thresholded matrix for larger steps. Large-step factors can be reused while
+h stays within a factor of three and the field changes by less than 0.005.
+Entries below 1e-7 may be removed from that preconditioner, never from the
+solved matrix. GMRES uses rtol=1e-11 for small steps and 1e-9 for large steps,
+atol=0, plus an independently checked relative residual below 1e-8.
+The initial version used ILU at all timesteps; its late Krylov failures
+limited speed. A saved null scout documents that computational limitation.
+A small nonzero absolute solver tolerance also caused misleading relative-
+residual failures as the bounds guard forced h toward zero; atol=0 fixes
+that numerical diagnostic without changing the native bounds guard. See the official
 [SciPy GMRES documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.gmres.html)
 for the residual/preconditioning semantics. A direct sparse LU benchmark
 cost about 11 seconds per step; ILU/GMRES took 0.46–0.83 seconds over tested
@@ -43,7 +54,7 @@ base solves, and the initial transient limits useful acceleration.
 
 ## Validation
 
-33 focused tests pass, including sparse/native equivalence on an asymmetric
+35 focused tests pass, including sparse/native equivalence on an asymmetric
 field with arbitrary potential and nontrivial boundaries, first-order base
 consistency, cylindrical mass conservation, mirror symmetry, exact resumed
 current-field continuation, CMC geometry, and production transfer/restart
@@ -78,3 +89,5 @@ Reproduction (repository venv; single numerical thread):
 Output directories must be new. Runs live under `runs/three_particle_implicit`
 and never overwrite the accepted CMC or native explicit evidence. Atomic
 checkpoints contain f, fixed ownership, grid, time, and next timestep.
+Integrator state consists of the actual field and next h; preconditioner
+factors are disposable numerical caches, not physical restart state.

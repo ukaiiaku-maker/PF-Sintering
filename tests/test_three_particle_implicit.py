@@ -54,3 +54,30 @@ def test_actual_field_checkpoint_continuation_is_reproducible(tmp_path):
         g=dict(op.g,f=saved['f'].copy(),ownership=saved['ownership'].copy())
         restored=ImplicitSurfaceDiffusion(PhaseAOperator(g)).step(g['f'],float(saved['next_h']))
     np.testing.assert_array_equal(restored,direct)
+
+
+def test_null_plateau_requires_two_complete_quiet_doubling_intervals():
+    from scripts.three_particle_implicit_analysis import null_plateau
+    times=np.array([.1,.2,.4,.8,1.6])
+    d={'t_model':times}
+    for side in ['LEFT','RIGHT']:
+        for key in ['CC_stress_Pa','PF_geometric_stress_Pa','kappa_per_m','psi_deg']:
+            d[side+'_'+key]=np.ones(len(times))
+    assert null_plateau(d)['t_start_model']==.4
+    for side in ['LEFT','RIGHT']:
+        d[side+'_CC_stress_Pa']=np.arange(len(times))*100000.
+    assert null_plateau(d)['t_start_model'] is None
+    for side in ['LEFT','RIGHT']:
+        d[side+'_CC_stress_Pa']=np.array([0.,0.,100000.,200000.,200000.])
+    assert null_plateau(d)['t_start_model'] is None
+
+
+def test_reused_large_step_preconditioner_does_not_change_solved_equation():
+    f,op,it=fixture(mirror=True)
+    f=.2+.001*(f-np.mean(f))
+    it.step(f,.1);factor=it._preconditioner
+    cached=it.step(f,.12)
+    assert it._preconditioner is factor
+    fresh=ImplicitSurfaceDiffusion(op).step(f,.12)
+    np.testing.assert_allclose(cached,fresh,atol=2e-11,rtol=0)
+    assert abs(np.sum((cached-f)*op.g['r_c']))<1e-21
