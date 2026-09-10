@@ -1,0 +1,21 @@
+{
+  "ratio": 0.7428902074688286,
+  "center_half_length_nm": 20.267653015264237,
+  "Kc_per_m": 17135499.374982458,
+  "Ko_per_m": 17135499.36306284,
+  "delta_mu_Pa": 0.011919617652893066,
+  "delta_mu_J_per_atom": 1.1919617652893065e-31,
+  "center_contact_radius_nm": 114.9435720717953,
+  "outer_contact_radius_nm": 114.9435720717953,
+  "contact_relative_mismatch": 0.0,
+  "connected": true,
+  "center_min_radius_nm": 114.9435720717953,
+  "center_span_over_W": 4.053530603052847,
+  "contact_separation_margin_W": -3.946469396947153,
+  "resolution_pass": false,
+  "desired_ordering": false,
+  "matched_potential": true,
+  "max_bvp_residual": 4.686834553010245e-10,
+  "volume_relative_error": 0.0,
+  "outer_centroid_from_GB_nm": 52.99720269189209
+}

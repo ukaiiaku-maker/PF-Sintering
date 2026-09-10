@@ -9,6 +9,7 @@ from pf_sintering.three_particle_phase_a import PhaseAOperator,initialize_step,i
 from pf_sintering.three_particle_diagnostics import diagnostics
 
 def main():
+    raise RuntimeError('Projected-energy initialization is rejected and disabled. Outputs are preserved; use the CMC initializer.')
     ap=argparse.ArgumentParser();ap.add_argument('--ratio',type=float,default=.7);ap.add_argument('--steps',type=int,default=10000);ap.add_argument('--resume',action='store_true');ap.add_argument('--dtau',type=float,default=.04);args=ap.parse_args()
     out=Path(f'runs/three_particle_phase_a/ratio_{args.ratio:g}');out.mkdir(parents=True,exist_ok=True)
     g=build_three_particle(ThreeParticleConfig(center_ratio=args.ratio));op=PhaseAOperator(g);f=g['f'];v0=grain_volumes(f,g)
