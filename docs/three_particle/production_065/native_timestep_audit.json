@@ -1,0 +1,81 @@
+{
+  "label": "OFF_TRAJECTORY_NATIVE_TIMESTEP_REFINEMENT",
+  "source": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.250000.npz",
+  "source_sha256": "e7047a7153851a0a3d66d2dd4c9bece6233bcf8989ecd38b8ca75f062b12a150",
+  "total_advanced_over_b": 0.0025,
+  "fixed_physical_convergence_check_cadence": true,
+  "unchanged_convergence_tolerances": true,
+  "rows": [
+    {
+      "refinement_factor": 1,
+      "dt_model": 1.2199696265952176e-06,
+      "steps_per_block": 10,
+      "check_interval_model": 1.2199696265952176e-05,
+      "completed": true,
+      "stop_reason": null,
+      "stop_detail": null,
+      "wall_s": 30.41033745801542,
+      "blocks": [
+        210
+      ],
+      "clock_s": 0.00040193133848485935,
+      "sigma_Pa": {
+        "LEFT": 3075633.8378264857,
+        "RIGHT": 18284334.400645863
+      },
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "field_Linf_to_finest": 2.7899753618498835e-09,
+      "max_local_stress_difference_Pa": 1.4249820103868842,
+      "relative_clock_difference": 1.1299405189291178e-08
+    },
+    {
+      "refinement_factor": 2,
+      "dt_model": 6.099848132976088e-07,
+      "steps_per_block": 20,
+      "check_interval_model": 1.2199696265952176e-05,
+      "completed": true,
+      "stop_reason": null,
+      "stop_detail": null,
+      "wall_s": 50.795630040986,
+      "blocks": [
+        210
+      ],
+      "clock_s": 0.00040193133545729796,
+      "sigma_Pa": {
+        "LEFT": 3075634.7878256403,
+        "RIGHT": 18284334.588879477
+      },
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "field_Linf_to_finest": 9.299728209732905e-10,
+      "max_local_stress_difference_Pa": 0.47498285584151745,
+      "relative_clock_difference": 3.766871259358595e-09
+    },
+    {
+      "refinement_factor": 4,
+      "dt_model": 3.049924066488044e-07,
+      "steps_per_block": 40,
+      "check_interval_model": 1.2199696265952176e-05,
+      "completed": true,
+      "stop_reason": null,
+      "stop_detail": null,
+      "wall_s": 94.11088191700401,
+      "blocks": [
+        210
+      ],
+      "clock_s": 0.00040193133394327436,
+      "sigma_Pa": {
+        "LEFT": 3075635.262808496,
+        "RIGHT": 18284334.682999775
+      },
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "field_Linf_to_finest": 0.0,
+      "max_local_stress_difference_Pa": 0.0,
+      "relative_clock_difference": 0.0
+    }
+  ],
+  "note": "Local relaxation increment only; this does not establish refinement of the previously accumulated morphology or a complete event.",
+  "production_changed": false
+}

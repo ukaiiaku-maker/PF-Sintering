@@ -318,3 +318,25 @@ are restored. Immutable pre-restart files and hashes are retained in
 forced_descendant_family/restart_before_quota_fix. No accepted source is
 replayed and no threshold is redrawn. This is a computational restart,
 not a physical failure or a second descendant.
+
+## First descendant: quarter-b warning and local timestep audit
+
+The first conditional descendant reaches q/b=0.25 with LEFT stress
+3.094 MPa. Its unmasked center profile has a new gradient maximum at 3.418W,
+within 0.75W of the 3W transfer boundary. Its magnitude is 1.736e15 /m2
+and prominence 7.32e13 /m2, about 4.2% of that magnitude. This shallow local
+peak was absent at the descendant's initial state. It is retained as an
+additional warning; the first descendant is incomplete and repeated-event
+morphology is not qualified. The established three-completed-event monitor
+is unchanged. Immutable plots and profiles are in descendant_quarter_b_review.
+
+A discarded 0.0025b continuation increment from that retained q/b=0.25
+state compares native dt, dt/2 and dt/4 while using 10, 20 and 40 steps
+per convergence-check block. Thus the physical check cadence and all
+convergence tolerances are fixed. All three stop at 210 blocks with
+unchanged field bounds. Nominal/fine and half/fine field differences are
+2.79e-9 and 9.30e-10; local-stress differences are 1.43 and 0.475 Pa,
+and relative event-clock differences are 1.13e-8 and 3.77e-9. This is strong
+local timestep agreement. It does not test refinement of the morphology
+already accumulated before the checkpoint, nor qualify a complete event.
+See native_timestep_audit.json and the retained input/output fields.
