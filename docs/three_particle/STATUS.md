@@ -3,25 +3,28 @@
 ## Refined shared-physics objective
 
 The PF stationary-null study is preserved validation and **no longer gates Phase B**.
-Both contacts now reuse the exact bicrystal local and continuous-integral stress
-formulas and live root law, with four passing contact/kinetics regressions
-(37 focused tests total). The 15-geometry screen has seven cleanup/topology
-passes, including two reversed-curvature controls. Two shortlisted reloads
-reach the unchanged field guard before appreciable root hazard; no geometry
-is yet qualified for stochastic three-grain events.
+The selected production geometry is Rc/Ro = 0.65, Ro = 119.999 nm, W = 4 nm,
+with the original CMC mapping, cleanup and physical parameters. Broad geometry
+screening has stopped. Its small probability of a root before the old 0.864 s
+numerical stop is **not a geometry failure**: the unchanged two-contact kinetics
+imply an order-10-second first-root waiting time. The 0.74 growing-center case
+is not the representative shrinking-center geometry.
 
-See [shared-physics report](production_screen/REPORT.md),
-[exact production call-path audit](production_screen/PHYSICS_AUDIT.md) and
-[plots](production_screen/screen_plots.pdf).
-Phase B remains disabled pending viable reload and event validation, not a
-stationary-null construction. Unequal 0.70 case and field guard unchanged;
-no clipping, fitted correction, null subtraction or kinetic retuning.
+Both contacts reuse the exact bicrystal within-contact local stress and root
+law. No aggregate stress, affinity, null subtraction or fitted correction enters
+activation. See [current numerical and event audit](production_065/REPORT.md)
+and the historical [screen](production_screen/REPORT.md).
+
+The numerical field-bound repair passes a 30-second no-sink reload with
+0.986% center-volume loss; forced event qualification is in progress.
+The original 1e-8 field guard remains active; accepted f is never clipped.
+Stochastic Phase B remains disabled until the reload and event gates pass.
 Historical qualification statements below describe their own studies.
 
 ```text
-PF-native stationary null: NOT YET FOUND
+PF-native stationary null: NOT YET FOUND (not a production gate)
 Phase A: NOT FULLY QUALIFIED
-Phase B: DISABLED
+Phase B: DISABLED pending numerical/event qualification
 Unequal 0.70 case: unchanged
 Field guard: unchanged
 No clipping

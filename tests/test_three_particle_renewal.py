@@ -1,0 +1,27 @@
+import numpy as np
+import pytest
+from pf_sintering.three_particle_renewal import RootClocks,locate_first_root
+
+
+def test_field_crossing_rollback_and_renewal_restart():
+    clocks=RootClocks(np.random.default_rng(19));clocks.threshold={'LEFT':.3,'RIGHT':.8}
+    before=clocks.snapshot();calls=[]
+    def advance(f,dt):calls.append(dt);return f+dt
+    def rates(f):return {'LEFT':1.+float(f[0]),'RIGHT':2.}
+    f=np.array([0.]);field,t,inc,contact=locate_first_root(f,1.,advance,rates,clocks,1e-8)
+    assert contact=='LEFT';assert abs(t-(-1+np.sqrt(1.6)))<1e-8
+    assert len(calls)>10;np.testing.assert_array_equal(f,[0.]);assert clocks.snapshot()==before
+    np.testing.assert_allclose(field,[t]);clocks.commit(inc,contact)
+    with pytest.raises(RuntimeError):clocks.increments(rates(f),rates(f),.1)
+    restored=RootClocks.restore(clocks.snapshot());right=clocks.hazard['RIGHT'];threshold=clocks.threshold['RIGHT']
+    clocks.extinct();restored.extinct();assert clocks.snapshot()==restored.snapshot()
+    assert clocks.hazard['RIGHT']==right and clocks.threshold['RIGHT']==threshold
+    assert clocks.hazard['LEFT']==0 and clocks.threshold['LEFT']!=.3
+
+
+def test_right_can_fire_first_and_no_crossing_preserves_rng():
+    clocks=RootClocks(np.random.default_rng(3));clocks.threshold={'LEFT':10.,'RIGHT':.1}
+    result=locate_first_root(np.array([0.]),1.,lambda f,t:f+t,lambda f:{'LEFT':1.,'RIGHT':1.},clocks,1e-7)
+    assert result[-1]=='RIGHT';assert abs(result[1]-.1)<1e-7
+    state=clocks.snapshot();inc=clocks.increments({'LEFT':1.,'RIGHT':1.},{'LEFT':1.,'RIGHT':1.},.01)
+    clocks.commit(inc);assert clocks.rng.bit_generator.state==state['rng']

@@ -1,0 +1,8 @@
+{
+  "reload_qualified": true,
+  "one_b_qualified": false,
+  "descendant_qualified": false,
+  "phase_b_enabled": false,
+  "reason": "30 physical seconds pass the unchanged field guard, conservation, energy, topology and late timestep refinement; forced one-b and descendants pending",
+  "predeclared_production_seed": 20260910
+}

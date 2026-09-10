@@ -1,0 +1,8 @@
+{
+  "status": "REFERENCE_OVERLAP_COMPLETE_NOT_A_FAILED_EVENT",
+  "reason": "Compiled event is bitwise identical at q/b=0.275; redundant original-kernel process interrupted to release computation",
+  "checkpoint": "runs/three_particle_production_065/forced_left/checkpoint.npz",
+  "checkpoint_sha256": "f2a92235d555d126f23b85f00afeff4c87dd62e323e02fb653661c4167949a35",
+  "continuing_run": "runs/three_particle_production_065/forced_left_compiled",
+  "production_processes_untouched": true
+}

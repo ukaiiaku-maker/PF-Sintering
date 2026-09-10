@@ -97,9 +97,13 @@ class ImplicitSurfaceDiffusion:
         relative_residual=np.linalg.norm(lhs@d-rhs)/max(np.linalg.norm(rhs),1e-300)
         if relative_residual>1e-8: raise FloatingPointError('implicit linear residual')
         effective_mu=mu+(H@d).reshape(f.shape)
-        flux_kernel(f,effective_mu,g['dr'],g['dz'],op.W,op.physics.M_s,1e-6/op.W,op.Jr,op.Jz)
-        div_and_update_kernel(f,op.Jr,op.Jz,g['r_c'],g['r_f'],g['dr'],g['dz'],h,op.out)
-        result=op.out.copy()
+        result=self.conservative_update(f,effective_mu,h)
         if not np.isfinite(result).all() or result.min() < -1e-8 or result.max()>1+1e-8:
             raise FloatingPointError('implicit bounds; reduce timestep without clipping')
         return result
+
+    def conservative_update(self,f,mu,h):
+        op=self.op;g=op.g
+        flux_kernel(f,mu,g['dr'],g['dz'],op.W,op.physics.M_s,1e-6/op.W,op.Jr,op.Jz)
+        div_and_update_kernel(f,op.Jr,op.Jz,g['r_c'],g['r_f'],g['dr'],g['dz'],h,op.out)
+        return op.out.copy()

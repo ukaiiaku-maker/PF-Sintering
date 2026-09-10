@@ -55,7 +55,8 @@ def current_state_mass_transfer_event(
         minimum_step_over_b: float = 0.0025,
         maximum_step_over_b: float = 0.02, step_limits=None,
         mask_parameters: TransferMaskParameters = TransferMaskParameters(),
-        maximum_accepted_states: int = 400, **_ignored_packet_options):
+        maximum_accepted_states: int = 400,
+        transfer_fn=bounded_conservative_transfer, **_ignored_packet_options):
     """Advance accumulated transferred material to a requested event quota.
 
     Every trial begins from the current committed fields.  Its masks are
@@ -104,6 +105,12 @@ def current_state_mass_transfer_event(
     clean = 0
     rejection_counts = {}
     last_rejections = []
+    if event_restart is not None:
+        step = float(event_restart.get("next_step_over_b", step))
+        step = min(maximum_step_over_b, max(minimum_step_over_b, step))
+        clean = int(event_restart.get("clean_acceptances", 0))
+        rejection_counts = dict(event_restart.get("rejection_reason_counts", {}))
+        last_rejections = list(event_restart.get("last_rejection_reasons", []))
 
     def restart_record():
         return dict(
@@ -118,7 +125,11 @@ def current_state_mass_transfer_event(
             event_time_model=elapsed,
             accepted_steps_total=accepted_total,
             mass_initial_weighted=mass_initial,
-            cumulative_grain_flux_volume_m3={1: 0.0, 2: 0.0},
+            cumulative_grain_flux_volume_m3={i: 0.0 for i in range(1, len(current))},
+            next_step_over_b=step,
+            clean_acceptances=clean,
+            rejection_reason_counts=dict(rejection_counts),
+            last_rejection_reasons=list(last_rejections),
             quasistatic_trial_rejections_total=rejected_total,
             restart_fast_precondition_calls_total=0,
             slow_clock_quadrature_refinements_total=0,
@@ -155,7 +166,7 @@ def current_state_mass_transfer_event(
                 r_TJ_m=float(record0["r_TJ_m"]), W_m=float(setup["W"]),
                 parameters=mask_parameters)
             transfer_volume = float(record0["contact_area_m2"])*dq_m
-            candidate, transfer_diagnostic = bounded_conservative_transfer(
+            candidate, transfer_diagnostic = transfer_fn(
                 current, receiver, donor,
                 transfer_volume_m3=transfer_volume,
                 r_c=setup["r_c"], dr=setup["dr"], dz=setup["dz"])
@@ -238,15 +249,15 @@ def current_state_mass_transfer_event(
         previous = row
         q = q_trial
         packets.append(packet)
+        clean += 1
+        if clean >= 3:
+            step = min(maximum_step_over_b, 2.0*step)
+            clean = 0
         progress = restart_record()
         if accepted_progress_callback is not None:
             accepted_progress_callback(packet, current, progress)
         if accepted_state_callback is not None:
             accepted_state_callback(packet, current)
-        clean += 1
-        if clean >= 3:
-            step = min(maximum_step_over_b, 2.0*step)
-            clean = 0
 
     restart = restart_record()
     return *current, True, dict(

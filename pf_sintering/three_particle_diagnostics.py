@@ -62,7 +62,7 @@ def diagnostics(f,op):
     return out,dict(z_m=z,r_m=R,kappa_per_m=kappa,mu_field_Pa=mu)
 
 
-def curvature_watch(f,op):
+def curvature_watch(f,op,two_contact_center=False):
     """Reuse production branch metrics on four disjoint branches at both TJs.
 
     Historical 3W/10W distances remain watch locations, not active transfer
@@ -79,9 +79,15 @@ def curvature_watch(f,op):
         rb=float(np.interp(b,z[np.isfinite(R)],R[np.isfinite(R)]))
         for sign in [-1,1]:
             valid=np.isfinite(R)&(sign*(z-b)>=0)
-            if contact=='LEFT' and sign>0:valid&=z<=0
-            if contact=='RIGHT' and sign<0:valid&=z>=0
+            if contact=='LEFT' and sign>0:valid&=z<(g['gb'][1] if two_contact_center else 0)
+            if contact=='RIGHT' and sign<0:valid&=z>(g['gb'][0] if two_contact_center else 0)
             key=f'{contact}_{sign:+d}'
             profile=monitor.branch_profile(z[valid],R[valid],z_tj=b,r_tj=rb,W=op.W,side=key)
+            if two_contact_center and ((contact=='LEFT' and sign>0) or (contact=='RIGHT' and sign<0)):
+                other=g['gb'][1] if contact=='LEFT' else g['gb'][0]
+                other_r=float(np.interp(other,z[np.isfinite(R)],R[np.isfinite(R)]))
+                excluded=np.hypot(profile['z_m']-other,profile['r_m']-other_r)<3*op.W
+                for quantity in ['kappa_m_per_m','dkappa_m_ds_per_m2']:
+                    profile[quantity][excluded]=np.nan
             records[key]=monitor.extrema_record(profile,op.W)
     return records

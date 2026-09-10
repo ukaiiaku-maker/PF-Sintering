@@ -1,0 +1,21 @@
+{
+  "energy_has_hard_constraint": false,
+  "mobility_has_double_zeros": true,
+  "original_at_exact_upper_max": 0.0,
+  "harmonic_at_exact_upper_max": 0.0,
+  "original_at_exact_lower_min": 0.0,
+  "harmonic_at_exact_lower_min": 0.0,
+  "exact_upper_cells": 48878,
+  "exact_lower_cells": 13252,
+  "boundary_probe": {
+    "index": [
+      481,
+      244
+    ],
+    "original_rate": 2.084319180110499e-06,
+    "harmonic_rate": 0.0,
+    "not_an_accepted_state": true
+  },
+  "initial_energy_J": 3.593766209086616e-13,
+  "finite_energy_outside_interval_J": 3.5955785857107214e-13
+}
