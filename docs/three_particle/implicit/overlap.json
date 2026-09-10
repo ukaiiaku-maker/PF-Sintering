@@ -1,0 +1,357 @@
+{
+  "status": "PASS",
+  "limits": {
+    "volume_change_fraction": 1e-08,
+    "kappa_per_m": 20000.0,
+    "neck_r_m": 2e-12,
+    "CC_stress_Pa": 20000.0,
+    "PF_geometric_stress_Pa": 20000.0,
+    "delta_mu_projected_Pa": 5000.0,
+    "field_max": 2e-05,
+    "total_volume_relative": 1e-11,
+    "mirror_error": 1e-08
+  },
+  "cases": {
+    "unequal": {
+      "pass_overlap": true,
+      "maximum_errors": {
+        "volume_change_fraction": 3.912930361919269e-10,
+        "kappa_per_m": 10930.229530863464,
+        "neck_r_m": 2.970155319823189e-14,
+        "CC_stress_Pa": 11160.339815989137,
+        "PF_geometric_stress_Pa": 11390.450632566586,
+        "delta_mu_projected_Pa": 644.9442494399846,
+        "field_max": 3.697431403493212e-06,
+        "total_volume_relative": 2.220446049250313e-16,
+        "mirror_error": 5.051514762044462e-15
+      },
+      "observations": [
+        {
+          "t_model": 0.0,
+          "errors": {
+            "volume_change_fraction": 0.0,
+            "kappa_per_m": 0.0,
+            "neck_r_m": 0.0,
+            "CC_stress_Pa": 0.0,
+            "PF_geometric_stress_Pa": 0.0,
+            "delta_mu_projected_Pa": 0.0,
+            "field_max": 0.0,
+            "total_volume_relative": 0.0,
+            "mirror_error": 5.551115123125783e-16
+          }
+        },
+        {
+          "t_model": 0.0011162617896462925,
+          "errors": {
+            "volume_change_fraction": 1.4523041425978206e-10,
+            "kappa_per_m": 10930.229530863464,
+            "neck_r_m": 2.970155319823189e-14,
+            "CC_stress_Pa": 11160.339815989137,
+            "PF_geometric_stress_Pa": 11390.450632566586,
+            "delta_mu_projected_Pa": 224.67023028060794,
+            "field_max": 3.697431403493212e-06,
+            "total_volume_relative": 1.1102230246251565e-16,
+            "mirror_error": 2.55351295663786e-15
+          }
+        },
+        {
+          "t_model": 0.002232523579292585,
+          "errors": {
+            "volume_change_fraction": 2.0114269958035287e-10,
+            "kappa_per_m": 7359.462455745786,
+            "neck_r_m": 2.7577680234034238e-14,
+            "CC_stress_Pa": 7543.270612891763,
+            "PF_geometric_stress_Pa": 7727.07841911912,
+            "delta_mu_projected_Pa": 644.9442494399846,
+            "field_max": 3.4309379225438974e-06,
+            "total_volume_relative": 0.0,
+            "mirror_error": 6.661338147750939e-16
+          }
+        },
+        {
+          "t_model": 0.0033487853689388777,
+          "errors": {
+            "volume_change_fraction": 2.6958498510402354e-10,
+            "kappa_per_m": 3254.187078729272,
+            "neck_r_m": 2.8370251795046504e-14,
+            "CC_stress_Pa": 3360.4520733356476,
+            "PF_geometric_stress_Pa": 3466.7171270027757,
+            "delta_mu_projected_Pa": 482.3961664661765,
+            "field_max": 3.5296292224540338e-06,
+            "total_volume_relative": 0.0,
+            "mirror_error": 6.661338147750939e-16
+          }
+        },
+        {
+          "t_model": 0.00446504715858517,
+          "errors": {
+            "volume_change_fraction": 2.3578882289683483e-10,
+            "kappa_per_m": 291.8995008505881,
+            "neck_r_m": 2.061906799868497e-14,
+            "CC_stress_Pa": 326.5041073411703,
+            "PF_geometric_stress_Pa": 361.1090702135116,
+            "delta_mu_projected_Pa": 154.98093865811825,
+            "field_max": 2.562015457008293e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 5.051514762044462e-15
+          }
+        },
+        {
+          "t_model": 0.005581308948231462,
+          "errors": {
+            "volume_change_fraction": 2.9301141583005874e-10,
+            "kappa_per_m": 1339.9220412224531,
+            "neck_r_m": 2.191332319831233e-14,
+            "CC_stress_Pa": 1338.0311971344054,
+            "PF_geometric_stress_Pa": 1336.1397804338485,
+            "delta_mu_projected_Pa": 46.10855159536004,
+            "field_max": 2.7239026380021514e-06,
+            "total_volume_relative": 1.1102230246251565e-16,
+            "mirror_error": 7.771561172376096e-16
+          }
+        },
+        {
+          "t_model": 0.0066975707378777545,
+          "errors": {
+            "volume_change_fraction": 2.7033348472163713e-10,
+            "kappa_per_m": 1909.6132652387023,
+            "neck_r_m": 1.791554968931355e-14,
+            "CC_stress_Pa": 1925.753139372915,
+            "PF_geometric_stress_Pa": 1941.8924629557878,
+            "delta_mu_projected_Pa": 161.45896305516362,
+            "field_max": 2.2247025909249984e-06,
+            "total_volume_relative": 0.0,
+            "mirror_error": 1.4432899320127035e-15
+          }
+        },
+        {
+          "t_model": 0.007813832527524047,
+          "errors": {
+            "volume_change_fraction": 3.428580374815726e-10,
+            "kappa_per_m": 2866.2831481024623,
+            "neck_r_m": 2.027793421420557e-14,
+            "CC_stress_Pa": 2900.2880472913384,
+            "PF_geometric_stress_Pa": 2934.292263869196,
+            "delta_mu_projected_Pa": 303.10252970829606,
+            "field_max": 2.5202794550205354e-06,
+            "total_volume_relative": 0.0,
+            "mirror_error": 2.9976021664879227e-15
+          }
+        },
+        {
+          "t_model": 0.00893009431717034,
+          "errors": {
+            "volume_change_fraction": 3.7765769182053273e-10,
+            "kappa_per_m": 3309.522094041109,
+            "neck_r_m": 2.0338733273012528e-14,
+            "CC_stress_Pa": 3353.768982693553,
+            "PF_geometric_stress_Pa": 3398.0151486042887,
+            "delta_mu_projected_Pa": 385.87330869957805,
+            "field_max": 2.5278713272625097e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 2.7755575615628914e-15
+          }
+        },
+        {
+          "t_model": 0.010046356106816633,
+          "errors": {
+            "volume_change_fraction": 3.9086793205103496e-10,
+            "kappa_per_m": 3434.0330423153937,
+            "neck_r_m": 1.9436840119346935e-14,
+            "CC_stress_Pa": 3483.0076154358685,
+            "PF_geometric_stress_Pa": 3531.981487199664,
+            "delta_mu_projected_Pa": 423.76872773468494,
+            "field_max": 2.415173132375159e-06,
+            "total_volume_relative": 0.0,
+            "mirror_error": 2.6645352591003757e-15
+          }
+        },
+        {
+          "t_model": 0.011162617896462924,
+          "errors": {
+            "volume_change_fraction": 3.912930361919269e-10,
+            "kappa_per_m": 3374.4796506017447,
+            "neck_r_m": 1.81709323596071e-14,
+            "CC_stress_Pa": 3424.651661064476,
+            "PF_geometric_stress_Pa": 3474.8230172507465,
+            "delta_mu_projected_Pa": 432.45301622897387,
+            "field_max": 2.2570283099154764e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 2.4424906541753444e-15
+          }
+        }
+      ]
+    },
+    "null": {
+      "pass_overlap": true,
+      "maximum_errors": {
+        "volume_change_fraction": 1.6104937598818498e-13,
+        "kappa_per_m": 10587.688462287188,
+        "neck_r_m": 2.989882644372848e-14,
+        "CC_stress_Pa": 10814.464974734932,
+        "PF_geometric_stress_Pa": 11041.241487182677,
+        "delta_mu_projected_Pa": 470.2247062250972,
+        "field_max": 3.7064472473424814e-06,
+        "total_volume_relative": 6.661338147750939e-16,
+        "mirror_error": 3.1086244689504383e-15
+      },
+      "observations": [
+        {
+          "t_model": 0.0,
+          "errors": {
+            "volume_change_fraction": 0.0,
+            "kappa_per_m": 0.0,
+            "neck_r_m": 0.0,
+            "CC_stress_Pa": 0.0,
+            "PF_geometric_stress_Pa": 0.0,
+            "delta_mu_projected_Pa": 0.0,
+            "field_max": 0.0,
+            "total_volume_relative": 0.0,
+            "mirror_error": 4.440892098500626e-16
+          }
+        },
+        {
+          "t_model": 0.001194286191092109,
+          "errors": {
+            "volume_change_fraction": 7.155318743856998e-14,
+            "kappa_per_m": 10587.688462287188,
+            "neck_r_m": 2.989882644372848e-14,
+            "CC_stress_Pa": 10814.464974734932,
+            "PF_geometric_stress_Pa": 11041.241487182677,
+            "delta_mu_projected_Pa": 165.90131943672895,
+            "field_max": 3.7064472473424814e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 8.881784197001252e-16
+          }
+        },
+        {
+          "t_model": 0.002388572382184218,
+          "errors": {
+            "volume_change_fraction": 7.374135830614619e-14,
+            "kappa_per_m": 7310.5440717078745,
+            "neck_r_m": 2.851200598808262e-14,
+            "CC_stress_Pa": 7496.3535369075835,
+            "PF_geometric_stress_Pa": 7682.163002107292,
+            "delta_mu_projected_Pa": 470.2247062250972,
+            "field_max": 3.5339102723019877e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 3.1086244689504383e-15
+          }
+        },
+        {
+          "t_model": 0.003582858573276327,
+          "errors": {
+            "volume_change_fraction": 7.264727286987862e-14,
+            "kappa_per_m": 3048.7855714969337,
+            "neck_r_m": 2.7390153981950163e-14,
+            "CC_stress_Pa": 3149.7478679306805,
+            "PF_geometric_stress_Pa": 3250.71016436629,
+            "delta_mu_projected_Pa": 321.99924940243363,
+            "field_max": 3.394320977512244e-06,
+            "total_volume_relative": 4.440892098500626e-16,
+            "mirror_error": 9.992007221626409e-16
+          }
+        },
+        {
+          "t_model": 0.004777144764368436,
+          "errors": {
+            "volume_change_fraction": 6.761447986877793e-14,
+            "kappa_per_m": 254.44177953898907,
+            "neck_r_m": 2.366583555732156e-14,
+            "CC_stress_Pa": 292.0068514794111,
+            "PF_geometric_stress_Pa": 329.5719234198332,
+            "delta_mu_projected_Pa": 109.86100566014647,
+            "field_max": 2.9312688480942484e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 7.771561172376096e-16
+          }
+        },
+        {
+          "t_model": 0.0059714309554605455,
+          "errors": {
+            "volume_change_fraction": 5.0765564172639285e-14,
+            "kappa_per_m": 947.9381515905261,
+            "neck_r_m": 1.734456661921911e-14,
+            "CC_stress_Pa": 944.8849518075585,
+            "PF_geometric_stress_Pa": 941.831752024591,
+            "delta_mu_projected_Pa": 25.971734400838614,
+            "field_max": 2.145022678479158e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 7.771561172376096e-16
+          }
+        },
+        {
+          "t_model": 0.007165717146552655,
+          "errors": {
+            "volume_change_fraction": 3.172847760752656e-14,
+            "kappa_per_m": 1723.4236606135964,
+            "neck_r_m": 1.6862625981880645e-14,
+            "CC_stress_Pa": 1738.147594936192,
+            "PF_geometric_stress_Pa": 1752.871529256925,
+            "delta_mu_projected_Pa": 114.05117973685265,
+            "field_max": 2.085579412725025e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 8.881784197001252e-16
+          }
+        },
+        {
+          "t_model": 0.008360003337644764,
+          "errors": {
+            "volume_change_fraction": 1.8161818216530425e-14,
+            "kappa_per_m": 1859.8546501919627,
+            "neck_r_m": 1.4050531998245074e-14,
+            "CC_stress_Pa": 1881.772464144975,
+            "PF_geometric_stress_Pa": 1903.6902780979872,
+            "delta_mu_projected_Pa": 147.87399750202894,
+            "field_max": 1.7358323453064983e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 9.992007221626409e-16
+          }
+        },
+        {
+          "t_model": 0.009554289528736873,
+          "errors": {
+            "volume_change_fraction": 7.133437034376278e-14,
+            "kappa_per_m": 2409.657787196338,
+            "neck_r_m": 1.5483729440047014e-14,
+            "CC_stress_Pa": 2442.2736967392266,
+            "PF_geometric_stress_Pa": 2474.889606282115,
+            "delta_mu_projected_Pa": 212.19491467997432,
+            "field_max": 1.9146463674513114e-06,
+            "total_volume_relative": 2.220446049250313e-16,
+            "mirror_error": 1.1102230246251565e-15
+          }
+        },
+        {
+          "t_model": 0.010748575719828981,
+          "errors": {
+            "volume_change_fraction": 1.225375686876158e-13,
+            "kappa_per_m": 2029.5393595118076,
+            "neck_r_m": 1.2034834074962411e-14,
+            "CC_stress_Pa": 2058.872330540791,
+            "PF_geometric_stress_Pa": 2088.2053015716374,
+            "delta_mu_projected_Pa": 188.86510809883475,
+            "field_max": 1.4852711056612122e-06,
+            "total_volume_relative": 6.661338147750939e-16,
+            "mirror_error": 1.1102230246251565e-15
+          }
+        },
+        {
+          "t_model": 0.01194286191092109,
+          "errors": {
+            "volume_change_fraction": 1.6104937598818498e-13,
+            "kappa_per_m": 1820.0622309856117,
+            "neck_r_m": 1.023510991265313e-14,
+            "CC_stress_Pa": 1847.519310940057,
+            "PF_geometric_stress_Pa": 1874.9763908945024,
+            "delta_mu_projected_Pa": 175.5839548893273,
+            "field_max": 1.261769546900826e-06,
+            "total_volume_relative": 4.440892098500626e-16,
+            "mirror_error": 1.1102230246251565e-15
+          }
+        }
+      ]
+    }
+  },
+  "phase_b_authorized": false
+}
