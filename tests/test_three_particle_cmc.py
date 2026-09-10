@@ -34,3 +34,15 @@ def test_arbitrary_spacing_not_automatically_connected():
     assert abs(c.contact_radius/o['contact_radius_m']-1)>.1
     good,o=compatible_chain(.7)
     with pytest.raises(ValueError,match='under-resolved'):map_to_pf(good,o,10e-9,1.25e-9)
+
+def test_resolved_mapping_has_exact_gb_faces_and_partition():
+    from pf_sintering.three_particle_geometry import grain_volumes
+    c,o=compatible_chain(.7);g=map_to_pf(c,o,4e-9,.5e-9)
+    assert g['dz']<=.5e-9
+    for b in g['gb']:
+        assert np.min(abs(g['z']+g['dz']/2-b))<1e-21
+    np.testing.assert_allclose(g['ownership'].sum(axis=0),1.,atol=2e-16)
+    np.testing.assert_allclose(g['f'],g['f'][::-1],atol=1e-13)
+    v=grain_volumes(g['f'],g);target=4*np.pi*g['radii']**3/3
+    # Geometric diffuse-interface volume bias is measured, never projected away.
+    assert np.max(abs(v/target-1))<.004

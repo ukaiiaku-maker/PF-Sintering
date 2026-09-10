@@ -49,7 +49,10 @@ def solve_center(ratio,half_length,outer_radius=100e-9,psi_deg=160.,contact_radi
     finds the compatible L, rather than overconstraining four boundary data
     plus volume at arbitrary L.
     """
-    if ratio<=0 or half_length<=0:raise ValueError('positive ratio and half length required')
+    if not all(np.isfinite(v) and v>0 for v in [ratio,half_length,outer_radius]) or not 0<psi_deg<180:
+        raise ValueError('positive finite dimensions and valid angle required')
+    if contact_radius is not None and (not np.isfinite(contact_radius) or contact_radius<=0):
+        raise ValueError('positive finite contact radius required')
     scale=outer_radius;ell=half_length/scale
     target=2*np.pi*ratio**3/3;slope=-math.tan(math.radians((180-psi_deg)/2))
     fixed_contact=contact_radius is not None
@@ -69,6 +72,7 @@ def solve_center(ratio,half_length,outer_radius=100e-9,psi_deg=160.,contact_radi
         return np.array(residual)
     sol=solve_bvp(ode,boundary,x,y,p=p,tol=2e-8,max_nodes=4000)
     if not sol.success:raise ValueError('CMC BVP failed: '+sol.message)
+    if fixed_contact and abs(sol.p[1])>=15:raise ValueError('BVP left its regular length range')
     L=scale*math.exp(sol.p[1]) if fixed_contact else half_length
     xx=np.linspace(0,1,2001); yy=sol.sol(xx)
     if np.min(yy[0])<=0 or np.max(abs(yy[1]))>100:
@@ -135,9 +139,12 @@ def map_to_pf(center,cap,width,spacing,margin_widths=10):
     if 2*center.half_length<8*width:raise ValueError('CMC center GBs are under-resolved at this W')
     if abs(center.contact_radius/cap['contact_radius_m']-1)>1e-6:raise ValueError('disconnected contact radii')
     L=center.half_length;tip=L+cap['pole_distance_m'];a=cap['sphere_radius_m']
-    nz=2*int(np.ceil((tip+margin_widths*width)/spacing))
+    # Preserve analytical GB positions exactly as FV faces. Do not move a
+    # contact to its nearest grid row: the matched null is sensitive to that.
+    dz=L/int(np.ceil(L/spacing))
+    nz=2*int(np.ceil((tip+margin_widths*width)/dz))
     nr=int(np.ceil((max(a,float(center.radius([0])[0]))+margin_widths*width)/spacing))
-    z=(np.arange(nz)-(nz-1)/2)*spacing;r,rf=r_centers_faces(nr,spacing)
+    z=(np.arange(nz)-(nz-1)/2)*dz;r,rf=r_centers_faces(nr,spacing)
     dense=np.linspace(-tip,tip,int(np.ceil(2*tip/(spacing/12)))+1)
     angles=np.linspace(0,np.arccos(-cap['sphere_center_distance_m']/a),5001)
     pole_z=L+cap['sphere_center_distance_m']+a*np.cos(angles)
@@ -158,6 +165,6 @@ def map_to_pf(center,cap,width,spacing,margin_widths=10):
     phi=np.stack([1-left,left-right,right])[:,:,None]*np.ones((1,1,nr))
     c=ThreeParticleConfig(outer_radius=center.radius_scale,center_ratio=center.ratio,width=width,spacing=spacing,psi_deg=cap['psi_deg'],margin_widths=margin_widths)
     centroid=L+cap['centroid_distance_m']
-    return dict(config=c,f=f,ownership=phi,eta=phi*f[None,:,:],z=z,r_c=r,r_f=rf,dr=spacing,dz=spacing,
+    return dict(config=c,f=f,ownership=phi,eta=phi*f[None,:,:],z=z,r_c=r,r_f=rf,dr=spacing,dz=dz,
                 gb=np.array([-L,L]),neck=cap['contact_radius_m'],centers=np.array([-centroid,0.,centroid]),
                 radii=center.radius_scale*np.array([1,center.ratio,1]),cmc_center=center,cmc_cap=cap)

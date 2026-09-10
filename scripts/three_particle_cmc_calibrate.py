@@ -50,10 +50,17 @@ def main():
     # f=.5 is the Gibbs/CMC dividing surface. Other levels diagnose bias;
     # selecting an off-level contour solely to cancel fitting bias is forbidden.
     allowed=[t for t in trials if t['rule']['level']==.5 and t['rule']['inner_W']>=1]
-    best=min(allowed,key=lambda t:t['max_error_deg'])
-    rule=best['rule'];c2,o2=compatible_chain(1.1);g2=map_to_pf(c2,o2,10e-9,1.25e-9)
+    frozen=out/'angle_calibration.json'
+    if frozen.exists():
+        rule=json.loads(frozen.read_text())['rule']
+        best=next(t for t in trials if t['rule']==rule)
+    else:
+        best=min(allowed,key=lambda t:t['max_error_deg']);rule=best['rule']
+    c2,o2=compatible_chain(1.1);g2=map_to_pf(c2,o2,10e-9,1.25e-9)
     held=measure(g2['f'],g2,rule)
     report=dict(status='FROZEN_ANALYTICAL_CALIBRATION',training_ratio=1.,held_out_ratio=1.1,width_nm=10.,spacing_nm=1.25,rule=rule,training_max_error_deg=best['max_error_deg'],held_out_angles_deg=[r['psi_deg'] for r in held],trials=trials,valid_for='mapped analytical CMC geometry; evolved-state accuracy requires cleanup validation')
-    (out/'angle_calibration.json').write_text(json.dumps(report,indent=2)+'\n')
+    target=out/'angle_validation.json' if frozen.exists() else frozen
+    if frozen.exists():report['status']='VALIDATION_OF_EXISTING_FROZEN_RULE'
+    target.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='trials'},indent=2))
 if __name__=='__main__':main()

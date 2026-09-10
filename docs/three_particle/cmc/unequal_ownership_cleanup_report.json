@@ -1,0 +1,328 @@
+{
+  "status": "CLEANUP_REJECTED",
+  "failure": "cleanup guard exceeded",
+  "canonical": false,
+  "ownership_cleanup": [
+    {
+      "zero_model_time": true,
+      "variational_ownership_equilibration": true,
+      "attempted_iterations": 40,
+      "accepted_iterations": 40,
+      "initial_ownership_energy_J": 1.4373662423869678e-14,
+      "final_ownership_energy_J": 1.4360791917154583e-14,
+      "ownership_energy_change_J": -1.2870506715095289e-17,
+      "final_amount_correction_coefficient": -0.00011991500435482909,
+      "particle_amount_relative_error": 0.0,
+      "maximum_accepted_phi_increment": 0.020465768728905792,
+      "initial_G_phi_pot_J": 7.228415688992244e-15,
+      "initial_G_phi_grad_J": 7.145246734877436e-15,
+      "final_G_phi_pot_J": 6.912485248688036e-15,
+      "final_G_phi_grad_J": 7.448306668466547e-15,
+      "ownership_half_level_alignment_columns": 242,
+      "maximum_ownership_logit_alignment": 0.0,
+      "pinned_ownership_half_level_cells": 0,
+      "ownership_crossing_constraint": "linear 0.5 interpolation projected exactly at every resolved GB column"
+    },
+    {
+      "zero_model_time": true,
+      "variational_ownership_equilibration": true,
+      "attempted_iterations": 40,
+      "accepted_iterations": 40,
+      "initial_ownership_energy_J": 1.4373662423869678e-14,
+      "final_ownership_energy_J": 1.4360791917154583e-14,
+      "ownership_energy_change_J": -1.2870506715095289e-17,
+      "final_amount_correction_coefficient": -0.00011991500435482914,
+      "particle_amount_relative_error": 0.0,
+      "maximum_accepted_phi_increment": 0.020465768728905792,
+      "initial_G_phi_pot_J": 7.228415688992244e-15,
+      "initial_G_phi_grad_J": 7.145246734877436e-15,
+      "final_G_phi_pot_J": 6.9124852486880286e-15,
+      "final_G_phi_grad_J": 7.448306668466555e-15,
+      "ownership_half_level_alignment_columns": 242,
+      "maximum_ownership_logit_alignment": 0.0,
+      "pinned_ownership_half_level_cells": 0,
+      "ownership_crossing_constraint": "linear 0.5 interpolation projected exactly at every resolved GB column"
+    }
+  ],
+  "cmc": {
+    "ratio": 0.7,
+    "center_half_length_nm": 17.011870189681144,
+    "Kc_per_m": 18789296.104694903,
+    "Ko_per_m": 17135499.36306284,
+    "delta_mu_Pa": 1653796.741632063,
+    "delta_mu_J_per_atom": 1.653796741632063e-23,
+    "center_contact_radius_nm": 114.9435720717953,
+    "outer_contact_radius_nm": 114.9435720717953,
+    "contact_relative_mismatch": 0.0,
+    "connected": true,
+    "center_min_radius_nm": 114.9435720717953,
+    "center_span_over_W": 8.50593509484057,
+    "contact_separation_margin_W": 0.5059350948405701,
+    "resolution_pass": true,
+    "desired_ordering": true,
+    "matched_potential": false,
+    "max_bvp_residual": 1.431918462058687e-10,
+    "volume_relative_error": 0.0,
+    "outer_centroid_from_GB_nm": 52.99720269189209
+  },
+  "rule": {
+    "level": 0.5,
+    "degree": 2,
+    "inner_W": 1,
+    "outer_W": 2
+  },
+  "limits": {
+    "grain_volume_relative": 0.0001,
+    "centroid_over_Ro": 0.0001,
+    "neck_relative": 0.005,
+    "dilute_fraction_relative": 0.05,
+    "angle_error_deg": 1.0,
+    "contour_error_over_W": 0.1
+  },
+  "initial": {
+    "volumes_m3": [
+      4.199289213147499e-21,
+      1.438178014098789e-21,
+      4.199289213147499e-21
+    ],
+    "centroids_m": [
+      -7.012286527764189e-08,
+      -8.822824124195388e-25,
+      7.012286527764189e-08
+    ],
+    "neck_radii_m": [
+      1.1498726982300925e-07,
+      1.1498726982300925e-07
+    ],
+    "dilute_fraction": 0.00531587937095714,
+    "mirror_error": 2.55351295663786e-15,
+    "angles_deg": [
+      159.9237675216035,
+      159.92376752160908
+    ],
+    "max_contour_error_over_W": 0.00045018036902254793
+  },
+  "final": {
+    "volumes_m3": [
+      4.199288814629068e-21,
+      1.438178811135653e-21,
+      4.199288814629067e-21
+    ],
+    "centroids_m": [
+      -7.012320674737823e-08,
+      1.7645638469195008e-24,
+      7.012320674737824e-08
+    ],
+    "neck_radii_m": [
+      1.150466614855174e-07,
+      1.150466614855174e-07
+    ],
+    "dilute_fraction": 0.005315843182992832,
+    "mirror_error": 6.661338147750939e-16,
+    "angles_deg": [
+      158.887837998245,
+      158.8878379982507
+    ],
+    "max_contour_error_over_W": 0.01520323187418636
+  },
+  "changes": {
+    "grain_volume_relative": 5.541990324431367e-07,
+    "centroid_over_Ro": 3.41469736354537e-06,
+    "neck_relative": 0.0005165064150107757,
+    "dilute_fraction_relative": 6.807521725549215e-06,
+    "angle_error_deg": 1.1121620017549958,
+    "contour_error_over_W": 0.01520323187418636
+  },
+  "gates": {
+    "grain_volume_relative": true,
+    "centroid_over_Ro": true,
+    "neck_relative": true,
+    "dilute_fraction_relative": true,
+    "angle_error_deg": false,
+    "contour_error_over_W": true
+  },
+  "wall_s": 2.791196750011295,
+  "dt_model": 1.2500000000000003e-06,
+  "steps": 800,
+  "history": [
+    {
+      "step": 200,
+      "model_cleanup_time": 0.00025000000000000006,
+      "metrics": {
+        "volumes_m3": [
+          4.1992889511010904e-21,
+          1.4381785381916056e-21,
+          4.1992889511010904e-21
+        ],
+        "centroids_m": [
+          -7.012320780976013e-08,
+          1.7645641818064324e-24,
+          7.012320780976013e-08
+        ],
+        "neck_radii_m": [
+          1.1502939611988794e-07,
+          1.1502939611988794e-07
+        ],
+        "dilute_fraction": 0.00531586475847631,
+        "mirror_error": 7.771561172376096e-16,
+        "angles_deg": [
+          160.33007762931476,
+          160.33007762932786
+        ],
+        "max_contour_error_over_W": 0.010849659947957056
+      },
+      "changes": {
+        "grain_volume_relative": 3.644144268566407e-07,
+        "centroid_over_Ro": 3.425321182436172e-06,
+        "neck_relative": 0.00036635617963232114,
+        "dilute_fraction_relative": 2.748836045673997e-06,
+        "angle_error_deg": 0.3300776293278602,
+        "contour_error_over_W": 0.010849659947957056
+      },
+      "gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true
+      }
+    },
+    {
+      "step": 400,
+      "model_cleanup_time": 0.0005000000000000001,
+      "metrics": {
+        "volumes_m3": [
+          4.199288881579307e-21,
+          1.4381786772351736e-21,
+          4.199288881579307e-21
+        ],
+        "centroids_m": [
+          -7.012320754009601e-08,
+          1.7645640112078108e-24,
+          7.012320754009602e-08
+        ],
+        "neck_radii_m": [
+          1.1503776102876149e-07,
+          1.1503776102876149e-07
+        ],
+        "dilute_fraction": 0.005315853813387514,
+        "mirror_error": 5.551115123125783e-16,
+        "angles_deg": [
+          159.94895772950386,
+          159.94895772950863
+        ],
+        "max_contour_error_over_W": 0.012962088332582068
+      },
+      "changes": {
+        "grain_volume_relative": 4.610947867966786e-07,
+        "centroid_over_Ro": 3.422624541346118e-06,
+        "neck_relative": 0.00043910257048418444,
+        "dilute_fraction_relative": 4.807778326454404e-06,
+        "angle_error_deg": 0.05104227049613996,
+        "contour_error_over_W": 0.012962088332582068
+      },
+      "gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true
+      }
+    },
+    {
+      "step": 600,
+      "model_cleanup_time": 0.0007500000000000002,
+      "metrics": {
+        "volumes_m3": [
+          4.1992888417401264e-21,
+          1.4381787569135323e-21,
+          4.1992888417401264e-21
+        ],
+        "centroids_m": [
+          -7.012320715623915e-08,
+          8.82281956723485e-25,
+          7.012320715623915e-08
+        ],
+        "neck_radii_m": [
+          1.1504290101046437e-07,
+          1.1504290101046437e-07
+        ],
+        "dilute_fraction": 0.005315847306282739,
+        "mirror_error": 6.661338147750939e-16,
+        "angles_deg": [
+          159.35240813493766,
+          159.35240813493826
+        ],
+        "max_contour_error_over_W": 0.014257014315890975
+      },
+      "changes": {
+        "grain_volume_relative": 5.164970788840151e-07,
+        "centroid_over_Ro": 3.4187859726558743e-06,
+        "neck_relative": 0.00048380301176598195,
+        "dilute_fraction_relative": 6.031866444544676e-06,
+        "angle_error_deg": 0.6475918650623385,
+        "contour_error_over_W": 0.014257014315890975
+      },
+      "gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true
+      }
+    },
+    {
+      "step": 800,
+      "model_cleanup_time": 0.0010000000000000002,
+      "metrics": {
+        "volumes_m3": [
+          4.199288814629068e-21,
+          1.438178811135653e-21,
+          4.199288814629067e-21
+        ],
+        "centroids_m": [
+          -7.012320674737823e-08,
+          1.7645638469195008e-24,
+          7.012320674737824e-08
+        ],
+        "neck_radii_m": [
+          1.150466614855174e-07,
+          1.150466614855174e-07
+        ],
+        "dilute_fraction": 0.005315843182992832,
+        "mirror_error": 6.661338147750939e-16,
+        "angles_deg": [
+          158.887837998245,
+          158.8878379982507
+        ],
+        "max_contour_error_over_W": 0.01520323187418636
+      },
+      "changes": {
+        "grain_volume_relative": 5.541990324431367e-07,
+        "centroid_over_Ro": 3.41469736354537e-06,
+        "neck_relative": 0.0005165064150107757,
+        "dilute_fraction_relative": 6.807521725549215e-06,
+        "angle_error_deg": 1.1121620017549958,
+        "contour_error_over_W": 0.01520323187418636
+      },
+      "gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": false,
+        "contour_error_over_W": true
+      }
+    }
+  ],
+  "sharp_target_volumes_m3": [
+    4.18879020478639e-21,
+    1.4367550402417316e-21,
+    4.18879020478639e-21
+  ],
+  "width_m": 4e-09,
+  "spacing_m": 5e-10
+}

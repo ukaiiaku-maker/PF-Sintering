@@ -1,0 +1,166 @@
+{
+  "status": "SHORT_CLEANUP_GUARDS_PASS",
+  "failure": null,
+  "canonical": false,
+  "ownership_cleanup": [],
+  "cmc": {
+    "ratio": 0.7,
+    "center_half_length_nm": 17.011870189681144,
+    "Kc_per_m": 18789296.104694903,
+    "Ko_per_m": 17135499.36306284,
+    "delta_mu_Pa": 1653796.741632063,
+    "delta_mu_J_per_atom": 1.653796741632063e-23,
+    "center_contact_radius_nm": 114.9435720717953,
+    "outer_contact_radius_nm": 114.9435720717953,
+    "contact_relative_mismatch": 0.0,
+    "connected": true,
+    "center_min_radius_nm": 114.9435720717953,
+    "center_span_over_W": 8.50593509484057,
+    "contact_separation_margin_W": 0.5059350948405701,
+    "resolution_pass": true,
+    "desired_ordering": true,
+    "matched_potential": false,
+    "max_bvp_residual": 1.431918462058687e-10,
+    "volume_relative_error": 0.0,
+    "outer_centroid_from_GB_nm": 52.99720269189209
+  },
+  "rule": {
+    "level": 0.5,
+    "degree": 2,
+    "inner_W": 1,
+    "outer_W": 2
+  },
+  "limits": {
+    "grain_volume_relative": 0.0001,
+    "centroid_over_Ro": 0.0001,
+    "neck_relative": 0.005,
+    "dilute_fraction_relative": 0.05,
+    "angle_error_deg": 1.0,
+    "contour_error_over_W": 0.1,
+    "contact_curvature_relative": 0.05
+  },
+  "initial": {
+    "contact_curvature_relative": 0.006198969085291828,
+    "volumes_m3": [
+      4.199289213147499e-21,
+      1.438178014098789e-21,
+      4.199289213147499e-21
+    ],
+    "centroids_m": [
+      -7.012286527764189e-08,
+      -8.822824124195388e-25,
+      7.012286527764189e-08
+    ],
+    "neck_radii_m": [
+      1.1498726982300925e-07,
+      1.1498726982300925e-07
+    ],
+    "dilute_fraction": 0.00531587937095714,
+    "mirror_error": 2.55351295663786e-15,
+    "angles_deg": [
+      159.9237675216035,
+      159.92376752160908
+    ],
+    "max_contour_error_over_W": 0.00045018036902254793
+  },
+  "final": {
+    "contact_curvature_relative": 0.0342684904920022,
+    "volumes_m3": [
+      4.1992889528084875e-21,
+      1.4381785347768097e-21,
+      4.199288952808489e-21
+    ],
+    "centroids_m": [
+      -7.012286646264162e-08,
+      0.0,
+      7.01228664626416e-08
+    ],
+    "neck_radii_m": [
+      1.1503058770732167e-07,
+      1.1503058770732167e-07
+    ],
+    "dilute_fraction": 0.0053158629484878275,
+    "mirror_error": 4.440892098500626e-16,
+    "angles_deg": [
+      160.3621002814149,
+      160.36210028142563
+    ],
+    "max_contour_error_over_W": 0.011139614997228599
+  },
+  "changes": {
+    "grain_volume_relative": 3.6204003661666206e-07,
+    "centroid_over_Ro": 1.1849997284834766e-08,
+    "neck_relative": 0.00037671895662105825,
+    "dilute_fraction_relative": 3.089323170502034e-06,
+    "angle_error_deg": 0.3621002814256258,
+    "contour_error_over_W": 0.011139614997228599,
+    "contact_curvature_relative": 0.0342684904920022
+  },
+  "gates": {
+    "grain_volume_relative": true,
+    "centroid_over_Ro": true,
+    "neck_relative": true,
+    "dilute_fraction_relative": true,
+    "angle_error_deg": true,
+    "contour_error_over_W": true,
+    "contact_curvature_relative": true
+  },
+  "wall_s": 0.7153725419775583,
+  "dt_model": 1.2500000000000003e-06,
+  "steps": 200,
+  "history": [
+    {
+      "step": 200,
+      "model_cleanup_time": 0.00025000000000000006,
+      "metrics": {
+        "contact_curvature_relative": 0.0342684904920022,
+        "volumes_m3": [
+          4.1992889528084875e-21,
+          1.4381785347768097e-21,
+          4.199288952808489e-21
+        ],
+        "centroids_m": [
+          -7.012286646264162e-08,
+          0.0,
+          7.01228664626416e-08
+        ],
+        "neck_radii_m": [
+          1.1503058770732167e-07,
+          1.1503058770732167e-07
+        ],
+        "dilute_fraction": 0.0053158629484878275,
+        "mirror_error": 4.440892098500626e-16,
+        "angles_deg": [
+          160.3621002814149,
+          160.36210028142563
+        ],
+        "max_contour_error_over_W": 0.011139614997228599
+      },
+      "changes": {
+        "grain_volume_relative": 3.6204003661666206e-07,
+        "centroid_over_Ro": 1.1849997284834766e-08,
+        "neck_relative": 0.00037671895662105825,
+        "dilute_fraction_relative": 3.089323170502034e-06,
+        "angle_error_deg": 0.3621002814256258,
+        "contour_error_over_W": 0.011139614997228599,
+        "contact_curvature_relative": 0.0342684904920022
+      },
+      "gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      }
+    }
+  ],
+  "sharp_target_volumes_m3": [
+    4.18879020478639e-21,
+    1.4367550402417316e-21,
+    4.18879020478639e-21
+  ],
+  "width_m": 4e-09,
+  "spacing_m": 5e-10
+}

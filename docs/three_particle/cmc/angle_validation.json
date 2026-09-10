@@ -1,0 +1,606 @@
+{
+  "status": "VALIDATION_OF_EXISTING_FROZEN_RULE",
+  "training_ratio": 1.0,
+  "held_out_ratio": 1.1,
+  "width_nm": 10.0,
+  "spacing_nm": 1.25,
+  "rule": {
+    "level": 0.5,
+    "degree": 2,
+    "inner_W": 1,
+    "outer_W": 2
+  },
+  "training_max_error_deg": 0.04566192415580872,
+  "held_out_angles_deg": [
+    160.02143937984374,
+    160.02143937984755
+  ],
+  "trials": [
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 2,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.3060540010628756,
+      "angles_deg": [
+        160.30605400106288,
+        160.30605400106074
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.14351311788038856,
+      "angles_deg": [
+        159.8564868821196,
+        159.85648688212484
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.1342419132140833,
+      "angles_deg": [
+        160.1342419132124,
+        160.13424191321408
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.450903472337842,
+      "angles_deg": [
+        160.45090347233784,
+        160.45090347233392
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.24709693400419042,
+      "angles_deg": [
+        160.24709693400405,
+        160.2470969340042
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 3,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.1816101400300738,
+      "angles_deg": [
+        160.1816101400285,
+        160.18161014003007
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.48906950837690033,
+      "angles_deg": [
+        159.51093049163086,
+        159.5109304916231
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.4694767299257876,
+      "angles_deg": [
+        159.5305232700742,
+        159.5305232700748
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 1.1373720047081406,
+      "angles_deg": [
+        161.13737200470814,
+        161.13737200468245
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.2806165331555235,
+      "angles_deg": [
+        160.28061653315305,
+        160.28061653315552
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 4,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.2632541209286785,
+      "angles_deg": [
+        159.73674587907132,
+        159.73674587908354
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.3395935685706206,
+      "angles_deg": [
+        160.33959356847558,
+        160.33959356857062
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 1.3335841876995005,
+      "angles_deg": [
+        158.6664158123005,
+        158.66641581231187
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 6.635649574680031,
+      "angles_deg": [
+        153.36435042531997,
+        153.36435042538213
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.45,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 2.1600764329535878,
+      "angles_deg": [
+        162.1600764329169,
+        162.1600764329536
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 2,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.014888903139080867,
+      "angles_deg": [
+        159.9851110968629,
+        159.98511109686092
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.13998447455759333,
+      "angles_deg": [
+        160.13998447455668,
+        160.1399844745576
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.11357866701229113,
+      "angles_deg": [
+        160.11357866701124,
+        160.1135786670123
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.04566192415580872,
+      "angles_deg": [
+        160.0456619241558,
+        160.04566192415436
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.14387651211788466,
+      "angles_deg": [
+        160.1438765121151,
+        160.14387651211788
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 3,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.08016771068611206,
+      "angles_deg": [
+        160.0801677106807,
+        160.0801677106861
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.09610767122640596,
+      "angles_deg": [
+        159.9038923287736,
+        159.90389232877422
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.1693424518760196,
+      "angles_deg": [
+        160.16934245187602,
+        160.16934245187133
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.0897485778957332,
+      "angles_deg": [
+        160.08974857789573,
+        160.08974857785876
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.027978035548869684,
+      "angles_deg": [
+        160.02797803554796,
+        160.02797803554887
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 4,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.1907348901617354,
+      "angles_deg": [
+        160.19073489015858,
+        160.19073489016174
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.8610083539693392,
+      "angles_deg": [
+        159.13899164603066,
+        159.13899164611584
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.11344876101230739,
+      "angles_deg": [
+        159.8865512389877,
+        159.88655123904337
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 2.3041024040885247,
+      "angles_deg": [
+        162.30410240408852,
+        162.30410240387928
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.5,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.5341042055149501,
+      "angles_deg": [
+        159.46589579448505,
+        159.46589579449005
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 2,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.15973373604273888,
+      "angles_deg": [
+        159.84026626395863,
+        159.84026626395726
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.05089799965477937,
+      "angles_deg": [
+        159.94910200034522,
+        159.9491020003459
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 2,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.07903722985957984,
+      "angles_deg": [
+        159.92096277014042,
+        159.9209627701427
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.008640482574122643,
+      "angles_deg": [
+        160.00864048257037,
+        160.00864048257412
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 2,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.06804579570237479,
+      "angles_deg": [
+        159.93195420429763,
+        159.9319542042991
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 3,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.5131318733988905,
+      "angles_deg": [
+        159.4868681266011,
+        159.4868681266039
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 0.7198301924041459,
+      "angles_deg": [
+        160.71983019240415,
+        160.71983019239295
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 3,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.017854892882837703,
+      "angles_deg": [
+        159.98214510711716,
+        159.98214510711975
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.3982718663890239,
+      "angles_deg": [
+        159.60172813361098,
+        159.60172813362368
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 3,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.33283726198959585,
+      "angles_deg": [
+        160.33283726198286,
+        160.3328372619896
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 4,
+        "inner_W": 0,
+        "outer_W": 1
+      },
+      "max_error_deg": 0.579587468743,
+      "angles_deg": [
+        159.42041253125967,
+        159.420412531257
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 1.5
+      },
+      "max_error_deg": 1.8456962323898836,
+      "angles_deg": [
+        161.84569623238988,
+        161.84569623238818
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 4,
+        "inner_W": 0.5,
+        "outer_W": 2
+      },
+      "max_error_deg": 1.1319488335356027,
+      "angles_deg": [
+        161.13194883346247,
+        161.1319488335356
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 2
+      },
+      "max_error_deg": 0.40880328392384513,
+      "angles_deg": [
+        159.5911967161555,
+        159.59119671607615
+      ]
+    },
+    {
+      "rule": {
+        "level": 0.55,
+        "degree": 4,
+        "inner_W": 1,
+        "outer_W": 3
+      },
+      "max_error_deg": 0.07190495768534788,
+      "angles_deg": [
+        160.07190495768478,
+        160.07190495768535
+      ]
+    }
+  ],
+  "valid_for": "mapped analytical CMC geometry; evolved-state accuracy requires cleanup validation"
+}
