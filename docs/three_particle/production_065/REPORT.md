@@ -263,3 +263,58 @@ model-time hazard subinterval. Root crossing keeps its separate original
 1e-4 model-time tolerance. A microsecond-crossing regression passes; all 66
 focused tests pass. The first conditional descendant threshold is drawn once
 from the predeclared seed and is not selected by its firing time.
+
+## Root quadrature and analysis readiness
+
+A separate one-second current-field audit from the predeclared post-transient
+checkpoint compares 0.2, 0.1 and 0.05 s root-hazard intervals without drawing
+random thresholds. LEFT integrated hazards are 0.0632673502, 0.0632682297
+and 0.0632684422. Relative differences to the finest are 1.73e-5 and
+3.36e-6, below the predeclared 1e-4 limit. Fields differ by at most 1.20e-5,
+below the declared 2e-5 overlap limit. These adaptive field differences do
+not establish a monotone temporal order. The 0.2 s root quadrature is now
+qualified; full-field crossing localization retains its original tolerance.
+See root_quadrature_refinement.json and its retained NPZ fields.
+
+The analysis driver separates passive reload, active one-b transit and
+facilitated source-window relaxation. It reports interval rates and complete
+event changes in center volume and chain strain, with explicit incomplete
+event labels and no independent-sample interpretation of serial correlations.
+Local activation, center mean, cluster, integral and Cannon–Carter diagnostics
+are retained separately. The conditional worker launched before the reporting
+update uses Cannon–Carter fits about its original pinned planes; its plots
+label that convention. The prospective genuine driver uses measured current
+contact positions for those diagnostic fits. Neither changes activation.
+
+This reporting and quadrature milestone does not enable Phase B. The
+conditional descendant family is still in progress; no completed descendant
+or genuine stochastic-root result is claimed here.
+
+## Continuation batching and quota endpoint
+
+A discarded-copy audit at forced q/b=0.8 raises only the computational
+iteration ceiling to 1024 and compares 0.01b, 0.005b and 0.0025b increments
+for a total 0.01b advance. The 0.01b trial is rejected by the unchanged
+acceptance checks; its returned input is not a valid overlap comparison.
+The 0.005b result agrees with 0.0025b within 8.19e-6 in fields, 5.47 kPa
+in local stress and 6.47e-5 relatively in clock. It uses 499 rather than
+504 native blocks and offers no material speed advantage. The selected
+0.0025b increment, 240-block ceiling and all convergence tolerances remain
+unchanged. See event_batch_audit.json.
+
+A separate regression reproduces a quota-roundoff bug: 400 additions of
+0.0025b can leave q infinitesimally below one and falsely hit the 400-state
+cap. The final trial endpoint now includes the accumulated floating-point
+remainder before source and clock construction. This transfers the full
+remaining quota; it neither clips a field nor declares untransferred material
+complete. All 66 focused regressions pass, including exactly-once restarts
+and the new exact 400-increment endpoint assertions.
+
+The active conditional descendant was intentionally checkpointed at
+q/b=0.2025, time since the forced-root start 0.1529799409 s, and resumed with
+this fix. Its accepted fields, base fields, adaptive continuation state,
+physical event clock, source controller, hazard, threshold and RNG state
+are restored. Immutable pre-restart files and hashes are retained in
+forced_descendant_family/restart_before_quota_fix. No accepted source is
+replayed and no threshold is redrawn. This is a computational restart,
+not a physical failure or a second descendant.

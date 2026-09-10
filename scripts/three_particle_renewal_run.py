@@ -26,7 +26,7 @@ PRODUCTION_SEED=20260910
 
 def require_qualification():
     gate=json.loads((D/'qualification.json').read_text())
-    if not all(gate.get(k) is True for k in ['reload_qualified','one_b_qualified','descendant_qualified','phase_b_enabled']):
+    if not all(gate.get(k) is True for k in ['reload_qualified','one_b_qualified','descendant_qualified','root_quadrature_qualified','phase_b_enabled']):
         raise RuntimeError('Phase B DISABLED: numerical, one-b and descendant qualification required')
     return gate
 
@@ -68,11 +68,13 @@ def main():
         if abs(float(grain_volumes(state[0],g).sum())/mass0-1)>1e-11:raise RuntimeError('trajectory mass guard')
         if state[0].min() < -1e-8 or state[0].max()>1+1e-8:raise RuntimeError('unchanged field guard')
         if np.max(abs(sum(state[1:])-state[0]))>5e-15:raise RuntimeError('ownership closure guard')
-        contacts=evaluate_contacts(state[0],op,MANIFEST);scalar,_=diagnostics(state[0],op)
+        contacts=evaluate_contacts(state[0],op,MANIFEST);scalar,_=diagnostics(state[0],op,gb_positions=[contacts[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
         chain=reference.metrics(state,q)['chain_strain'];areas={k:np.pi*v['r_n_m']**2 for k,v in contacts.items()}
         # Existing contact-side stress fields are retained verbatim for center diagnostics.
         row=dict(time_s=t,phase=phase,event_number=event_number,avalanche_id=clocks.avalanche_id,
             contact=clocks.active,q_over_b=q,chain_strain=chain,contacts=contacts,
+            descendant_hazard=avalanche.state.descendant_hazard,descendant_threshold=avalanche.state.descendant_threshold,
+            source_amplitude=avalanche.state.source_amplitude,source_window_deadline_s=avalanche.state.window_deadline_s,
             center_volume_m3=float(grain_volumes(state[0],g)[1]),
             center_particle_mean_local_Pa=.5*(contacts['LEFT']['sigma_local_positive_Pa']+contacts['RIGHT']['sigma_local_negative_Pa']),
             cluster_area_weighted_local_Pa=sum(areas[k]*contacts[k]['sigma_local_Pa'] for k in areas)/sum(areas.values()),
@@ -98,7 +100,7 @@ def main():
     record('POST_TRANSIENT_NEW_TRAJECTORY');save()
     try:
         while t<start_t+20:
-            update_ownership(op,g['ownership']);step=min(.2,start_t+20-t)
+            update_ownership(op,g['ownership']);step=min(gate['root_macro_step_s'],start_t+20-t)
             fn,elapsed,increment,contact=locate_first_root(state[0],step,field_advance,rates,clocks,MANIFEST['passive_crossing_tolerance_model']*MANIFEST['seconds_per_model_time'])
             t+=elapsed;state=(fn,*(g['ownership']*fn[None]));clocks.commit(increment,contact)
             record('ROOT_CROSSING' if contact else 'RELOAD');save()
@@ -120,6 +122,7 @@ def main():
                 reference.bind(state);record('ONE_B_COMPLETE' if result[4] else 'ONE_B_FAILED',info['event_progress_over_b']);save()
                 if not result[4]:raise RuntimeError(info['stop_reason'])
                 avalanche.complete_transit(t)
+                record('SOURCE_WINDOW_OPEN');save()
                 # The source lives after a complete transit. Evolve current PF
                 # through its 9 ms window, localizing any child in the full field.
                 window_end=avalanche.state.window_deadline_s

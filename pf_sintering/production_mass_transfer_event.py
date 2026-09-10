@@ -152,6 +152,14 @@ def current_state_mass_transfer_event(
                 branch_time_integrator=EVENT_INTEGRATOR_NAME,
                 explicit_max_fourth_order_courant=None)
         q_trial = min(q+step, target)
+        # Roundoff from repeated quota additions must not leave a spurious
+        # 401st increment. Snap the trial endpoint before constructing its
+        # source and clock, so the full remaining material is transferred.
+        quota_roundoff = (8.0*np.finfo(float).eps
+                          * max(abs(target), abs(q_trial))
+                          * max(1, accepted_total+1))
+        if 0.0 <= target-q_trial <= quota_roundoff:
+            q_trial = target
         dq_over_b = q_trial-q
         dq_m = dq_over_b*transport.b_m
         try:

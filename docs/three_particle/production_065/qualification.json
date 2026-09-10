@@ -12,5 +12,7 @@
   "event_overlap_report": "buffered_event_probe.json",
   "source_window_preconditioner_reuse": true,
   "descendant_crossing_tolerance_s": 1e-12,
-  "predeclared_descendant_seed": 20260911
+  "predeclared_descendant_seed": 20260911,
+  "root_quadrature_qualified": true,
+  "root_macro_step_s": 0.2
 }

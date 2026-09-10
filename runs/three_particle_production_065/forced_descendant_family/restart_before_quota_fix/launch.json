@@ -1,0 +1,64 @@
+{
+  "label": "DESCENDANT_QUALIFICATION_AFTER_FORCED_ROOT",
+  "seed": 20260911,
+  "root_checkpoint": "runs/three_particle_production_065/forced_left_minimum_increment/final.npz",
+  "root_thresholds_drawn": false,
+  "qualification": {
+    "reload_qualified": true,
+    "one_b_qualified": true,
+    "descendant_qualified": false,
+    "phase_b_enabled": false,
+    "reason": "30 s reload and a complete forced one-b mechanical event pass; conditional descendants and repeated-event morphology are the remaining Phase B gates",
+    "predeclared_production_seed": 20260910,
+    "event_engine": "buffered_native",
+    "event_max_fast_blocks": 240,
+    "event_max_increment_over_b": 0.0025,
+    "one_b_review": "one_b_review.json",
+    "event_overlap_report": "buffered_event_probe.json",
+    "source_window_preconditioner_reuse": true,
+    "descendant_crossing_tolerance_s": 1e-12,
+    "predeclared_descendant_seed": 20260911
+  },
+  "descendant_crossing_tolerance_s": 1e-12,
+  "descendant_parameters": {
+    "state": {
+      "avalanche_active": true,
+      "avalanche_id": 1,
+      "root_cycle": 1,
+      "child_number": 0,
+      "S_completed": 1,
+      "q_avalanche_over_b": 1.0,
+      "descendant_threshold": 1.6748647310883076,
+      "descendant_hazard": 0.0,
+      "pending_children": 0,
+      "delta_G_step_eV": 1.5,
+      "source_amplitude": 1.0,
+      "facilitation_decay_alpha": 0.7,
+      "avalanche_start_time_s": 0.0,
+      "last_child_completion_time_s": 0.12163465714678343,
+      "window_start_time_s": 0.12163465714678343,
+      "window_deadline_s": 0.13063465714678343,
+      "window_triggered": false,
+      "descendant_total_hazard": 0.0,
+      "thresholds_drawn": [
+        1.6748647310883076
+      ]
+    },
+    "descendant_barrier": {
+      "root_G0_eV": 5.3646516047156325,
+      "root_Gfloor_eV": 2.9476002588459194,
+      "floor_fraction": 0.549448589775135,
+      "a": 0.9682214719449614,
+      "sigma_hat_Pa": 1697232928.2808514,
+      "n": 0.46101864227254197,
+      "delta_G_step_eV": 1.5,
+      "envelope": "max(root_G_floor, root_G_star(sigma) - delta_G_step); fixed and non-additive"
+    },
+    "temperature_K": 1830.15,
+    "attempt_frequency_per_s": 1000000000000.0,
+    "b_m": 2.5e-10,
+    "correlation_time_s": 0.009,
+    "crossings": []
+  },
+  "physical_parameters_changed": false
+}

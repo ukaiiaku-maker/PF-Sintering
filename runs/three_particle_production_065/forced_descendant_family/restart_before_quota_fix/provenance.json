@@ -1,0 +1,13 @@
+{
+  "label": "INTENTIONAL_ACCEPTED_CHECKPOINT_RESTART_FOR_QUOTA_ROUNDOFF_FIX",
+  "q_over_b": 0.20250000000000012,
+  "time_s": 0.15297994089889888,
+  "thresholds_redrawn": false,
+  "accepted_source_replayed": false,
+  "sha256": {
+    "family.npz": "e4e1b2fe6f3821fec314557fb1b3cf03cfdb2f1d601b1d796eda4b4aef9e0d20",
+    "history.json": "2f37a4a5381a7a48cb707363e1598371c9ac513b444d476d06c6b996da538a22",
+    "event_2.npz": "3b7a07e12478506e914f3b771969e8c168eadc3fa7e7566d75c028e3d2fcecff",
+    "launch.json": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+  }
+}

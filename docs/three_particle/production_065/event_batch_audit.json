@@ -1,0 +1,76 @@
+{
+  "label": "OFF_TRAJECTORY_NATIVE_BATCH_AUDIT",
+  "source": "runs/three_particle_production_065/forced_left_minimum_increment/watch_q0.800000.npz",
+  "source_sha256": "7e22e5e433b49cdcc93e0bffe164f1ea92af8dd0b49b7a750af80dbe93f3ad99",
+  "declared_limits": {
+    "field_Linf": 2e-05,
+    "local_stress_Pa": 30000.0,
+    "relative_clock": 0.001
+  },
+  "max_fast_blocks": 1024,
+  "unchanged_fast_convergence_tolerances": true,
+  "production_promoted": false,
+  "rows": [
+    {
+      "increment_over_b": 0.01,
+      "completed": false,
+      "stop_reason": "current-state transfer failed at minimum step",
+      "wall_s": 68.79302387498319,
+      "clock_s": 0.0,
+      "sigma_Pa": {
+        "LEFT": 7469118.672800755,
+        "RIGHT": 17748866.018847346
+      },
+      "blocks": [],
+      "field_Linf_to_reference": null,
+      "max_local_stress_difference_Pa": null,
+      "relative_clock_difference": null,
+      "overlap_pass": false
+    },
+    {
+      "increment_over_b": 0.005,
+      "completed": true,
+      "stop_reason": null,
+      "wall_s": 70.05654625000898,
+      "clock_s": 0.00141168184978693,
+      "sigma_Pa": {
+        "LEFT": 7348117.783033056,
+        "RIGHT": 17752210.63870614
+      },
+      "blocks": [
+        249,
+        250
+      ],
+      "field_Linf_to_reference": 8.186108443053453e-06,
+      "max_local_stress_difference_Pa": 5469.2787769548595,
+      "relative_clock_difference": 6.466570296304042e-05,
+      "overlap_pass": true
+    },
+    {
+      "increment_over_b": 0.0025,
+      "completed": true,
+      "stop_reason": null,
+      "wall_s": 71.6638424169505,
+      "clock_s": 0.0014115905682905354,
+      "sigma_Pa": {
+        "LEFT": 7353587.061810011,
+        "RIGHT": 17753187.854374185
+      },
+      "blocks": [
+        126,
+        125,
+        127,
+        126
+      ],
+      "field_Linf_to_reference": 0.0,
+      "max_local_stress_difference_Pa": 0.0,
+      "relative_clock_difference": 0.0,
+      "overlap_pass": true
+    }
+  ],
+  "notes": [
+    "The failed 0.01b trial returns its unchanged input; it is not a field/clock overlap comparison.",
+    "The original audit retained only the generic stop reason for that rejected trial; it does not identify which acceptance check rejected it.",
+    "The 0.005b overlap passes, but 499 versus 504 native blocks gives no material speed advantage; 0.0025b remains selected."
+  ]
+}

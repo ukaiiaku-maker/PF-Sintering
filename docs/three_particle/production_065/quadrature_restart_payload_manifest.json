@@ -1,0 +1,42 @@
+{
+  "label": "COMPLETED_NUMERICAL_AUDITS_AND_PARTIAL_CONDITIONAL_RESTART",
+  "phase_b_enabled": false,
+  "descendant_complete": false,
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/root_quadrature_refinement.npz",
+      "bytes": 6089269,
+      "sha256": "eb6678352a98b4b75a779911659e905af06e6f2fb4ecbbef48d2f66a642ab398"
+    },
+    {
+      "path": "runs/three_particle_production_065/event_batch_audit.npz",
+      "bytes": 12318088,
+      "sha256": "47c340c8be166bf6f13b265da2c64fd59615c8daaa86d926e78be07ab47a80fe"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/event_2.npz",
+      "bytes": 6161573,
+      "sha256": "3b7a07e12478506e914f3b771969e8c168eadc3fa7e7566d75c028e3d2fcecff"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/family.npz",
+      "bytes": 3081740,
+      "sha256": "e4e1b2fe6f3821fec314557fb1b3cf03cfdb2f1d601b1d796eda4b4aef9e0d20"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/history.json",
+      "bytes": 1161847,
+      "sha256": "2f37a4a5381a7a48cb707363e1598371c9ac513b444d476d06c6b996da538a22"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/launch.json",
+      "bytes": 2311,
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/provenance.json",
+      "bytes": 582,
+      "sha256": "794e7de5b595cbf70f062df3f79eef67cc973d7e903b1230f31ffb996178217d"
+    }
+  ]
+}

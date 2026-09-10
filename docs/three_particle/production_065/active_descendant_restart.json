@@ -1,0 +1,18 @@
+{
+  "label": "ACTIVE_DESCENDANT_RESTART_VERIFICATION",
+  "before_q": 0.20250000000000012,
+  "after_q": 0.20750000000000013,
+  "history_prefix_unchanged": true,
+  "rng_unchanged": true,
+  "controller_unchanged": true,
+  "threshold_draw_count": 1,
+  "original_crossing_count": 1,
+  "positive_time_increment_s": 0.0007935336113808478,
+  "field_min": -1.3748789310120962e-108,
+  "field_max": 1.0,
+  "ownership_closure": 1.1102230246251565e-16,
+  "code_sha256": {
+    "scripts/three_particle_forced_descendants.py": "87bcfa20580e76c9c521bdab78e1abedaffe4000474b23fe8a2470a116cde18b",
+    "pf_sintering/production_mass_transfer_event.py": "4fae1407db2ad4c38ce68d8e3a82cdef0f22e025d715d4f5e0ad6eb7ef3c88b8"
+  }
+}

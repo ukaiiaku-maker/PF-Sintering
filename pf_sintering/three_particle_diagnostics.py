@@ -25,7 +25,7 @@ def cannon_carter(radius,psi,kappa,gamma_s):
     return dict(force_N=float(np.pi*radius**2*stress),stress_Pa=float(stress))
 
 
-def diagnostics(f,op):
+def diagnostics(f,op,gb_positions=None):
     g=op.g;W=op.W;z=g['z'];R=radius_profile(f,g);mu=op.potential(f).copy();vol=grain_volumes(f,g)
     out={'total_volume_m3':float(vol.sum()),'mirror_error':float(np.max(abs(f-f[::-1]))),'energy_J':op.energy(f),'topology_stop':topology_status(f,g)['stop']}
     localization=12/W*f*f*(1-f)**2*g['r_c'][None,:]
@@ -34,15 +34,16 @@ def diagnostics(f,op):
         out[f'V_{name}_m3']=float(vol[k]);out[f'R_{name}_m']=float((3*vol[k]/(4*np.pi))**(1/3))
         out[f'mu_{name}_Pa']=float(np.sum(mu*weights)/np.sum(weights))
         out[f'centroid_{name}_m']=float(np.sum(f*g['ownership'][k]*g['r_c'][None,:]*z[:,None])/np.sum(f*g['ownership'][k]*g['r_c'][None,:]))
+    positions=g['gb'] if gb_positions is None else np.asarray(gb_positions)
     kappa=np.full_like(R,np.nan)
     # Per-grain curvature; never differentiate through a physical GB groove.
-    bounds=[-np.inf,*g['gb'],np.inf]
+    bounds=[-np.inf,*positions,np.inf]
     for a,b in zip(bounds[:-1],bounds[1:]):
         ids=np.flatnonzero(np.isfinite(R)&(z>a)&(z<b))
         if len(ids)<5:continue
         slope=np.gradient(R[ids],z[ids]);second=np.gradient(slope,z[ids])
         kappa[ids]=-second/(1+slope*slope)**1.5+1/(R[ids]*np.sqrt(1+slope*slope))
-    for contact,b in zip(['LEFT','RIGHT'],g['gb']):
+    for contact,b in zip(['LEFT','RIGHT'],positions):
         rb=float(np.interp(b,z[np.isfinite(R)],R[np.isfinite(R)]))
         sides=[]
         for sign in [-1,1]:

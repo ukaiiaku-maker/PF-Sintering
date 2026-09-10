@@ -40,10 +40,10 @@ def test_event_zero_and_midpoint_restart_exactly_once():
                     sigma_integral_continuous_Pa=1.,transport_affinity_MPa=1.,r_neck_nm=3.,r_TJ_nm=3.,A1_nm=0.,z_TJ_m=0.)
     def evaluator(*state):return dict(z_TJ_m=0.,r_TJ_m=3.,contact_area_m2=1.)
     def relax(state,q):return state,metrics(state,q),dict(converged=True)
-    def run(state,target=1.,restart=None,cap=400,callback=None):
+    def run(state,target=1.,restart=None,cap=400,callback=None,**options):
         return current_state_mass_transfer_event(state,setup,{},evaluator,transport,target,
             fast_relax_fn=relax,state_metrics_fn=metrics,transfer_fn=partial(pair_transfer,pair=(0,1)),
-            event_restart=restart,maximum_accepted_states=cap,accepted_progress_callback=callback)
+            event_restart=restart,maximum_accepted_states=cap,accepted_progress_callback=callback,**options)
     direct=run(state)
     assert direct[4]
     zero=run(state,cap=0);assert not zero[4];assert zero[5]['event_progress_over_b']==0.
@@ -56,6 +56,13 @@ def test_event_zero_and_midpoint_restart_exactly_once():
     assert len(repeat[5]['packets'])==0
     for x,y in zip(repeat[:4],direct[:4]):np.testing.assert_array_equal(x,y)
     np.testing.assert_array_equal(direct[3],state[3])
+
+    # Four hundred 0.0025b additions must finish the quota before the cap.
+    fine=run(state,initial_step_over_b=.0025,maximum_step_over_b=.0025)
+    assert fine[4], fine[5]['stop_reason']
+    assert fine[5]['event_progress_over_b']==1.
+    assert fine[5]['event_restart']['accepted_steps_total']==400
+    np.testing.assert_allclose(sum(p['dq_m'] for p in fine[5]['packets']),transport.b_m,rtol=1e-13)
 
     # Interrupt an adaptive path after a rejection and before its growth cycle.
     original_metrics=metrics
