@@ -1,0 +1,102 @@
+{
+  "status": "PASS_CMC_INITIALIZATION_AND_SHORT_INTERVAL_RIPENING",
+  "full_phase_a_qualified": false,
+  "phase_b_authorized": false,
+  "gates": {
+    "unequal_center_loses": true,
+    "both_outers_gain": true,
+    "mass_closes": true,
+    "mirror": true,
+    "matched_null_negligible": true,
+    "transport_off_stationary": true,
+    "restart_roundtrip": true
+  },
+  "cases": {
+    "unequal": {
+      "volume_changes": [
+        4.3203526312041163e-07,
+        -2.5229847865348987e-06,
+        4.3203526312041163e-07
+      ],
+      "total_volume_error": -1.1102230246251565e-16,
+      "wall_s": 30.52958995901281,
+      "t_model": 0.011162617896462924,
+      "t_s": 0.00017391295245039692,
+      "projected_mu_initial_Pa": [
+        17089658.25757474,
+        18741714.639697954,
+        17089658.257574745
+      ],
+      "projected_mu_final_Pa": [
+        17109450.947630245,
+        18997409.868812263,
+        17109450.94763023
+      ]
+    },
+    "null": {
+      "volume_changes": [
+        -3.877587140266314e-11,
+        1.8944090740546926e-10,
+        -3.877609344726807e-11
+      ],
+      "total_volume_error": -4.440892098500626e-16,
+      "wall_s": 31.36096775002079,
+      "t_model": 0.011942861910921091,
+      "t_s": 0.0001860691098540439,
+      "projected_mu_initial_Pa": [
+        17089274.560733892,
+        17089007.761381373,
+        17089274.560733896
+      ],
+      "projected_mu_final_Pa": [
+        17109330.72763191,
+        17274851.929661036,
+        17109330.727631927
+      ]
+    },
+    "equal": {
+      "volume_changes": [
+        -1.4080551883344228e-06,
+        2.820469400477421e-06,
+        -1.408055188445445e-06
+      ],
+      "total_volume_error": -3.3306690738754696e-16,
+      "wall_s": 37.399692750012036,
+      "t_model": 0.012053580941423012,
+      "t_s": 0.00018779410605705252,
+      "projected_mu_initial_Pa": [
+        17089261.886933226,
+        12022491.74113054,
+        17089261.88693322
+      ],
+      "projected_mu_final_Pa": [
+        17110448.223756514,
+        12075850.660839155,
+        17110448.2237565
+      ]
+    },
+    "unequal_off": {
+      "volume_changes": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "total_volume_error": 0.0,
+      "wall_s": 0.28921633400022984,
+      "t_model": 0.0011162617896462925,
+      "t_s": 1.7391295245039693e-05,
+      "projected_mu_initial_Pa": null,
+      "projected_mu_final_Pa": null
+    }
+  },
+  "unequal_absolute_grain_volume_changes_m3": [
+    1.8142423931667685e-27,
+    -3.6284847881510885e-27,
+    1.8142423931667685e-27
+  ],
+  "outer_gain_vs_half_center_loss": [
+    0.999999999499088,
+    0.999999999499088
+  ],
+  "scope": "Short deterministic interval. Sustained ripening-driven stress loading and long-time performance are not qualified."
+}

@@ -1,0 +1,25 @@
+{
+  "status": "PRESERVED_NOT_RESUMED",
+  "files": [
+    {
+      "path": "runs/three_particle_phase_a/ratio_0.7/initialization_candidate.npz",
+      "sha256": "35f869c9971a04cf5c70b6665d88e75db05064ad676ceb4106ca375571b098a8",
+      "bytes": 651148
+    },
+    {
+      "path": "runs/three_particle_phase_a/ratio_0.7/initialization_report.json",
+      "sha256": "e9bba7ef477d04554649af65e8211460d0fe3208ec1a1cf18de327797db23086",
+      "bytes": 37883
+    },
+    {
+      "path": "runs/three_particle_phase_a/ratio_1/initialization_candidate.npz",
+      "sha256": "89fd03bed87be56e51402d904b516f0ed11b899b00ebf3f14fddb81c311fbb00",
+      "bytes": 693311
+    },
+    {
+      "path": "runs/three_particle_phase_a/ratio_1/initialization_report.json",
+      "sha256": "0b2b82043980e906d6983f890c91af160283fcc9c727ebff76a2c67e22956178",
+      "bytes": 37903
+    }
+  ]
+}

@@ -1,5 +1,18 @@
 # Three-particle ripening development
 
+## Current CMC follow-up
+
+The CMC initializer and short events-off ripening-direction/control tests now pass.
+Full Phase A and Phase B remain gated. See [CMC report](cmc/REPORT.md),
+[plots](cmc/analysis/phase_a_short_interval_plots.pdf), and
+[morphology movie](cmc/analysis/morphology.gif). The old projected initializer is
+disabled; its unmodified outputs are preserved and hashed in
+`cmc/rejected_study_manifest.json`.
+
+## Historical rejected projected-initialization study
+
+The statements below describe the earlier study, before the CMC follow-up.
+
 Phase A is NOT QUALIFIED. Phase B is gated off.
 
 Base: `stochastic-pr-current-state-production-v1`, commit
