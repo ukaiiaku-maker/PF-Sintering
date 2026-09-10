@@ -1,0 +1,42 @@
+{
+  "LEFT_-1": {
+    "max_abs_kappa_per_m": 12504460.1803538,
+    "p95_abs_kappa_per_m": 11447109.322933968,
+    "p99_abs_kappa_per_m": 12069855.721254185,
+    "kappa_max_index": 186,
+    "max_abs_dkappa_ds_per_m2": 1088702520064109.5,
+    "dkappa_max_index": 186,
+    "max_abs_kappa_within_1W_of_mask_edge_per_m": 8522968.636404252,
+    "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 117167599732940.0
+  },
+  "LEFT_+1": {
+    "max_abs_kappa_per_m": 2181036.903689996,
+    "p95_abs_kappa_per_m": 2168888.453517502,
+    "p99_abs_kappa_per_m": 2178607.2136554974,
+    "kappa_max_index": 24,
+    "max_abs_dkappa_ds_per_m2": 25415382425388.375,
+    "dkappa_max_index": 26,
+    "max_abs_kappa_within_1W_of_mask_edge_per_m": 2181036.903689996,
+    "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 25415382425388.375
+  },
+  "RIGHT_-1": {
+    "max_abs_kappa_per_m": 2181036.9036898687,
+    "p95_abs_kappa_per_m": 2168888.453517469,
+    "p99_abs_kappa_per_m": 2178607.213655389,
+    "kappa_max_index": 24,
+    "max_abs_dkappa_ds_per_m2": 25415382425516.625,
+    "dkappa_max_index": 26,
+    "max_abs_kappa_within_1W_of_mask_edge_per_m": 2181036.9036898687,
+    "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 25415382425516.625
+  },
+  "RIGHT_+1": {
+    "max_abs_kappa_per_m": 12504460.180353355,
+    "p95_abs_kappa_per_m": 11447109.322932277,
+    "p99_abs_kappa_per_m": 12069855.72125355,
+    "kappa_max_index": 186,
+    "max_abs_dkappa_ds_per_m2": 1088702520066631.0,
+    "dkappa_max_index": 186,
+    "max_abs_kappa_within_1W_of_mask_edge_per_m": 8522968.636404729,
+    "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 117167599732238.0
+  }
+}

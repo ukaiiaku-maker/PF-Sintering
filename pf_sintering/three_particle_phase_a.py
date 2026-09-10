@@ -102,3 +102,21 @@ def initialize_step(f,op,dtau=0.01):
                 return trial,dict(dtau=step,energy_J=next_energy,max_change=float(np.max(np.abs(trial-f))),projected_mu_residual=float(np.max(np.abs(direction))))
         step*=.5
     raise RuntimeError('initialization line search failed; no canonical state written')
+
+
+def dilute_material_fraction(f,g):
+    """Material below f=0.1; monitors unintended diffuse-vapor storage in initialization."""
+    total=axisym_volume(f,g['r_c'],g['dr'],g['dz'])
+    return axisym_volume(np.where(f<.1,f,0.),g['r_c'],g['dr'],g['dz'])/total
+
+
+def initialization_locality_gate(f,seed,g):
+    """Conservative rejection guard, not a claim of physical vapor solubility.
+
+    Local surface smoothing must not grow a dilute material reservoir. The
+    factor-two threshold is an explicit numerical screening tolerance; passing
+    it alone does not qualify an initial morphology.
+    """
+    initial=dilute_material_fraction(seed,g);current=dilute_material_fraction(f,g)
+    return dict(pass_locality=current<=2*initial,initial_dilute_fraction=initial,
+                current_dilute_fraction=current,maximum_dilute_fraction=2*initial)

@@ -53,7 +53,9 @@ def diagnostics(f,op):
             slope=float(np.polyval(np.polyder(coeff),0));second=float(np.polyval(np.polyder(coeff,2),0)/W)
             km=-second/(1+slope*slope)**1.5
             sides.append((slope,km,1/(rb*np.sqrt(1+slope*slope))))
-        psi=np.pi-(np.arctan(sides[1][0])-np.arctan(sides[0][0]))
+        # Interior angle between the two outward branch tangents, in [0, pi].
+        a,beta=sides[0][0],sides[1][0]
+        psi=np.arccos(np.clip(-(1+a*beta)/np.sqrt((1+a*a)*(1+beta*beta)),-1,1))
         kt=float(np.mean([s[1]+s[2] for s in sides]));cc=cannon_carter(rb,psi,kt,op.physics.gamma_s)
         pf=local_3d_contact_stress(sides[0][1],sides[1][1],rb,psi,op.physics.gamma_s)
         out.update({f'{contact}_{key}':value for key,value in dict(gb_z_m=float(b),tj_z_m=float(b),tj_r_m=rb,neck_r_m=rb,psi_deg=float(np.rad2deg(psi)),kappa_per_m=kt,CC_force_N=cc['force_N'],CC_stress_Pa=cc['stress_Pa'],PF_geometric_stress_Pa=pf['sigma_3D_local_Pa']).items()})
