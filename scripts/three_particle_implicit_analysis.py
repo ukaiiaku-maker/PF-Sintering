@@ -143,10 +143,10 @@ def main():
     # Commit compact numeric histories and metadata; full fields remain in runs.
     for case,d in data.items():
         with (OUT/f'history_{case}.csv').open('w',newline='') as stream:
-            writer=csv.writer(stream);writer.writerow(d);writer.writerows(zip(*d.values()))
+            writer=csv.writer(stream,lineterminator="\n");writer.writerow(d);writer.writerows(zip(*d.values()))
     for case,d in refined.items():
         with (OUT/f'history_refined_{case}.csv').open('w',newline='') as stream:
-            writer=csv.writer(stream);writer.writerow(d);writer.writerows(zip(*d.values()))
+            writer=csv.writer(stream,lineterminator="\n");writer.writerow(d);writer.writerows(zip(*d.values()))
     manifest=[]
     for case in data:
         for stage in STAGES+['refine_v2','refine_target_v2','exact_refinement_check','target_refined_v2']:

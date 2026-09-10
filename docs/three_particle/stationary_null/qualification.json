@@ -1,0 +1,44 @@
+{
+  "status": "PF_STATIONARY_NULL_NOT_QUALIFIED",
+  "flux_root_ratio": 0.742875186697676,
+  "initial_relative_center_rate_per_model_time": 2.0306778083124373e-16,
+  "initial_rhs_max": 6.232618262901054,
+  "initial_virtual_work_delta_spread_Pa": 1532370.2568494715,
+  "gates": {
+    "reached_0p9_seconds": false,
+    "center_drift_below_1ppm": false,
+    "post_transient_projected_mu_change_below_5000Pa": false,
+    "post_transient_stress_changes_below_5000Pa": false,
+    "total_mass": true,
+    "mirror": true,
+    "resolved_topology": true,
+    "no_numerical_guard_stop": false
+  },
+  "end_seconds": 0.8723045914025408,
+  "center_relative_drift": 0.0002772847589809224,
+  "common_start_seconds": 0.39884654514071577,
+  "common_end_seconds": 0.8723045914025408,
+  "post_transient_projected_mu_change_Pa": 105945.01825128868,
+  "post_transient_stress_changes_Pa": {
+    "LEFT_CC_stress_Pa": 47577.09003171837,
+    "RIGHT_CC_stress_Pa": 47577.09001244209,
+    "LEFT_PF_geometric_stress_Pa": 47096.18684310466,
+    "RIGHT_PF_geometric_stress_Pa": 47096.186823539436
+  },
+  "total_mass_error": 3.3306690738754696e-16,
+  "mirror_error": 1.1501910535116622e-13,
+  "curvature_qualification": {
+    "outside_core_max_W_times_raw_minus_smoothed_K": {
+      "initial": 0.02001821103887944,
+      "terminal": 0.02129619119679645
+    },
+    "scope": "Descriptive mesh-scale roughness and archived native watcher; this does not override failed stationarity gates."
+  },
+  "phase_b_authorized": false,
+  "descriptive_unequal_minus_failed_candidate_excess_Pa": {
+    "LEFT_CC_stress_Pa": 48110.78460511973,
+    "RIGHT_CC_stress_Pa": 48110.78471818834,
+    "LEFT_PF_geometric_stress_Pa": 50378.50032330677,
+    "RIGHT_PF_geometric_stress_Pa": 50378.50043829158
+  }
+}

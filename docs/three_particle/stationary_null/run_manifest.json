@@ -1,0 +1,132 @@
+[
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.720000000000/initial.npz",
+    "bytes": 1213635,
+    "sha256": "0f9a24052bd206b548593488b428e9099c3e710d2ee5d3e3b180fae8c452a767"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.720000000000/initial_report.json",
+    "bytes": 2929,
+    "sha256": "789fb8d7d54e2f36b02370b8ff5e282e4fa491254a1ca5e3fade5433c21a40f7"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.730000000000/initial.npz",
+    "bytes": 1232082,
+    "sha256": "3a14389b7e49e8d1ef2aca042b4b3ca40bd0dc306c0a40c143f81707739766d8"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.730000000000/initial_report.json",
+    "bytes": 2953,
+    "sha256": "8932449b1c562b46f573e9d78dfbcf093cbc3fe4190d51f5268669dd1f4b8375"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742868262493/initial.npz",
+    "bytes": 1235106,
+    "sha256": "6fc074920b1f4acef54c1e065aa9a7839d459397313ece3561a09fb502ca782a"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742868262493/initial_report.json",
+    "bytes": 2980,
+    "sha256": "ec6dbc44562ff49ce53781fad7545c0349256a1995c2dc5c135010f0e3c5e372"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875065231/initial.npz",
+    "bytes": 1234833,
+    "sha256": "e79f4a864598d0b4fbc69c02033d034a1b3eec9b410ff89206a8dedffda78051"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875065231/initial_report.json",
+    "bytes": 2962,
+    "sha256": "22f3524aaa768ac6abad65654ebb7f15971a869eb67d45b910f75a16ed1b858d"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875186647/initial.npz",
+    "bytes": 1234904,
+    "sha256": "12a503dae073ef9767f8992892482ab4acbfbaef3dc4d06ec43ccd778f87db1b"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875186647/initial_report.json",
+    "bytes": 2981,
+    "sha256": "06fbd9996f579f01f9dcddf84fb27afdb1196b1aa458e50479b596cb87a52544"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875186698/initial.npz",
+    "bytes": 1234754,
+    "sha256": "3eddb11b5ae355b7b993250b316afa3ac6e428d3d073affc2e86d6919f9c3774"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875186698/initial_report.json",
+    "bytes": 2996,
+    "sha256": "69bceefa245f598dc7d39d7bd829808e2c7b775e8d1c4a976377c1519b144693"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875187096/initial.npz",
+    "bytes": 1234615,
+    "sha256": "b46db4b0d24e48f984b7386946649552668425393a6e8a6056d9491d9e66c038"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742875187096/initial_report.json",
+    "bytes": 2963,
+    "sha256": "be5def06101e56a449fafcd58b65a59cf624ce535f254f312494fe0f8c80732c"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742890207469/initial.npz",
+    "bytes": 1231047,
+    "sha256": "b8ab22d0b9dcf4c66184e89cd3374b541487d8111048b02ffa796db43d2a570e"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.742890207469/initial_report.json",
+    "bytes": 2990,
+    "sha256": "84c5fd4043756453f62954243cbdc41ef860d51fa9961a8ea607aed5776e878a"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.743914451769/initial.npz",
+    "bytes": 1231268,
+    "sha256": "831082a3c35079b5872da45c1ad7dd865ae206c5193f06104a834b9d3124862d"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.743914451769/initial_report.json",
+    "bytes": 2964,
+    "sha256": "c63d722bcc73320782b0086af5bf4070c58b9ff7e87387382314a01f70fd3778"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.755000000000/initial.npz",
+    "bytes": 1240920,
+    "sha256": "78876a89e313982ddbc75324d08be58ad958e4a15977f61c2e76a1d3a1205a40"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.755000000000/initial_report.json",
+    "bytes": 2960,
+    "sha256": "d46b356a079451ee827afa9faab0e50b445655c4d8f14958a28301ba93cdab10"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.770000000000/initial.npz",
+    "bytes": 1260093,
+    "sha256": "0df03131124239aee56b9f004e6f1b315139371d924dce9f58a27e100d5bd618"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/ratio_0.770000000000/initial_report.json",
+    "bytes": 2946,
+    "sha256": "87834542336a6c6d840540bc0f67a764dc77a74d35d537626f290cbe5a7fa5cb"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/released_flux_root/checkpoint.npz",
+    "bytes": 1314239,
+    "sha256": "ff23fc72562a915a0301492c54140b25337585bb9740f8f71faf1fbbfa630914"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/released_flux_root/frames.npz",
+    "bytes": 27872911,
+    "sha256": "a62deb96e858abf4736579feee98c7b8e85422cc426048a84f3c983be0ad87f5"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/released_flux_root/history.csv",
+    "bytes": 90292,
+    "sha256": "8fa7452ec5e3367f1a8d288232c94c4de07ebcdf199affa456ddde51b592155d"
+  },
+  {
+    "path": "runs/three_particle_stationary_null/released_flux_root/report.json",
+    "bytes": 9856,
+    "sha256": "860b3e1d4cf2729dfed9b6d328d9c3dc125813136a97aec97158e41e7480c870"
+  }
+]

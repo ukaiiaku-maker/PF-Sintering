@@ -1,0 +1,90 @@
+{
+  "status": "REJECTED_TRIAL_TIME_REFINEMENT_AUDIT",
+  "source": "runs/three_particle_implicit/target_refined_v2_unequal/checkpoint.npz",
+  "start_model": 60.456579964718294,
+  "initial_epsilon": 9.999736816368454e-09,
+  "maximum_location_z_r_nm": [
+    -19.199110642640147,
+    100.25
+  ],
+  "initial_rhs_at_max_per_model_time": 2.362771062719955e-06,
+  "fixed_window_model": 0.00014288150907472544,
+  "fixed_window_seconds": 2.226085791365081e-06,
+  "rows": [
+    {
+      "refinement_factor": 1,
+      "dt_model": 1.1162617896462925e-06,
+      "steps": 128,
+      "one_step_epsilon": 1.0002374262185754e-08,
+      "fixed_window_epsilon": 1.0337329880982793e-08,
+      "fixed_window_growth_at_original_max": 3.375930646143388e-10,
+      "maximum_location_index": [
+        360,
+        200
+      ],
+      "total_volume_relative_error": 0.0,
+      "max_field_difference_from_finest": 1.7053025658242404e-13
+    },
+    {
+      "refinement_factor": 2,
+      "dt_model": 5.581308948231462e-07,
+      "steps": 256,
+      "one_step_epsilon": 1.0001055539277104e-08,
+      "fixed_window_epsilon": 1.0337329880982793e-08,
+      "fixed_window_growth_at_original_max": 3.375930646143388e-10,
+      "maximum_location_index": [
+        360,
+        200
+      ],
+      "total_volume_relative_error": 2.220446049250313e-16,
+      "max_field_difference_from_finest": 1.7053025658242404e-13
+    },
+    {
+      "refinement_factor": 4,
+      "dt_model": 2.790654474115731e-07,
+      "steps": 512,
+      "one_step_epsilon": 1.0000396288845081e-08,
+      "fixed_window_epsilon": 1.0337331435295027e-08,
+      "fixed_window_growth_at_original_max": 3.375946189265733e-10,
+      "maximum_location_index": [
+        360,
+        200
+      ],
+      "total_volume_relative_error": 2.220446049250313e-16,
+      "max_field_difference_from_finest": 1.7208456881689926e-13
+    },
+    {
+      "refinement_factor": 8,
+      "dt_model": 1.3953272370578656e-07,
+      "steps": 1024,
+      "one_step_epsilon": 1.0000066552606768e-08,
+      "fixed_window_epsilon": 1.0337386724401654e-08,
+      "fixed_window_growth_at_original_max": 3.376499080331996e-10,
+      "maximum_location_index": [
+        360,
+        200
+      ],
+      "total_volume_relative_error": 2.220446049250313e-16,
+      "max_field_difference_from_finest": 2.2737367544323206e-13
+    },
+    {
+      "refinement_factor": 16,
+      "dt_model": 6.976636185289328e-08,
+      "steps": 2048,
+      "one_step_epsilon": 9.999901573465309e-09,
+      "fixed_window_epsilon": 1.033715935072621e-08,
+      "fixed_window_growth_at_original_max": 3.374225343577564e-10,
+      "maximum_location_index": [
+        360,
+        200
+      ],
+      "total_volume_relative_error": 0.0,
+      "max_field_difference_from_finest": 0.0
+    }
+  ],
+  "wall_s": 11.865429833997041,
+  "guard_relaxed": false,
+  "clipping_used": false,
+  "accepted_continuation": false,
+  "conclusion": "Finite-time native trials converge to a nonzero overshoot from the terminal field; this is not proof that a spatially converged PF equilibrium exceeds one. Both an inherited overshoot and an outward semidiscrete derivative are present."
+}

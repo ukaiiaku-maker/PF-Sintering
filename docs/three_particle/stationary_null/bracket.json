@@ -1,0 +1,1338 @@
+{
+  "status": "ZERO_INITIAL_FLUX_CANDIDATE_NOT_STATIONARY_QUALIFICATION",
+  "flux_root_ratio": 0.742875186697676,
+  "root": {
+    "ratio": 0.742875186697676,
+    "cmc": {
+      "ratio": 0.742875186697676,
+      "center_half_length_nm": 20.2664483051802,
+      "Kc_per_m": 17136013.871167913,
+      "Ko_per_m": 17135499.36306284,
+      "delta_mu_Pa": 514.5081050731242,
+      "delta_mu_J_per_atom": 5.145081050731242e-27,
+      "center_contact_radius_nm": 114.94357207179533,
+      "outer_contact_radius_nm": 114.9435720717953,
+      "contact_relative_mismatch": 2.220446049250313e-16,
+      "connected": true,
+      "center_min_radius_nm": 114.94357207179533,
+      "center_span_over_W": 10.1332241525901,
+      "contact_separation_margin_W": 2.133224152590101,
+      "resolution_pass": true,
+      "desired_ordering": true,
+      "matched_potential": false,
+      "max_bvp_residual": 1.7696107633457192e-10,
+      "volume_relative_error": -1.1102230246251565e-16,
+      "outer_centroid_from_GB_nm": 52.99720269189209
+    },
+    "cleanup_steps": 200,
+    "cleanup_changes": {
+      "grain_volume_relative": 1.2254530723510015e-11,
+      "centroid_over_Ro": 1.9588651624256726e-08,
+      "neck_relative": 0.0003745926195937166,
+      "dilute_fraction_relative": 3.063954626791876e-06,
+      "angle_error_deg": 0.3432108817538335,
+      "contour_error_over_W": 0.010774577419878589,
+      "contact_curvature_relative": 0.03152405960418758
+    },
+    "cleanup_gates": {
+      "grain_volume_relative": true,
+      "centroid_over_Ro": true,
+      "neck_relative": true,
+      "dilute_fraction_relative": true,
+      "angle_error_deg": true,
+      "contour_error_over_W": true,
+      "contact_curvature_relative": true
+    },
+    "diagnostics": {
+      "virtual_work": {
+        "profile": {
+          "multipliers_Pa": [
+            17108157.26698581,
+            17082564.53783281,
+            17108157.26698582
+          ],
+          "delta_Pa": -25592.729153003544,
+          "weighted_KKT_rms_Pa": 10374778.314153839
+        },
+        "localization": {
+          "multipliers_Pa": [
+            20280508.103367656,
+            18743302.24078489,
+            20280508.103367615
+          ],
+          "delta_Pa": -1537205.8625827432,
+          "weighted_KKT_rms_Pa": 8726103.97414573
+        },
+        "normal_displacement": {
+          "multipliers_Pa": [
+            17085662.801584415,
+            17080827.195851143,
+            17085662.80158442
+          ],
+          "delta_Pa": -4835.605733271688,
+          "weighted_KKT_rms_Pa": 10369512.752818827
+        }
+      },
+      "grain_volume_rates_m3_per_model_time": [
+        -2.930697506917292e-37,
+        3.490631246179869e-37,
+        -5.731812502916185e-38
+      ],
+      "sharp_GB_center_rate_m3_per_model_time": 5.806294718710645e-28,
+      "native_rhs_max_per_model_time": 6.232618262901054,
+      "virtual_work_delta_spread_Pa": 1532370.2568494715
+    },
+    "projected_mu_Pa": [
+      17089274.60391112,
+      17089521.978931062,
+      17089274.603911117
+    ],
+    "projected_mu_contrast_Pa": 247.37501994520426,
+    "initial_volumes_m3": [
+      4.199292574086397e-21,
+      1.7189488317108772e-21,
+      4.199292574086397e-21
+    ],
+    "center_relative_rate_per_model_time": 2.0306778083124373e-16,
+    "stationary_qualified": false
+  },
+  "bracket_and_iterations": [
+    {
+      "ratio": 0.72,
+      "cmc": {
+        "ratio": 0.72,
+        "center_half_length_nm": 18.484567527721847,
+        "Kc_per_m": 17969678.934742108,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 834179.571679268,
+        "delta_mu_J_per_atom": 8.34179571679268e-24,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 9.242283763860922,
+        "contact_separation_margin_W": 1.2422837638609217,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.5927349844945422e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 7.15639170145721e-09,
+        "centroid_over_Ro": 2.0832717501251087e-08,
+        "neck_relative": 0.00037610307130808707,
+        "dilute_fraction_relative": 3.064466765456686e-06,
+        "angle_error_deg": 0.3449711827846613,
+        "contour_error_over_W": 0.010819371114642476,
+        "contact_curvature_relative": 0.032690019998641184
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17107320.975031838,
+              17913913.99939602,
+              17107320.975031827
+            ],
+            "delta_Pa": 806593.0243641883,
+            "weighted_KKT_rms_Pa": 10378155.205927344
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280056.674651258,
+              19567364.765540514,
+              20280056.674651254
+            ],
+            "delta_Pa": -712691.9091107436,
+            "weighted_KKT_rms_Pa": 8704398.5620734
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17084658.43817415,
+              17913430.090931434,
+              17084658.438174166
+            ],
+            "delta_Pa": 828771.6527572758,
+            "weighted_KKT_rms_Pa": 10373312.325086212
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          1.6126902264146803e-25,
+          -3.2253804528266854e-25,
+          1.6126902264119427e-25
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": -1.551821574832868e-24,
+        "native_rhs_max_per_model_time": 6.533985721495814,
+        "virtual_work_delta_spread_Pa": 1541463.5618680194
+      },
+      "projected_mu_Pa": [
+        17089061.3739821,
+        17922513.33868362,
+        17089061.373982113
+      ],
+      "projected_mu_contrast_Pa": 833451.964701511,
+      "initial_volumes_m3": [
+        4.199292513681621e-21,
+        1.5649971146872107e-21,
+        4.199292513681621e-21
+      ],
+      "center_relative_rate_per_model_time": -0.0002060949775917848,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.73,
+      "cmc": {
+        "ratio": 0.73,
+        "center_half_length_nm": 19.250602105789252,
+        "Kc_per_m": 17592545.710863907,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 457046.34780106694,
+        "delta_mu_J_per_atom": 4.570463478010669e-24,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 9.625301052894624,
+        "contact_separation_margin_W": 1.6253010528946241,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.6745896225086435e-10,
+        "volume_relative_error": 2.220446049250313e-16,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 3.685451832602382e-09,
+        "centroid_over_Ro": 1.9880359448077063e-08,
+        "neck_relative": 0.000374380539775121,
+        "dilute_fraction_relative": 3.084287266696961e-06,
+        "angle_error_deg": 0.3545174524045649,
+        "contour_error_over_W": 0.010769370864371314,
+        "contact_curvature_relative": 0.03317338113026447
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17107866.598069035,
+              17538855.078113433,
+              17107866.598069035
+            ],
+            "delta_Pa": 430988.48004439846,
+            "weighted_KKT_rms_Pa": 10404127.786444463
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280473.345286477,
+              19195653.316445835,
+              20280473.34528648
+            ],
+            "delta_Pa": -1084820.0288406461,
+            "weighted_KKT_rms_Pa": 8755030.103865009
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085387.87027694,
+              17537967.3228877,
+              17085387.87027693
+            ],
+            "delta_Pa": 452579.45261076465,
+            "weighted_KKT_rms_Pa": 10398820.175576769
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          8.830682130823877e-26,
+          -1.7661364261623052e-25,
+          8.830682130799858e-26
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": -8.576872149892634e-25,
+        "native_rhs_max_per_model_time": 6.571486977861496,
+        "virtual_work_delta_spread_Pa": 1537399.4814514108
+      },
+      "projected_mu_Pa": [
+        17089357.929915223,
+        17545666.56916068,
+        17089357.929915227
+      ],
+      "projected_mu_contrast_Pa": 456308.6392454542,
+      "initial_volumes_m3": [
+        4.199292528729957e-21,
+        1.6311141047631469e-21,
+        4.1992925287299555e-21
+      ],
+      "center_relative_rate_per_model_time": -0.00010827792004280196,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.7428902074688286,
+      "cmc": {
+        "ratio": 0.7428902074688286,
+        "center_half_length_nm": 20.26765301527896,
+        "Kc_per_m": 17135499.370861083,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 0.007798243314027786,
+        "delta_mu_J_per_atom": 7.798243314027786e-32,
+        "center_contact_radius_nm": 114.94357207179527,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": -2.220446049250313e-16,
+        "connected": true,
+        "center_min_radius_nm": 114.94357207179527,
+        "center_span_over_W": 10.13382650763948,
+        "contact_separation_margin_W": 2.13382650763948,
+        "resolution_pass": true,
+        "desired_ordering": false,
+        "matched_potential": true,
+        "max_bvp_residual": 1.769698364234525e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.0845435660655767e-11,
+        "centroid_over_Ro": 1.9591616239572116e-08,
+        "neck_relative": 0.0003746008531180234,
+        "dilute_fraction_relative": 3.0633514243039173e-06,
+        "angle_error_deg": 0.34311526062745656,
+        "contour_error_over_W": 0.010774827986008524,
+        "contact_curvature_relative": 0.031513989590730374
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108156.31184109,
+              17082042.749976706,
+              17108156.311841067
+            ],
+            "delta_Pa": -26113.561864372343,
+            "weighted_KKT_rms_Pa": 10374531.788062708
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280506.743972454,
+              18742785.306569815,
+              20280506.743972443
+            ],
+            "delta_Pa": -1537721.4374026358,
+            "weighted_KKT_rms_Pa": 8725750.87715781
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085660.963737376,
+              17080303.247715253,
+              17085660.963737383
+            ],
+            "delta_Pa": -5357.716022126377,
+            "weighted_KKT_rms_Pa": 10369268.443665177
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -9.76411118422688e-29,
+          1.9528222366758193e-28,
+          -9.764111182536584e-29
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 1.515194720275204e-27,
+        "native_rhs_max_per_model_time": 6.2314368339572725,
+        "virtual_work_delta_spread_Pa": 1532363.7213805094
+      },
+      "projected_mu_Pa": [
+        17089274.560733832,
+        17089007.76144679,
+        17089274.56073384
+      ],
+      "projected_mu_contrast_Pa": -266.79928704723716,
+      "initial_volumes_m3": [
+        4.199292574321753e-21,
+        1.7190531025318173e-21,
+        4.199292574321753e-21
+      ],
+      "center_relative_rate_per_model_time": 1.1359871511820707e-07,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.755,
+      "cmc": {
+        "ratio": 0.755,
+        "center_half_length_nm": 21.25385786192999,
+        "Kc_per_m": 16733687.609829053,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": -401811.7532337867,
+        "delta_mu_J_per_atom": -4.0181175323378666e-24,
+        "center_contact_radius_nm": 114.94357207179533,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 2.220446049250313e-16,
+        "connected": true,
+        "center_min_radius_nm": 114.94357207179533,
+        "center_span_over_W": 10.626928930964995,
+        "contact_separation_margin_W": 2.6269289309649952,
+        "resolution_pass": true,
+        "desired_ordering": false,
+        "matched_potential": false,
+        "max_bvp_residual": 1.8335774623779233e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 2.8775244409473544e-09,
+        "centroid_over_Ro": 1.9267693899883127e-08,
+        "neck_relative": 0.0003745971502167045,
+        "dilute_fraction_relative": 3.039797750736817e-06,
+        "angle_error_deg": 0.3358453950334024,
+        "contour_error_over_W": 0.010775511398031491,
+        "contact_curvature_relative": 0.03153393891608902
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108440.303241786,
+              16680824.191388186,
+              17108440.30324178
+            ],
+            "delta_Pa": -427616.1118535958,
+            "weighted_KKT_rms_Pa": 10351313.678078122
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280572.73135279,
+              18344809.581168182,
+              20280572.73135277
+            ],
+            "delta_Pa": -1935763.1501845978,
+            "weighted_KKT_rms_Pa": 8705791.36219493
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085951.2917332,
+              16678366.72922884,
+              17085951.291733224
+            ],
+            "delta_Pa": -407584.5625043735,
+            "weighted_KKT_rms_Pa": 10346037.911633596
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -7.783176274665534e-26,
+          1.5566352549336199e-25,
+          -7.783176274671131e-26
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 7.561581602787874e-25,
+        "native_rhs_max_per_model_time": 6.501528726043398,
+        "virtual_work_delta_spread_Pa": 1528178.5876802243
+      },
+      "projected_mu_Pa": [
+        17089274.814285506,
+        16687585.376436608,
+        17089274.814285494
+      ],
+      "projected_mu_contrast_Pa": -401689.4378488939,
+      "initial_volumes_m3": [
+        4.1992926116227845e-21,
+        1.804495824652315e-21,
+        4.1992926116227845e-21
+      ],
+      "center_relative_rate_per_model_time": 8.626427579756511e-05,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.77,
+      "cmc": {
+        "ratio": 0.77,
+        "center_half_length_nm": 22.517223870376867,
+        "Kc_per_m": 16269834.487106072,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": -865664.8759567682,
+        "delta_mu_J_per_atom": -8.656648759567681e-24,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 11.258611935188434,
+        "contact_separation_margin_W": 3.2586119351884335,
+        "resolution_pass": true,
+        "desired_ordering": false,
+        "matched_potential": false,
+        "max_bvp_residual": 1.847013697370949e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 5.780243395037132e-09,
+        "centroid_over_Ro": 1.8407046883235184e-08,
+        "neck_relative": 0.00037319582433670284,
+        "dilute_fraction_relative": 3.0543595391785416e-06,
+        "angle_error_deg": 0.3416917579757808,
+        "contour_error_over_W": 0.010736674108005734,
+        "contact_curvature_relative": 0.0329709982863684
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108964.84330793,
+              16218942.167607497,
+              17108964.843307897
+            ],
+            "delta_Pa": -890022.6757004149,
+            "weighted_KKT_rms_Pa": 10356423.512876056
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280906.910374552,
+              17886343.898647323,
+              20280906.910374552
+            ],
+            "delta_Pa": -2394563.0117272288,
+            "weighted_KKT_rms_Pa": 8732909.581909422
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17086624.31910505,
+              16215836.658711249,
+              17086624.319105048
+            ],
+            "delta_Pa": -870787.6603938024,
+            "weighted_KKT_rms_Pa": 10350774.962700924
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -1.6758936449202771e-25,
+          3.3517872898394114e-25,
+          -1.6758936449191487e-25
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 1.6403541693142189e-24,
+        "native_rhs_max_per_model_time": 7.053940298259587,
+        "virtual_work_delta_spread_Pa": 1523775.3513334263
+      },
+      "projected_mu_Pa": [
+        17089550.69977148,
+        16224243.844067568,
+        17089550.699771475
+      ],
+      "projected_mu_contrast_Pa": -865306.8557039108,
+      "initial_volumes_m3": [
+        4.1992926383214044e-21,
+        1.9141974054684844e-21,
+        4.1992926383214044e-21
+      ],
+      "center_relative_rate_per_model_time": 0.00017510144357442008,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.73,
+      "cmc": {
+        "ratio": 0.73,
+        "center_half_length_nm": 19.250602105789252,
+        "Kc_per_m": 17592545.710863907,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 457046.34780106694,
+        "delta_mu_J_per_atom": 4.570463478010669e-24,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 9.625301052894624,
+        "contact_separation_margin_W": 1.6253010528946241,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.6745896225086435e-10,
+        "volume_relative_error": 2.220446049250313e-16,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 3.685451832602382e-09,
+        "centroid_over_Ro": 1.9880359448077063e-08,
+        "neck_relative": 0.000374380539775121,
+        "dilute_fraction_relative": 3.084287266696961e-06,
+        "angle_error_deg": 0.3545174524045649,
+        "contour_error_over_W": 0.010769370864371314,
+        "contact_curvature_relative": 0.03317338113026447
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17107866.598069035,
+              17538855.078113433,
+              17107866.598069035
+            ],
+            "delta_Pa": 430988.48004439846,
+            "weighted_KKT_rms_Pa": 10404127.786444463
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280473.345286477,
+              19195653.316445835,
+              20280473.34528648
+            ],
+            "delta_Pa": -1084820.0288406461,
+            "weighted_KKT_rms_Pa": 8755030.103865009
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085387.87027694,
+              17537967.3228877,
+              17085387.87027693
+            ],
+            "delta_Pa": 452579.45261076465,
+            "weighted_KKT_rms_Pa": 10398820.175576769
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          8.830682130823877e-26,
+          -1.7661364261623052e-25,
+          8.830682130799858e-26
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": -8.576872149892634e-25,
+        "native_rhs_max_per_model_time": 6.571486977861496,
+        "virtual_work_delta_spread_Pa": 1537399.4814514108
+      },
+      "projected_mu_Pa": [
+        17089357.929915223,
+        17545666.56916068,
+        17089357.929915227
+      ],
+      "projected_mu_contrast_Pa": 456308.6392454542,
+      "initial_volumes_m3": [
+        4.199292528729957e-21,
+        1.6311141047631469e-21,
+        4.1992925287299555e-21
+      ],
+      "center_relative_rate_per_model_time": -0.00010827792004280196,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.755,
+      "cmc": {
+        "ratio": 0.755,
+        "center_half_length_nm": 21.25385786192999,
+        "Kc_per_m": 16733687.609829053,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": -401811.7532337867,
+        "delta_mu_J_per_atom": -4.0181175323378666e-24,
+        "center_contact_radius_nm": 114.94357207179533,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 2.220446049250313e-16,
+        "connected": true,
+        "center_min_radius_nm": 114.94357207179533,
+        "center_span_over_W": 10.626928930964995,
+        "contact_separation_margin_W": 2.6269289309649952,
+        "resolution_pass": true,
+        "desired_ordering": false,
+        "matched_potential": false,
+        "max_bvp_residual": 1.8335774623779233e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 2.8775244409473544e-09,
+        "centroid_over_Ro": 1.9267693899883127e-08,
+        "neck_relative": 0.0003745971502167045,
+        "dilute_fraction_relative": 3.039797750736817e-06,
+        "angle_error_deg": 0.3358453950334024,
+        "contour_error_over_W": 0.010775511398031491,
+        "contact_curvature_relative": 0.03153393891608902
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108440.303241786,
+              16680824.191388186,
+              17108440.30324178
+            ],
+            "delta_Pa": -427616.1118535958,
+            "weighted_KKT_rms_Pa": 10351313.678078122
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280572.73135279,
+              18344809.581168182,
+              20280572.73135277
+            ],
+            "delta_Pa": -1935763.1501845978,
+            "weighted_KKT_rms_Pa": 8705791.36219493
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085951.2917332,
+              16678366.72922884,
+              17085951.291733224
+            ],
+            "delta_Pa": -407584.5625043735,
+            "weighted_KKT_rms_Pa": 10346037.911633596
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -7.783176274665534e-26,
+          1.5566352549336199e-25,
+          -7.783176274671131e-26
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 7.561581602787874e-25,
+        "native_rhs_max_per_model_time": 6.501528726043398,
+        "virtual_work_delta_spread_Pa": 1528178.5876802243
+      },
+      "projected_mu_Pa": [
+        17089274.814285506,
+        16687585.376436608,
+        17089274.814285494
+      ],
+      "projected_mu_contrast_Pa": -401689.4378488939,
+      "initial_volumes_m3": [
+        4.1992926116227845e-21,
+        1.804495824652315e-21,
+        4.1992926116227845e-21
+      ],
+      "center_relative_rate_per_model_time": 8.626427579756511e-05,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.7439144517690714,
+      "cmc": {
+        "ratio": 0.7439144517690714,
+        "center_half_length_nm": 20.349908535091892,
+        "Kc_per_m": 17100512.80667973,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": -34986.55638311058,
+        "delta_mu_J_per_atom": -3.498655638311058e-25,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 10.174954267545946,
+        "contact_separation_margin_W": 2.174954267545946,
+        "resolution_pass": true,
+        "desired_ordering": false,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7763211351360643e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 2.5383384283372834e-10,
+        "centroid_over_Ro": 1.9776583486008528e-08,
+        "neck_relative": 0.0003751842232553315,
+        "dilute_fraction_relative": 3.0527591997620007e-06,
+        "angle_error_deg": 0.3367052580948666,
+        "contour_error_over_W": 0.010791548701122743,
+        "contact_curvature_relative": 0.030951473317466505
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108089.274352815,
+              17046542.570532918,
+              17108089.274352822
+            ],
+            "delta_Pa": -61546.70381990075,
+            "weighted_KKT_rms_Pa": 10357792.050651114
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280393.41144595,
+              18707603.502146225,
+              20280393.411445923
+            ],
+            "delta_Pa": -1572789.9092997126,
+            "weighted_KKT_rms_Pa": 8701747.80778175
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085534.060546212,
+              17044656.661028963,
+              17085534.060546204
+            ],
+            "delta_Pa": -40877.39951724559,
+            "weighted_KKT_rms_Pa": 10352680.23907573
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -6.84774894460584e-27,
+          1.3695497888897275e-26,
+          -6.847748944289314e-27
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 6.671769036832851e-26,
+        "native_rhs_max_per_model_time": 6.160059492639299,
+        "virtual_work_delta_spread_Pa": 1531912.509782467
+      },
+      "projected_mu_Pa": [
+        17089176.8515527,
+        17054050.848393068,
+        17089176.851552702
+      ],
+      "projected_mu_contrast_Pa": -35126.00315963477,
+      "initial_volumes_m3": [
+        4.199292584241608e-21,
+        1.7261731284466946e-21,
+        4.199292584241608e-21
+      ],
+      "center_relative_rate_per_model_time": 7.93402333937456e-06,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.742868262492901,
+      "cmc": {
+        "ratio": 0.742868262492901,
+        "center_half_length_nm": 20.26589297898554,
+        "Kc_per_m": 17136251.056912486,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 751.693849645555,
+        "delta_mu_J_per_atom": 7.516938496455549e-27,
+        "center_contact_radius_nm": 114.94357207179527,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": -2.220446049250313e-16,
+        "connected": true,
+        "center_min_radius_nm": 114.94357207179527,
+        "center_span_over_W": 10.132946489492769,
+        "contact_separation_margin_W": 2.1329464894927685,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7695561434202777e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.3394285680590201e-11,
+        "centroid_over_Ro": 1.95873375320484e-08,
+        "neck_relative": 0.0003745889439525918,
+        "dilute_fraction_relative": 3.0632599105073766e-06,
+        "angle_error_deg": 0.3432546093264932,
+        "contour_error_over_W": 0.010774460492568652,
+        "contact_curvature_relative": 0.03152873283831026
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108157.717067,
+              17082805.050010342,
+              17108157.717066977
+            ],
+            "delta_Pa": -25352.667056646198,
+            "weighted_KKT_rms_Pa": 10374891.67832876
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280508.476238687,
+              18743540.415711448,
+              20280508.476238683
+            ],
+            "delta_Pa": -1536968.0605272353,
+            "weighted_KKT_rms_Pa": 8726266.497085722
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085663.655194484,
+              17081068.70054057,
+              17085663.655194513
+            ],
+            "delta_Pa": -4594.954653929919,
+            "weighted_KKT_rms_Pa": 10369625.096324097
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          4.462939086557738e-29,
+          -8.925878183885208e-29,
+          4.462939097506509e-29
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 1.551172500058432e-28,
+        "native_rhs_max_per_model_time": 6.233209288439405,
+        "virtual_work_delta_spread_Pa": 1532373.1058733054
+      },
+      "projected_mu_Pa": [
+        17089274.64832293,
+        17089759.033686575,
+        17089274.648322932
+      ],
+      "projected_mu_contrast_Pa": 484.3853636421263,
+      "initial_volumes_m3": [
+        4.1992925739722895e-21,
+        1.718900766836543e-21,
+        4.1992925739722895e-21
+      ],
+      "center_relative_rate_per_model_time": -5.1927827109603034e-08,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.7428750652312004,
+      "cmc": {
+        "ratio": 0.7428750652312004,
+        "center_half_length_nm": 20.266438563397745,
+        "Kc_per_m": 17136018.031876285,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 518.668813444674,
+        "delta_mu_J_per_atom": 5.18668813444674e-27,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 10.133219281698873,
+        "contact_separation_margin_W": 2.1332192816988726,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7696081096933436e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.227418167104588e-11,
+        "centroid_over_Ro": 1.958862872789737e-08,
+        "neck_relative": 0.00037459255529070923,
+        "dilute_fraction_relative": 3.063932863756058e-06,
+        "angle_error_deg": 0.3432116490865553,
+        "contour_error_over_W": 0.010774575369929816,
+        "contact_curvature_relative": 0.03152414159665551
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108157.274771977,
+              17082568.757040523,
+              17108157.27477199
+            ],
+            "delta_Pa": -25588.51773145795,
+            "weighted_KKT_rms_Pa": 10374780.30515677
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280508.112436567,
+              18743306.419071347,
+              20280508.112436537
+            ],
+            "delta_Pa": -1537201.693365205,
+            "weighted_KKT_rms_Pa": 8726106.828074545
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085662.81651713,
+              17080831.432510477,
+              17085662.816517178
+            ],
+            "delta_Pa": -4831.384006675333,
+            "weighted_KKT_rms_Pa": 10369514.725903446
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          7.855335465600327e-31,
+          -1.5710669806680912e-30,
+          7.855334352742699e-31
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 5.73125276859153e-28,
+        "native_rhs_max_per_model_time": 6.232628780613357,
+        "virtual_work_delta_spread_Pa": 1532370.3093585297
+      },
+      "projected_mu_Pa": [
+        17089274.605046593,
+        17089526.13761044,
+        17089274.605046585
+      ],
+      "projected_mu_contrast_Pa": 251.53256385028362,
+      "initial_volumes_m3": [
+        4.1992925740847345e-21,
+        1.7189479885347584e-21,
+        4.1992925740847345e-21
+      ],
+      "center_relative_rate_per_model_time": -9.139700509538267e-10,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.7428751870957933,
+      "cmc": {
+        "ratio": 0.7428751870957933,
+        "center_half_length_nm": 20.266448337109768,
+        "Kc_per_m": 17136013.85753083,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 514.4944679886103,
+        "delta_mu_J_per_atom": 5.144944679886102e-27,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 10.133224168554882,
+        "contact_separation_margin_W": 2.1332241685548823,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7696130045427938e-10,
+        "volume_relative_error": 0.0,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.2254086634300165e-11,
+        "centroid_over_Ro": 1.958865202130342e-08,
+        "neck_relative": 0.0003745926198044369,
+        "dilute_fraction_relative": 3.0639546981792165e-06,
+        "angle_error_deg": 0.34321087924050175,
+        "contour_error_over_W": 0.010774577426598604,
+        "contact_curvature_relative": 0.03152405933524649
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108157.2669603,
+              17082564.524003964,
+              17108157.266960286
+            ],
+            "delta_Pa": -25592.742956329137,
+            "weighted_KKT_rms_Pa": 10374778.30762812
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280508.103338003,
+              18743302.227090027,
+              20280508.10333796
+            ],
+            "delta_Pa": -1537205.8762479536,
+            "weighted_KKT_rms_Pa": 8726103.96479169
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085662.80153548,
+              17080827.181965053,
+              17085662.801535483
+            ],
+            "delta_Pa": -4835.619570426643,
+            "weighted_KKT_rms_Pa": 10369512.746351836
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -2.57468759364458e-33,
+          5.1493142252956716e-33,
+          -2.5746300724233386e-33
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 5.806540446352438e-28,
+        "native_rhs_max_per_model_time": 6.232618228430719,
+        "virtual_work_delta_spread_Pa": 1532370.256677527
+      },
+      "projected_mu_Pa": [
+        17089274.60390763,
+        17089521.965300497,
+        17089274.603907626
+      ],
+      "projected_mu_contrast_Pa": 247.3613928668201,
+      "initial_volumes_m3": [
+        4.199292574086403e-21,
+        1.7189488344744626e-21,
+        4.1992925740864024e-21
+      ],
+      "center_relative_rate_per_model_time": 2.9956180905582227e-12,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.742875186697676,
+      "cmc": {
+        "ratio": 0.742875186697676,
+        "center_half_length_nm": 20.2664483051802,
+        "Kc_per_m": 17136013.871167913,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 514.5081050731242,
+        "delta_mu_J_per_atom": 5.145081050731242e-27,
+        "center_contact_radius_nm": 114.94357207179533,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 2.220446049250313e-16,
+        "connected": true,
+        "center_min_radius_nm": 114.94357207179533,
+        "center_span_over_W": 10.1332241525901,
+        "contact_separation_margin_W": 2.133224152590101,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7696107633457192e-10,
+        "volume_relative_error": -1.1102230246251565e-16,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.2254530723510015e-11,
+        "centroid_over_Ro": 1.9588651624256726e-08,
+        "neck_relative": 0.0003745926195937166,
+        "dilute_fraction_relative": 3.063954626791876e-06,
+        "angle_error_deg": 0.3432108817538335,
+        "contour_error_over_W": 0.010774577419878589,
+        "contact_curvature_relative": 0.03152405960418758
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108157.26698581,
+              17082564.53783281,
+              17108157.26698582
+            ],
+            "delta_Pa": -25592.729153003544,
+            "weighted_KKT_rms_Pa": 10374778.314153839
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280508.103367656,
+              18743302.24078489,
+              20280508.103367615
+            ],
+            "delta_Pa": -1537205.8625827432,
+            "weighted_KKT_rms_Pa": 8726103.97414573
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085662.801584415,
+              17080827.195851143,
+              17085662.80158442
+            ],
+            "delta_Pa": -4835.605733271688,
+            "weighted_KKT_rms_Pa": 10369512.752818827
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          -2.930697506917292e-37,
+          3.490631246179869e-37,
+          -5.731812502916185e-38
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 5.806294718710645e-28,
+        "native_rhs_max_per_model_time": 6.232618262901054,
+        "virtual_work_delta_spread_Pa": 1532370.2568494715
+      },
+      "projected_mu_Pa": [
+        17089274.60391112,
+        17089521.978931062,
+        17089274.603911117
+      ],
+      "projected_mu_contrast_Pa": 247.37501994520426,
+      "initial_volumes_m3": [
+        4.199292574086397e-21,
+        1.7189488317108772e-21,
+        4.199292574086397e-21
+      ],
+      "center_relative_rate_per_model_time": 2.0306778083124373e-16,
+      "stationary_qualified": false
+    },
+    {
+      "ratio": 0.7428751866473046,
+      "cmc": {
+        "ratio": 0.7428751866473046,
+        "center_half_length_nm": 20.266448301140336,
+        "Kc_per_m": 17136013.872893333,
+        "Ko_per_m": 17135499.36306284,
+        "delta_mu_Pa": 514.50983049348,
+        "delta_mu_J_per_atom": 5.145098304934799e-27,
+        "center_contact_radius_nm": 114.9435720717953,
+        "outer_contact_radius_nm": 114.9435720717953,
+        "contact_relative_mismatch": 0.0,
+        "connected": true,
+        "center_min_radius_nm": 114.9435720717953,
+        "center_span_over_W": 10.133224150570168,
+        "contact_separation_margin_W": 2.133224150570168,
+        "resolution_pass": true,
+        "desired_ordering": true,
+        "matched_potential": false,
+        "max_bvp_residual": 1.7696167408135432e-10,
+        "volume_relative_error": 2.220446049250313e-16,
+        "outer_centroid_from_GB_nm": 52.99720269189209
+      },
+      "cleanup_steps": 200,
+      "cleanup_changes": {
+        "grain_volume_relative": 1.225430867890509e-11,
+        "centroid_over_Ro": 1.9588651756605624e-08,
+        "neck_relative": 0.0003745926195668492,
+        "dilute_fraction_relative": 3.063954618021114e-06,
+        "angle_error_deg": 0.3432108820703945,
+        "contour_error_over_W": 0.010774577419028247,
+        "contact_curvature_relative": 0.03152405963813765
+      },
+      "cleanup_gates": {
+        "grain_volume_relative": true,
+        "centroid_over_Ro": true,
+        "neck_relative": true,
+        "dilute_fraction_relative": true,
+        "angle_error_deg": true,
+        "contour_error_over_W": true,
+        "contact_curvature_relative": true
+      },
+      "diagnostics": {
+        "virtual_work": {
+          "profile": {
+            "multipliers_Pa": [
+              17108157.266989067,
+              17082564.539582428,
+              17108157.26698904
+            ],
+            "delta_Pa": -25592.727406624705,
+            "weighted_KKT_rms_Pa": 10374778.314979421
+          },
+          "localization": {
+            "multipliers_Pa": [
+              20280508.103371453,
+              18743302.242517345,
+              20280508.103371423
+            ],
+            "delta_Pa": -1537205.860854093,
+            "weighted_KKT_rms_Pa": 8726103.97532902
+          },
+          "normal_displacement": {
+            "multipliers_Pa": [
+              17085662.80159063,
+              17080827.197607975,
+              17085662.801590618
+            ],
+            "delta_Pa": -4835.603982646018,
+            "weighted_KKT_rms_Pa": 10369512.753636975
+          }
+        },
+        "grain_volume_rates_m3_per_model_time": [
+          3.2534348363287277e-34,
+          -6.508252156125735e-34,
+          3.2548004645650746e-34
+        ],
+        "sharp_GB_center_rate_m3_per_model_time": 5.8062635340968565e-28,
+        "native_rhs_max_per_model_time": 6.232618267306803,
+        "virtual_work_delta_spread_Pa": 1532370.256871447
+      },
+      "projected_mu_Pa": [
+        17089274.603911575,
+        17089521.980655458,
+        17089274.603911575
+      ],
+      "projected_mu_contrast_Pa": 247.37674388289452,
+      "initial_volumes_m3": [
+        4.199292574086396e-21,
+        1.7189488313612164e-21,
+        4.199292574086396e-21
+      ],
+      "center_relative_rate_per_model_time": -3.786181436809799e-13,
+      "stationary_qualified": false
+    }
+  ],
+  "events_enabled": false,
+  "phase_b_authorized": false
+}

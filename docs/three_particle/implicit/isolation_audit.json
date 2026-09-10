@@ -10,5 +10,6 @@
   "production_sources_modified": false,
   "accepted_cmc_parameters_modified": false,
   "events_enabled": false,
-  "final_publication_blocked_by_automatic_review": true
+  "final_publication_blocked_by_automatic_review": false,
+  "approved_milestone_commit": "9b188cf"
 }

@@ -1,0 +1,31 @@
+{
+  "predicted_virtual_work_J": -2.559272915300477e-18,
+  "volume_direction_m3": [
+    -5e-23,
+    1e-22,
+    -5e-23
+  ],
+  "actual_volume_direction_m3": [
+    -4.9999999999999944e-23,
+    9.999999999999973e-23,
+    -4.9999999999999973e-23
+  ],
+  "rows": [
+    {
+      "epsilon": 0.01,
+      "energy_derivative_J": -2.5756259936390725e-18,
+      "relative_error": 0.006389736022613929
+    },
+    {
+      "epsilon": 0.001,
+      "energy_derivative_J": -2.5594364373084045e-18,
+      "relative_error": 6.389393133887122e-05
+    },
+    {
+      "epsilon": 0.0001,
+      "energy_derivative_J": -2.559274297993389e-18,
+      "relative_error": 5.402678643099119e-07
+    }
+  ],
+  "interpretation": "Virtual-work multipliers match derivatives of the actual fixed-ownership PF functional, but are not derivatives of a minimized functional at this unequilibrated field."
+}

@@ -1,0 +1,16 @@
+{
+  "verified_utc": "2026-09-10T18:02:44.697553+00:00",
+  "approved_previous_milestone": "9b188cf",
+  "prior_actual_state_files_checked": 52,
+  "protected_sources_and_angle_rule_checked": 5,
+  "mismatches": [],
+  "production_head": "0023db8509df151622ae94fec140e714b967ef31",
+  "production_diff_sha256": "ae7ec5aa058325a6f93dbf04308f60c573637422a13f2270861b7d7dddd99a2c",
+  "worker_pid": 49267,
+  "watcher_pid": 49324,
+  "both_alive": true,
+  "unequal_case_changed": false,
+  "phase_b_enabled": false,
+  "publication_status_at_audit": "User explicitly approved complete follow-up commit and push; pre-publication verification passed",
+  "report_only_change": "Normalize published CSV line endings to LF; numerical values and raw run files unchanged."
+}

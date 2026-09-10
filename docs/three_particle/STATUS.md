@@ -1,6 +1,29 @@
 # Three-particle ripening development
 
-## Current implicit follow-up
+```text
+PF-native stationary null: NOT YET FOUND
+Phase A: NOT FULLY QUALIFIED
+Phase B: DISABLED
+Unequal 0.70 case: unchanged
+Field guard: unchanged
+No clipping
+No fitted correction
+```
+
+## Current stationary-null follow-up
+
+The implicit milestone is committed and pushed as `9b188cf`.
+The prescribed finite-width bracket gives a zero-initial-flux root at
+0.7428751867, but it is not stationary: the center gains 0.0277% and the
+unchanged field guard stops the run at 0.8723 s. The thermodynamic virtual-work
+estimates remain basis-dependent after the prescribed 200-step cleanup.
+A qualified PF-native stationary null is still outstanding. Phase B is disabled.
+
+See [null-study report](stationary_null/REPORT.md),
+[plots](stationary_null/study_plots.pdf), and
+[native timestep bound audit](stationary_null/native_bound_refinement.json).
+
+## Previous implicit follow-up
 
 The current-field implicit solver passes both the initial and late native
 PF overlaps. The paired long-time comparison observes sustained additional
