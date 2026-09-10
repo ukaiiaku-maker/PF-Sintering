@@ -105,3 +105,16 @@ def test_compiled_threegrain_kernels_match_reference():
     density=op.Wc*sum(phi[i]*phi[j] for i in range(3) for j in range(i+1,3))
     for p in phi:density+=_axisym_gate_derivative_of_weighted_gradient(p,op.k_eta/2,g['dr'],g['dz'],g['r_c'],g['r_f'])
     update_ownership(op,phi);np.testing.assert_allclose(op.gb_density,density,rtol=3e-16,atol=0.)
+
+
+def test_fast_pair_ownership_roundtrip_does_not_accumulate_closure():
+    from pf_sintering.three_particle_event import normalized_pair_ownership
+    rng=np.random.default_rng(4);f=rng.uniform(.1,1.,(7,9));phi=rng.uniform(.1,1.,(3,*f.shape));phi/=phi.sum(axis=0)
+    state=(f,*(phi*f[None]));inactive=state[3].copy()
+    for _ in range(2000):
+        phi=normalized_pair_ownership(state,phi,(0,1));state=(f,*(phi*f[None]))
+    assert np.max(abs(sum(state[1:])-f))<=3e-16
+    np.testing.assert_allclose(state[3],inactive,rtol=0,atol=3e-16)
+    # With no third grain, reconstruct exactly the binary complementary phi.
+    state=(f,.4*f,.6*f,np.zeros_like(f));phi=normalized_pair_ownership(state,phi,(0,1))
+    np.testing.assert_array_equal(phi[1],1.-phi[0]);np.testing.assert_array_equal(phi[2],0.)

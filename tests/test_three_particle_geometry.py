@@ -30,3 +30,11 @@ def test_controls_and_resolution():
     np.testing.assert_array_equal(equal['radii'],np.full(3,100e-9))
     with pytest.raises(ValueError): build_three_particle(ThreeParticleConfig(center_ratio=.1))
     with pytest.raises(ValueError): build_three_particle(ThreeParticleConfig(spacing=5e-9))
+
+
+def test_topology_center_interval_is_translation_invariant(geometry):
+    g=geometry;shift=100e-9;translated={**g,'z':g['z']+shift,'gb':np.array(g['gb'])+shift}
+    original=topology_status(g['f'],g);moved=topology_status(g['f'],translated)
+    assert moved['stop']==original['stop'];assert moved['reasons']==original['reasons']
+    np.testing.assert_allclose(moved['center_min_radius_m'],original['center_min_radius_m'],rtol=1e-14,atol=0.)
+    np.testing.assert_allclose(moved['center_span_m'],original['center_span_m'],rtol=1e-14,atol=0.)

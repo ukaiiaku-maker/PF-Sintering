@@ -1,0 +1,99 @@
+"""Descendant qualification after a forced completed root; not stochastic-root evidence."""
+from pathlib import Path
+import sys,json,time,os,argparse
+sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
+import numpy as np
+from three_particle_forced_event import ContactEvent,MANIFEST
+from three_particle_source_window import advance_source_window
+from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
+from pf_sintering.three_particle_event import load_event_checkpoint,save_event_checkpoint
+from pf_sintering.three_particle_geometry import grain_volumes,topology_status
+from pf_sintering.three_particle_contacts import evaluate_contacts
+from pf_sintering.three_particle_diagnostics import diagnostics,curvature_watch
+from pf_sintering.three_particle_renewal import RootClocks,locate_first_root
+from pf_sintering.pr_avalanche import AvalancheController,DescendantBarrier
+from pf_sintering.exp_barrier_nucleation import CompleteExpFloorParams
+from monitor_current_state_transfer_curvature import apply_progressive_flags
+D=Path('docs/three_particle/production_065');DESCENDANT_SEED=20260911
+
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--root-checkpoint',type=Path,required=True);ap.add_argument('--out-name',default='forced_descendant_family');args=ap.parse_args()
+    gate=json.loads((D/'qualification.json').read_text())
+    if not gate.get('reload_qualified') or not gate.get('one_b_qualified'):raise RuntimeError('completed one-b mechanical qualification required')
+    state,restart,contact,label=load_event_checkpoint(args.root_checkpoint)
+    if contact!='LEFT' or label!='FORCED_EVENT_FOR_MECHANICAL_QUALIFICATION' or abs(restart['cumulative_q_m']/MANIFEST['b_event_m']-1)>1e-12:raise ValueError('requires a complete forced LEFT root')
+    out=Path('runs/three_particle_production_065')/args.out_name;out.mkdir(exist_ok=False)
+    c,o=compatible_chain(.65,119.999e-9);g=map_to_pf(c,o,4e-9,.5e-9);reference=ContactEvent(g)
+    reference.metrics(restart['base_fields'],0.);reference.bind(state);mass0=float(grain_volumes(state[0],g).sum())
+    rule=json.loads(Path('docs/three_particle/cmc/angle_calibration.json').read_text())['rule'];p=MANIFEST['root_barrier_slice']
+    controller=AvalancheController(barrier=DescendantBarrier(CompleteExpFloorParams(p['G0_eV'],p['Gfloor_eV'],p['a'],p['sigmahat_Pa'],p['n']),1.5),
+        temperature_K=MANIFEST['temperature_K'],attempt_frequency_per_s=MANIFEST['clock_scale']/MANIFEST['seconds_per_model_time'],
+        b_m=MANIFEST['b_event_m'],correlation_time_s=.009,rng=np.random.default_rng(DESCENDANT_SEED),facilitation_decay_alpha=.70)
+    t=restart['event_time_model']*MANIFEST['seconds_per_model_time'];controller.start(avalanche_id=1,root_cycle=1,start_time_s=0.);controller.complete_transit(t)
+    records=[];completed_watches=[];status='RUNNING';wall=time.perf_counter();event_number=1
+    def record(phase,q=0.):
+        reference.bind(state);row=reference.metrics(state,q);cc=evaluate_contacts(state[0],reference.op,MANIFEST);extra,_=diagnostics(state[0],reference.op)
+        if abs(row['total_volume_m3']/mass0-1)>1e-11:raise RuntimeError('family mass guard')
+        if np.max(abs(sum(state[1:])-state[0]))>5e-15:raise RuntimeError('family ownership closure')
+        if state[0].min() < -1e-8 or state[0].max()>1+1e-8:raise RuntimeError('unchanged family field guard')
+        areas={k:np.pi*v['r_n_m']**2 for k,v in cc.items()}
+        record=dict(time_since_forced_root_s=t,phase=phase,event_number=event_number,avalanche_id=1,q_over_b=q,
+            metrics=row,contacts=cc,diagnostics=extra,descendant_hazard=controller.state.descendant_hazard,
+            descendant_threshold=controller.state.descendant_threshold,source_amplitude=controller.state.source_amplitude,
+            cluster_area_weighted_local_Pa=sum(areas[k]*cc[k]['sigma_local_Pa'] for k in cc)/sum(areas.values()),
+            stochastic_root_result=False)
+        if phase in ['FORCED_ROOT_COMPLETE','ONE_B_COMPLETE','ONE_B_FAILED']:
+            record['curvature']=curvature_watch(state[0],reference.op,two_contact_center=True,gb_positions=[cc[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
+            if phase!='ONE_B_FAILED':completed_watches.append(record['curvature'])
+        records.append(record)
+        if phase=='ONE_B_COMPLETE':
+            for branch in record['curvature']:
+                history=[dict(avalanche_id=1,artifact_flag=0,**w[branch]) for w in completed_watches];apply_progressive_flags(history)
+                if history[-1]['artifact_flag']:raise RuntimeError('progressive curvature artifact: '+branch)
+            if row['topology_stop']:raise RuntimeError('family topology terminal')
+    def save():
+        temp=out/'family.writing.npz';np.savez_compressed(temp,fields=np.array(state),gb=g['gb'],
+            metadata=json.dumps(dict(status=status,t_s=t,controller=controller.manifest(),rng=controller.rng.bit_generator.state,event_number=event_number)))
+        os.replace(temp,out/'family.npz');(out/'history.json').write_text(json.dumps(records,indent=2,default=float)+'\n')
+    (out/'launch.json').write_text(json.dumps(dict(label='DESCENDANT_QUALIFICATION_AFTER_FORCED_ROOT',seed=DESCENDANT_SEED,root_checkpoint=str(args.root_checkpoint),
+        root_thresholds_drawn=False,descendant_parameters=controller.manifest(),physical_parameters_changed=False),indent=2)+'\n')
+    record('FORCED_ROOT_COMPLETE',1.);save()
+    try:
+        while controller.state.avalanche_active:
+            deadline=controller.state.window_deadline_s
+            while t<deadline-1e-14:
+                dt=min(.001,deadline-t)
+                probe=RootClocks.__new__(RootClocks);probe.active=None;probe.hazard={'LEFT':controller.state.descendant_hazard,'RIGHT':0.};probe.threshold={'LEFT':controller.state.descendant_threshold,'RIGHT':float('inf')}
+                def rates(fields):
+                    reference.bind(fields);cc=evaluate_contacts(fields[0],reference.op,MANIFEST)['LEFT']
+                    return {'LEFT':controller.rate(cc['sigma_local_Pa'],cc['r_n_m']),'RIGHT':0.}
+                evolved,elapsed,inc,child=locate_first_root(state,dt,lambda fields,seconds:advance_source_window(fields,seconds,g,(0,1),rule),rates,probe,
+                    MANIFEST['passive_crossing_tolerance_model']*MANIFEST['seconds_per_model_time'])
+                state=tuple(evolved);t+=elapsed;reference.bind(state)
+                if child:controller.commit_crossing(crossing_time_s=t)
+                else:controller.state.descendant_hazard+=inc['LEFT'];controller.state.descendant_total_hazard+=inc['LEFT']
+                record('CHILD_CROSSING' if child else 'SOURCE_WINDOW');save()
+                if child:break
+            if not controller.state.window_triggered:controller.expire_window(deadline);break
+            if controller.state.S_completed>=26:raise RuntimeError('25-descendant safety cap; no false extinction')
+            event_number+=1;controller.begin_transit();event=ContactEvent(g,max_fast_blocks=gate.get('event_max_fast_blocks',240));event_start=t
+            zero=event.run(state,maximum_accepted_states=0)
+            save_event_checkpoint(out/f'event_{event_number}_q0.npz',state,zero[5]['event_restart'],contact='LEFT',label='DESCENDANT_AFTER_FORCED_ROOT')
+            def progress(packet,fields,event_restart):
+                nonlocal state,t
+                state=fields;t=event_start+event_restart['event_time_model']*MANIFEST['seconds_per_model_time']
+                save_event_checkpoint(out/f'event_{event_number}.npz',state,event_restart,contact='LEFT',label='DESCENDANT_AFTER_FORCED_ROOT')
+                record('ACTIVE_ONE_B',packet['q_end_over_b']);save()
+                print('descendant',event_number-1,'q/b',packet['q_end_over_b'],'chain strain',records[-1]['metrics']['chain_strain'],flush=True)
+            result=event.run(state,callback=progress,maximum_step_over_b=.005,initial_step_over_b=.005);state=result[:4];info=result[5];t=event_start+info['event_time_model']*MANIFEST['seconds_per_model_time']
+            save_event_checkpoint(out/f'event_{event_number}_final.npz',state,info['event_restart'],contact='LEFT',label='DESCENDANT_AFTER_FORCED_ROOT')
+            record('ONE_B_COMPLETE' if result[4] else 'ONE_B_FAILED',info['event_progress_over_b']);save()
+            if not result[4]:raise RuntimeError(info['stop_reason'])
+            controller.complete_transit(t)
+        cc=evaluate_contacts(state[0],reference.op,MANIFEST);g['gb']=np.array([cc[k]['z_TJ_m'] for k in ['LEFT','RIGHT']]);record('AVALANCHE_EXTINCT_REPINNED');status='FORCED_FAMILY_COMPLETE'
+    except (RuntimeError,ValueError,FloatingPointError) as error:status='STOPPED: '+str(error)
+    save();report=dict(status=status,descendants_completed=controller.state.S_completed-1,controller=controller.manifest(),wall_s=time.perf_counter()-wall,
+        duration_s=t,stochastic_root_result=False,source=str(args.root_checkpoint),final=records[-1])
+    (D/(args.out_name+'.json')).write_text(json.dumps(report,indent=2,default=float)+'\n');print(status,flush=True)
+if __name__=='__main__':main()

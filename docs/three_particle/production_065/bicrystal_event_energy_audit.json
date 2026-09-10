@@ -1,0 +1,47 @@
+{
+  "source_qualification": "PASS_CURRENT_STATE_TRANSFER_TWO_EVENT_GATE",
+  "archived_data_read_only": true,
+  "events": [
+    {
+      "source": "/private/tmp/PF-Sintering-storage-relief-20260908/archived_runs/pr_current_state_mass_transfer_qualification_v1/event1_dq0p01b/history.csv",
+      "source_sha256": "62a4c3402a720b65fbee46ec19ae52b186639ad0965e5ede02544cc34c118b75",
+      "label": "event1_dq0p01b",
+      "initial_G_PF_J": 9.357994174633395e-13,
+      "final_G_PF_J": 9.35804163716069e-13,
+      "relative_energy_change": 5.0718697202079e-06,
+      "initial_local_stress_MPa": 57.151756009832155,
+      "final_local_stress_MPa": 56.90473031187789
+    },
+    {
+      "source": "/private/tmp/PF-Sintering-storage-relief-20260908/archived_runs/pr_current_state_mass_transfer_qualification_v1/event1_dq0p02b/history.csv",
+      "source_sha256": "333ff8df71de4c5c1565fd84f7b377d8f720cdc4126ecd271f1affd414c3d4d4",
+      "label": "event1_dq0p02b",
+      "initial_G_PF_J": 9.357994174633395e-13,
+      "final_G_PF_J": 9.358045220758847e-13,
+      "relative_energy_change": 5.454814835159638e-06,
+      "initial_local_stress_MPa": 57.151756009832155,
+      "final_local_stress_MPa": 56.93864404472964
+    },
+    {
+      "source": "/private/tmp/PF-Sintering-storage-relief-20260908/archived_runs/pr_current_state_mass_transfer_qualification_v1/event2_dq0p01b/history.csv",
+      "source_sha256": "59e0b1cd4f352f597226ec39cafb48eb01af841641ea796fecb305f2293a9d9f",
+      "label": "event2_dq0p01b",
+      "initial_G_PF_J": 9.3603791153773e-13,
+      "final_G_PF_J": 9.360530201795448e-13,
+      "relative_energy_change": 1.6141057566754213e-05,
+      "initial_local_stress_MPa": 54.75922799780864,
+      "final_local_stress_MPa": 54.65486731725897
+    },
+    {
+      "source": "/private/tmp/PF-Sintering-storage-relief-20260908/archived_runs/pr_current_state_mass_transfer_qualification_v1/event2_dq0p02b/history.csv",
+      "source_sha256": "64bc8bfd7d3b3c8a1da0ebf81ed8d3229b4c37cdbd9b1dc4b674ddde332f8d90",
+      "label": "event2_dq0p02b",
+      "initial_G_PF_J": 9.3603791153773e-13,
+      "final_G_PF_J": 9.36053745376324e-13,
+      "relative_energy_change": 1.691580907037249e-05,
+      "initial_local_stress_MPa": 54.75922799780864,
+      "final_local_stress_MPa": 54.68516884143291
+    }
+  ],
+  "interpretation": "The qualified bicrystal current-state source also increases the tracked PF energy during these events. PF energy remains a diagnostic; the prescribed source is not a guaranteed descent direction of that functional. No activation-law substitution is made."
+}

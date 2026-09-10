@@ -9,6 +9,7 @@ sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolv
 import numpy as np
 from three_particle_forced_event import ContactEvent,MANIFEST
 from three_particle_implicit_run import advance
+from three_particle_source_window import advance_source_window
 from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
 from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusion
 from pf_sintering.three_particle_contacts import evaluate_contacts
@@ -75,7 +76,17 @@ def main():
             cluster_area_weighted_local_Pa=sum(areas[k]*contacts[k]['sigma_local_Pa'] for k in areas)/sum(areas.values()),
             hazards=clocks.hazard.copy(),thresholds=clocks.threshold.copy(),
             H_over_Hstar={k:clocks.hazard[k]/clocks.threshold[k] for k in clocks.hazard},diagnostics=scalar)
+        if phase in ['POST_TRANSIENT_NEW_TRAJECTORY','ONE_B_COMPLETE','ONE_B_FAILED']:
+            row['curvature_watch']=curvature_watch(state[0],op,two_contact_center=True,gb_positions=[contacts[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
         records.append(row)
+        if phase=='ONE_B_COMPLETE':
+            from monitor_current_state_transfer_curvature import apply_progressive_flags
+            completed=[r for r in records if r['phase']=='ONE_B_COMPLETE' and r['avalanche_id']==clocks.avalanche_id]
+            for branch in row['curvature_watch']:
+                history=[dict(avalanche_id=r['avalanche_id'],artifact_flag=0,**r['curvature_watch'][branch]) for r in completed]
+                apply_progressive_flags(history)
+                if history[-1]['artifact_flag']:raise RuntimeError('progressive curvature artifact: '+branch)
+            if reference.metrics(state,q)['topology_stop']:raise RuntimeError('post-event topology terminal')
     def save():
         temp=out/'trajectory.writing.npz'
         np.savez_compressed(temp,fields=np.array(state),ownership=g['ownership'],gb=g['gb'],time_s=t,
@@ -93,7 +104,7 @@ def main():
             if contact is None:continue
             avalanche.start(avalanche_id=clocks.avalanche_id,root_cycle=clocks.avalanche_id,start_time_s=t)
             while avalanche.state.avalanche_active:
-                event_number+=1;avalanche.begin_transit();pair=(0,1) if contact=='LEFT' else (1,2);event=ContactEvent(g,pair)
+                event_number+=1;avalanche.begin_transit();pair=(0,1) if contact=='LEFT' else (1,2);event=ContactEvent(g,pair,max_fast_blocks=gate.get('event_max_fast_blocks',60))
                 event_start_t=t
                 zero=event.run(state,maximum_accepted_states=0)
                 save_event_checkpoint(out/f'event_{event_number}_q0.npz',state,zero[5]['event_restart'],contact=contact,label='GENUINE_STOCHASTIC_EVENT')
@@ -102,7 +113,8 @@ def main():
                     state=fields;t=event_start_t+restart['event_time_model']*MANIFEST['seconds_per_model_time']
                     record('ACTIVE_ONE_B',packet['q_end_over_b']);save()
                     save_event_checkpoint(out/f'event_{event_number}.npz',fields,restart,contact=contact,label='GENUINE_STOCHASTIC_EVENT')
-                result=event.run(state,callback=progress);state=result[:4];info=result[5];t=event_start_t+info['event_time_model']*MANIFEST['seconds_per_model_time']
+                dq=gate['event_max_increment_over_b']
+                result=event.run(state,callback=progress,maximum_step_over_b=dq,initial_step_over_b=dq);state=result[:4];info=result[5];t=event_start_t+info['event_time_model']*MANIFEST['seconds_per_model_time']
                 reference.bind(state);record('ONE_B_COMPLETE' if result[4] else 'ONE_B_FAILED',info['event_progress_over_b']);save()
                 if not result[4]:raise RuntimeError(info['stop_reason'])
                 avalanche.complete_transit(t)
@@ -119,21 +131,7 @@ def main():
                     # A temporary clock performs field bisection without drawing RNG.
                     probe=RootClocks.__new__(RootClocks);probe.active=None;probe.hazard={'LEFT':avalanche.state.descendant_hazard,'RIGHT':0.};probe.threshold={'LEFT':avalanche.state.descendant_threshold,'RIGHT':float('inf')}
                     def window_advance(fields,seconds):
-                        # Active source: retain the same pair ownership flow.
-                        local=ContactEvent(dict(g),pair);local.bind(fields);solver=HarmonicSurfaceDiffusion(local.op)
-                        current=tuple(x.copy() for x in fields);elapsed=0.;h=seconds
-                        while elapsed<seconds-1e-14:
-                            h=min(h,seconds-elapsed);local.bind(current)
-                            try:
-                                fn,error=advance(current[0],h/MANIFEST['seconds_per_model_time'],solver,rule)
-                                if error>1:raise RuntimeError('source window field error')
-                            except (FloatingPointError,RuntimeError):
-                                h*=.2
-                                if h<1e-10:raise RuntimeError('source window timestep floor')
-                                continue
-                            phi=ownership_pair_step(local.g['ownership'],fn,local.op,pair,h/MANIFEST['seconds_per_model_time'],1.0937500000000001e-25)
-                            current=(fn,*(phi*fn[None]));elapsed+=h
-                        return current
+                        return advance_source_window(fields,seconds,g,pair,rule)
                     evolved,elapsed,increment,child=locate_first_root(state,step,window_advance,child_rates,probe,MANIFEST['passive_crossing_tolerance_model']*MANIFEST['seconds_per_model_time'])
                     t+=elapsed;state=tuple(evolved);reference.bind(state)
                     if child:avalanche.commit_crossing(crossing_time_s=t)

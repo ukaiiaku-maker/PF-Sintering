@@ -1,0 +1,273 @@
+{
+  "source_run": "runs/three_particle_production_065/forced_left_fine_increment",
+  "snapshots": [
+    {
+      "q_over_b": 0.0,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18276515.633552194,
+          "p95_abs_kappa_per_m": 7577637.019221229,
+          "p99_abs_kappa_per_m": 11616554.996026406,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1566208335268064e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 7612316.07434756,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 337854576348046.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 9402200.048819795,
+          "p95_abs_kappa_per_m": 9402056.62898784,
+          "p99_abs_kappa_per_m": 9402171.364853404,
+          "kappa_max_index": 33,
+          "max_abs_dkappa_ds_per_m2": 45453563375950.0,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 9398006.80960947,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 42907583679492.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 9402200.048818646,
+          "p95_abs_kappa_per_m": 9402056.629091347,
+          "p99_abs_kappa_per_m": 9402171.364873186,
+          "kappa_max_index": 33,
+          "max_abs_dkappa_ds_per_m2": 45453563363986.0,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 9398006.809634687,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 42907583716440.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18276515.633561935,
+          "p95_abs_kappa_per_m": 7577637.019231804,
+          "p99_abs_kappa_per_m": 11616554.996023837,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1566208335272222e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 7612316.07434197,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 337854576332733.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    },
+    {
+      "q_over_b": 0.2750000000000001,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18273027.252532512,
+          "p95_abs_kappa_per_m": 8425474.605635524,
+          "p99_abs_kappa_per_m": 11695366.308695588,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1565919995084454e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8661217.945367571,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 855377576351456.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 8686708.57309834,
+          "p95_abs_kappa_per_m": 8658589.489866048,
+          "p99_abs_kappa_per_m": 8681084.75645188,
+          "kappa_max_index": 34,
+          "max_abs_dkappa_ds_per_m2": 920439176110269.0,
+          "dkappa_max_index": 27,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8233274.958708501,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 920439176110269.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": true
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 8685799.132405078,
+          "p95_abs_kappa_per_m": 8655552.770864964,
+          "p99_abs_kappa_per_m": 8679749.860097054,
+          "kappa_max_index": 31,
+          "max_abs_dkappa_ds_per_m2": 919930145761123.0,
+          "dkappa_max_index": 38,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8685799.132405078,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 711049012477624.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18258647.92577786,
+          "p95_abs_kappa_per_m": 7577794.93060835,
+          "p99_abs_kappa_per_m": 11648777.492395138,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1564537403761098e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 7629185.468052394,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 337934571450323.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    },
+    {
+      "q_over_b": 0.6000000000000003,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18152567.732265808,
+          "p95_abs_kappa_per_m": 9158427.530955413,
+          "p99_abs_kappa_per_m": 11915495.656968733,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.155473262758526e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 10140086.728847936,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 630831848686226.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 3868787.6993196825,
+          "p95_abs_kappa_per_m": 3852435.0461415863,
+          "p99_abs_kappa_per_m": 3865517.1686840635,
+          "kappa_max_index": 36,
+          "max_abs_dkappa_ds_per_m2": 439152770186019.5,
+          "dkappa_max_index": 30,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 3285545.436738664,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 439152770186019.5,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 3868609.852668601,
+          "p95_abs_kappa_per_m": 3851902.712141243,
+          "p99_abs_kappa_per_m": 3865268.4245631294,
+          "kappa_max_index": 29,
+          "max_abs_dkappa_ds_per_m2": 438899966028103.0,
+          "dkappa_max_index": 35,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 3868609.852668601,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 381930835691182.0,
+          "curvature_edge_tied": true,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18216210.881549362,
+          "p95_abs_kappa_per_m": 7529324.595745719,
+          "p99_abs_kappa_per_m": 11726377.617061706,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1560842984265294e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 7539428.970210305,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 373312660403504.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    },
+    {
+      "q_over_b": 0.7000000000000004,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18134378.5827038,
+          "p95_abs_kappa_per_m": 9444818.712423658,
+          "p99_abs_kappa_per_m": 11949285.54796907,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.155316699225936e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 10393112.441181287,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 654698577959990.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 2333051.6734979516,
+          "p95_abs_kappa_per_m": 2329576.782758256,
+          "p99_abs_kappa_per_m": 2332356.6953500123,
+          "kappa_max_index": 36,
+          "max_abs_dkappa_ds_per_m2": 654384333410190.5,
+          "dkappa_max_index": 24,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 2107525.555742411,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 654384333410190.5,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": true
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 2333028.842601012,
+          "p95_abs_kappa_per_m": 2329436.638504358,
+          "p99_abs_kappa_per_m": 2332310.401781681,
+          "kappa_max_index": 29,
+          "max_abs_dkappa_ds_per_m2": 652880063733749.8,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 2333028.842601012,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 297462093050817.2,
+          "curvature_edge_tied": true,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18201379.72034171,
+          "p95_abs_kappa_per_m": 7545206.459903681,
+          "p99_abs_kappa_per_m": 11753674.432917474,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1559597827395528e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 7781877.886903735,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 449254684807928.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    },
+    {
+      "q_over_b": 0.8,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18122830.68076674,
+          "p95_abs_kappa_per_m": 9707531.842122482,
+          "p99_abs_kappa_per_m": 11960055.89643976,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1552270194395006e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 10599465.8955883,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 957347131947706.2,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 2178663.209937064,
+          "p95_abs_kappa_per_m": 1775427.672700921,
+          "p99_abs_kappa_per_m": 2098016.1024898347,
+          "kappa_max_index": 24,
+          "max_abs_dkappa_ds_per_m2": 1031492499751987.8,
+          "dkappa_max_index": 24,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 2178663.209937064,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 1031492499751987.8,
+          "curvature_edge_tied": true,
+          "gradient_edge_tied": true
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 2182691.585843104,
+          "p95_abs_kappa_per_m": 1778785.0262176327,
+          "p99_abs_kappa_per_m": 2101910.273918009,
+          "kappa_max_index": 41,
+          "max_abs_dkappa_ds_per_m2": 1032947649887505.2,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 932426.5800468244,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 217828461027452.38,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18185801.45814248,
+          "p95_abs_kappa_per_m": 7595160.270046057,
+          "p99_abs_kappa_per_m": 11782433.276176075,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1558312698913058e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8063179.269184253,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 510167542923860.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    }
+  ],
+  "within_event_analog_screen": [],
+  "established_criterion": "three completed events, not within-event snapshots",
+  "qualification_decision": "PENDING physical profile review"
+}

@@ -1,0 +1,12 @@
+{
+  "source": "runs/three_particle_production_065/forced_left_extended_fast_budget/checkpoint.npz",
+  "q": 0.4400000000000002,
+  "native_steps": 100,
+  "duration_s": 1.9007057450941859e-06,
+  "fields_Linf": 1.3895884443115847e-09,
+  "LEFT_stress_difference_Pa": 0.6973842326551676,
+  "partition_closure": 1.1102230246251565e-16,
+  "relative_mass_difference": -2.220446049250313e-16,
+  "wall_s": 4.20020362501964,
+  "passed": true
+}

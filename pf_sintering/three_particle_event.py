@@ -5,7 +5,7 @@ surface evolution may change it through f; ownership relaxation acts only on
 the selected pair. No extra rigid displacement or stress correction is added.
 """
 import numpy as np
-from numba import njit
+from numba import njit,prange
 from .current_state_mass_transfer import bounded_conservative_transfer
 from .corrected_interfacial_energy import _axisym_gate_derivative_of_weighted_gradient
 
@@ -29,9 +29,23 @@ def pair_transfer(state,receiver_mask,donor_mask,*,pair,**kwargs):
     # On pure inactive cells the active source is identically zero.
     pure=u==0.;out[a][pure]=eta[a][pure];out[b][pure]=eta[b][pure]
     if np.max(abs(out.sum(axis=0)-fn))>5e-15:raise RuntimeError('three-grain source closure')
-    diag.update(inactive_grain=inactive,inactive_eta_bitwise_preserved=np.array_equal(out[inactive],eta[inactive]),
+    diag.update(ownership_rule='preserve inactive eta and within-pair ownership; active pair closes to f minus inactive eta',
+                inactive_grain=inactive,inactive_eta_bitwise_preserved=np.array_equal(out[inactive],eta[inactive]),
                 partition_closure=float(np.max(abs(out.sum(axis=0)-fn))))
     return (fn,*out),diag
+
+
+def normalized_pair_ownership(state,fallback,pair):
+    """Use one active ownership as the simplex complement, as in binary PF.
+
+    Independent division of all three eta fields permits roundoff closure error
+    to accumulate through repeated fast steps. Inactive phi and the first active
+    phi are retained; the second active phi closes their sum. f is untouched.
+    """
+    f=state[0];a,b=pair;inactive=3-a-b
+    phi=np.divide(np.array(state[1:]),f[None],out=fallback.copy(),where=abs(f[None])>1e-30)
+    phi[b]=1.-phi[inactive]-phi[a]
+    return phi
 
 
 def ownership_pair_step_reference(phi,f,op,pair,dt,M_eta):
@@ -50,10 +64,10 @@ def ownership_pair_step_reference(phi,f,op,pair,dt,M_eta):
     return out
 
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def _pair_phi_kernel(phi,f,a,b,dt,M_eta,Wc,k_eta,dr,dz,rc,rf):
     out=phi.copy();nz,nr=f.shape
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             v=min(1.,max(0.,f[j,i]));d=phi[a,j,i]-phi[b,j,i]
             jm=0.;jp=0.;zm=0.;zp=0.
@@ -74,10 +88,10 @@ def ownership_pair_step(phi,f,op,pair,dt,M_eta):
     return _pair_phi_kernel(phi,f,*pair,dt,M_eta,op.Wc,op.k_eta,g['dr'],g['dz'],g['r_c'],g['r_f'])
 
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def _gb_density(phi,Wc,k_eta,dr,dz,rc,rf):
     nz,nr=phi.shape[1:];out=np.empty((nz,nr))
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             value=Wc*((phi[0,j,i]*phi[1,j,i]+phi[0,j,i]*phi[2,j,i])+phi[1,j,i]*phi[2,j,i])
             for k in range(3):

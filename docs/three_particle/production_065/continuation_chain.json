@@ -1,0 +1,30 @@
+{
+  "event_label": "FORCED_EVENT_FOR_MECHANICAL_QUALIFICATION",
+  "stochastic_root_thresholds_drawn": false,
+  "physical_state_reinitialized": false,
+  "stages": [
+    {
+      "run": "forced_left",
+      "status": "retired reference after bitwise overlap at q=0.275",
+      "active_source_replayed": false
+    },
+    {
+      "run": "forced_left_compiled",
+      "status": "stopped at q=0.4075: 60-block fast budget; original output preserved",
+      "max_fast_blocks": 60
+    },
+    {
+      "run": "forced_left_extended_fast_budget",
+      "status": "exact checkpoint pause at q=0.46 to avoid repeatedly rejected doubled increments",
+      "max_fast_blocks": 240,
+      "ownership_simplex_complement": true
+    },
+    {
+      "run": "forced_left_fine_increment",
+      "status": "running same event from q=0.46",
+      "max_fast_blocks": 240,
+      "maximum_q_increment_over_b": 0.005,
+      "ownership_simplex_complement": true
+    }
+  ]
+}

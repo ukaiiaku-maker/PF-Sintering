@@ -4,7 +4,7 @@ Not a barrier, energy or continuum mobility change. The original arithmetic
 face-field quadrature remains the default production/native implementation.
 """
 import numpy as np
-from numba import njit
+from numba import njit,prange
 from .three_particle_implicit import ImplicitSurfaceDiffusion
 from .axisym_numba_kernel import flux_kernel,div_and_update_kernel
 
@@ -13,10 +13,10 @@ def harmonic(a,b):
     return np.divide(2*a*b,a+b,out=np.zeros_like(a+b),where=(a+b)>0)
 
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def _rescale_faces(f,jr,jz):
     nz,nr=f.shape
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             a=f[j,i];qa=a*a*(1-a)**2
             if i<nr-1:

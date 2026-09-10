@@ -1,0 +1,17 @@
+{
+  "label": "OFF_TRAJECTORY_REFLECTION_REGRESSION",
+  "source": "runs/three_particle_production_065/forced_left_fine_increment/checkpoint.npz",
+  "source_q": 0.5050000000000002,
+  "increment_over_b": 0.0025,
+  "left_completed": true,
+  "right_completed": true,
+  "field_Linf_by_component": [
+    5.551115123125783e-16,
+    3.226331024518437e-15,
+    3.219646771412954e-15,
+    2.0539125955565396e-15
+  ],
+  "relative_clock_difference": 2.020605904817785e-14,
+  "wall_s": 28.575945999997202,
+  "passed": true
+}

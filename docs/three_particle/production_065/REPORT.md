@@ -125,3 +125,63 @@ PF evolution retains the active-pair ownership flow; after extinction the new
 ownership is pinned. Production seed 20260910 was declared before any production
 threshold draw. The launch guard was exercised and correctly refused to start.
 Mechanical, descendant and complete renewal qualification are still pending.
+
+## First mechanical stop and continuing numerical audit
+
+The original 60-block fast-relaxation budget stops the forced event at
+q/b = 0.4075 (0.0427644 physical seconds). LEFT stress drops from 17.1508 to
+13.0855 MPa and chain strain is +4.61587e-5. This is **not** a completed one-b
+qualification. Material error is -9.88e-15 and topology remains valid, but
+independently reconstructed ownership develops 1.68754e-14 pointwise closure
+error, above the 5e-15 closure target. The unmodified stopped output and its
+[figure](forced_event.pdf) are preserved.
+
+A discarded copy of the rejected minimum increment meets exactly the original
+fast convergence tolerances at block 61. This identifies an iteration-budget
+limit, not demonstrated physical nonconvergence. Reconstructing one active
+ownership as the complement of the other active and inactive fractions prevents
+roundoff drift, matching the binary simplex construction. f is untouched and
+inactive eta remains unchanged by the source. A 2,000-step roundtrip test passes;
+the actual rejected increment now closes to 1.11e-16, still converges at block
+61, and changes local stress by only -1.12e-7 Pa relative to the original audit.
+
+The same event continues from its exact checkpoint with a 240-block computational
+ceiling and a finer 0.005b maximum increment. Convergence tolerances, physical
+coefficients, field guard, source construction and accumulated physical event
+clock are retained. The finer ceiling reduces rejected doubled trials; near q/b=0.8 the adaptive solver accepts 0.0025b and still rejects attempted 0.005b trials.
+See continuation_chain.json. This continuation is still pending completion.
+
+Actual-field reflection of an accepted 0.0025b increment agrees to 3.3e-15 in
+material fields and 2.1e-14 relatively in its physical clock. Active-source PF
+window evolution agrees with 100 native steps to 1.39e-9 in fields and 0.70 Pa
+in LEFT stress. The three-grain topology interval now uses both actual boundary
+coordinates, including asymmetric states; its translation-invariance test passes.
+Curvature monitoring can use the two measured field TJ positions.
+
+The fast implicit-flow prototype fails its native event overlap and is not
+promoted. A separate storage-only native optimization preserves block count,
+fields to 3.9e-15 and the physical clock to 3.3e-14; the ongoing reference event
+still uses the original native path. The four-thread test is slower than one
+thread and is not selected. All these are numerical tests on discarded copies.
+
+## Distinguish reload and event energetics/volume changes
+
+At the stopped q/b=0.4075 checkpoint the center gains 0.00865% volume during the
+event, despite positive chain strain. Its tracked PF energy increases 0.03456%.
+These observations must not be conflated with the energy-decreasing,
+center-shrinking no-sink reload. The corresponding archived *qualified bicrystal*
+current-state events also increase tracked PF energy, by about 0.00051–0.00169%.
+See bicrystal_event_energy_audit.json with original source hashes. The prescribed
+current-state event source is not a guaranteed descent direction of the tracked
+PF functional. No new activation work or barrier correction is introduced to
+change that observation.
+
+The requested volume-loss/strain correlation remains a question to test across
+the complete renewal trajectory, not a conclusion inferred from a partial
+forced stress drop. Descendant qualification and genuine stochastic production
+remain gated on a completed, audited one-b event.
+
+At the follow-up audit milestone, 62 focused regressions pass. The forced event
+has passed q/b=0.8 but is still running. Both descendants and genuine Phase B
+remain disabled; the descendant launch guard was exercised and refused entry.
+No production random thresholds have been drawn.

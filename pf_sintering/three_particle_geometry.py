@@ -113,7 +113,7 @@ def topology_status(f,g):
     width=g['config'].width
     span=float(g['gb'][1]-g['gb'][0])
     center_radius=(3*grain_volumes(f,g)[1]/(4*np.pi))**(1/3)
-    center_rows=np.abs(g['z'])<g['gb'][1]-2*width
+    center_rows=(g['z']>g['gb'][0]+2*width)&(g['z']<g['gb'][1]-2*width)
     radius=np.sqrt(np.maximum(0,2*np.sum(f*g['r_c'][None,:],axis=1)*g['dr']))
     minimum=float(np.min(radius[center_rows])) if np.any(center_rows) else 0.0
     reasons=[]
