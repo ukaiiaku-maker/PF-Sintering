@@ -1,0 +1,12 @@
+[
+  {
+    "script": "scripts/three_particle_renewal_run.py",
+    "refused_before_launch": true,
+    "reason": "Phase B DISABLED"
+  },
+  {
+    "script": "scripts/three_particle_forced_descendants.py",
+    "refused_before_launch": true,
+    "reason": "completed one-b mechanical qualification required"
+  }
+]

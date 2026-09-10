@@ -16,9 +16,11 @@ activation. See [current numerical and event audit](production_065/REPORT.md)
 and the historical [screen](production_screen/REPORT.md).
 
 The numerical field-bound repair passes a 30-second no-sink reload with
-0.986% center-volume loss; forced event qualification is in progress.
+0.986% center-volume loss. A forced LEFT one-b event completes and passes its
+single-event mechanical review; conditional descendant qualification is running.
 The original 1e-8 field guard remains active; accepted f is never clipped.
-Stochastic Phase B remains disabled until the reload and event gates pass.
+Stochastic Phase B remains disabled until the remaining descendant and
+repeated-event morphology gates pass.
 Historical qualification statements below describe their own studies.
 
 ```text

@@ -1,0 +1,29 @@
+{
+  "label": "OFF_TRAJECTORY_CACHED_IMPLICIT_FAST_PROBE",
+  "source": "runs/three_particle_production_065/forced_left_minimum_increment/watch_q0.800000.npz",
+  "completed": false,
+  "stop_reason": "current-state transfer failed at minimum step",
+  "stop_detail": "['fast implicit probe timestep floor']",
+  "wall_s": 17.13225191598758,
+  "fields_Linf_to_native": 0.00029194307488455973,
+  "sigma_difference_to_native_Pa": 29107.357283712365,
+  "event_info": {
+    "completed": false,
+    "event_progress_over_b": 0.0,
+    "event_progress_m": 0.0,
+    "event_time_model": 0.0,
+    "packets": [],
+    "stop_reason": "current-state transfer failed at minimum step",
+    "stop_detail": "['fast implicit probe timestep floor']",
+    "branch_time_integrator": "current-state conservative material-transfer continuation",
+    "explicit_max_fourth_order_courant": null
+  },
+  "production_promoted": false,
+  "relative_clock_difference_to_native": -1.0,
+  "native_overlap_limits": {
+    "fields_Linf": 2e-05,
+    "local_stress_Pa": 5000,
+    "relative_clock": 0.001
+  },
+  "native_overlap_pass": false
+}

@@ -81,3 +81,18 @@ def test_reused_large_step_preconditioner_does_not_change_solved_equation():
     fresh=ImplicitSurfaceDiffusion(op).step(f,.12)
     np.testing.assert_allclose(cached,fresh,atol=2e-11,rtol=0)
     assert abs(np.sum((cached-f)*op.g['r_c']))<1e-21
+
+
+@pytest.mark.parametrize('harmonic_faces', [False, True])
+def test_optional_small_step_cache_retains_current_operator_and_mass(harmonic_faces):
+    from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusion
+    f,op,_=fixture(mirror=True)
+    f=.2+.001*(f-np.mean(f))
+    cls=HarmonicSurfaceDiffusion if harmonic_faces else ImplicitSurfaceDiffusion
+    cached_solver=cls(op,reuse_small_step_preconditioner=True)
+    first=cached_solver.step(f,.001);factor=cached_solver._preconditioner
+    cached=cached_solver.step(first,.0012)
+    assert cached_solver._preconditioner is factor
+    fresh=cls(op).step(first,.0012)
+    np.testing.assert_allclose(cached,fresh,atol=2e-11,rtol=0)
+    assert abs(np.sum((cached-first)*op.g['r_c']))<1e-21

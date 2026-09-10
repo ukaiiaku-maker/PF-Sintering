@@ -6,8 +6,11 @@ from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusio
 from pf_sintering.three_particle_event import ownership_pair_step
 
 
-def advance_source_window(fields,seconds,g,pair,rule):
-    local=ContactEvent(dict(g),pair);local.bind(fields);solver=HarmonicSurfaceDiffusion(local.op)
+# Exact facilitated-window crossing tolerance in pr_avalanche_renewal_five.py.
+DESCENDANT_CROSSING_TOLERANCE_S=1e-12
+
+def advance_source_window(fields,seconds,g,pair,rule,*,reuse_small_step_preconditioner=False):
+    local=ContactEvent(dict(g),pair);local.bind(fields);solver=HarmonicSurfaceDiffusion(local.op,reuse_small_step_preconditioner=reuse_small_step_preconditioner)
     current=tuple(x.copy() for x in fields);elapsed=0.;h=seconds
     while elapsed<seconds-1e-14:
         h=min(h,seconds-elapsed);local.bind(current)

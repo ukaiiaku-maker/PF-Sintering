@@ -25,3 +25,13 @@ def test_right_can_fire_first_and_no_crossing_preserves_rng():
     assert result[-1]=='RIGHT';assert abs(result[1]-.1)<1e-7
     state=clocks.snapshot();inc=clocks.increments({'LEFT':1.,'RIGHT':1.},{'LEFT':1.,'RIGHT':1.},.01)
     clocks.commit(inc);assert clocks.rng.bit_generator.state==state['rng']
+
+
+def test_microsecond_descendant_crossing_resolves_to_picosecond_tolerance():
+    clocks=RootClocks(np.random.default_rng(71));clocks.threshold={'LEFT':.73,'RIGHT':100.}
+    initial=np.array([0.]);rate=2e5;slope=1e4
+    field,t,increment,contact=locate_first_root(initial,.0004,lambda f,dt:f+dt,
+        lambda f:{'LEFT':rate*(1+slope*float(f[0])),'RIGHT':0.},clocks,1e-12)
+    exact=(np.sqrt(1+2*slope*.73/rate)-1)/slope
+    assert contact=='LEFT' and 0 <= t-exact <= 1e-12
+    np.testing.assert_array_equal(initial,[0.]);np.testing.assert_allclose(field,[t],rtol=0,atol=0)

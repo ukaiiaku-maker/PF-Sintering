@@ -14,8 +14,9 @@ from .axisym_numba_kernel import flux_kernel, div_and_update_kernel
 
 
 class ImplicitSurfaceDiffusion:
-    def __init__(self, op):
+    def __init__(self, op, *, reuse_small_step_preconditioner=False):
         self.op = op
+        self.reuse_small_step_preconditioner = bool(reuse_small_step_preconditioner)
         self._preconditioner = None
         self._preconditioner_h = 0.
         self._preconditioner_field = None
@@ -78,7 +79,7 @@ class ImplicitSurfaceDiffusion:
         rhs=h*(A@mu.ravel())
         # Dropping is ONLY in the preconditioner; the solved operator retains
         # every native coefficient, including arbitrarily small mobilities.
-        reuse=(h>.05 and self._preconditioner is not None
+        reuse=((h>.05 or self.reuse_small_step_preconditioner) and self._preconditioner is not None
                and .3<h/self._preconditioner_h<3.
                and np.max(np.abs(f-self._preconditioner_field))<.005)
         for attempt in range(2):
@@ -87,7 +88,7 @@ class ImplicitSurfaceDiffusion:
             else:
                 pre=lhs.copy(); pre.data[np.abs(pre.data)<1e-7]=0; pre.eliminate_zeros()
                 lu=splu(pre) if h>.05 else spilu(pre,drop_tol=1e-3,fill_factor=15)
-                if h>.05:
+                if h>.05 or self.reuse_small_step_preconditioner:
                     self._preconditioner=lu;self._preconditioner_h=h
                     self._preconditioner_field=f.copy()
             d,info=gmres(lhs,rhs,M=LinearOperator(lhs.shape,lu.solve),

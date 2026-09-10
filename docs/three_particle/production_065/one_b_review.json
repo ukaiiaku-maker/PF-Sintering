@@ -1,0 +1,21 @@
+{
+  "one_b_qualified": true,
+  "qualification_scope": "single forced mechanical event; repeated-event morphology remains a descendant-study gate",
+  "final_checkpoint": "runs/three_particle_production_065/forced_left_minimum_increment/final.npz",
+  "final_checkpoint_sha256": "949a4eab494beaf16f1f0fd5ac8e3b94e91e417d5559aeacf4a3e11b6a7074ad",
+  "reviewed_at_utc": "2026-09-10T22:11:19.651062+00:00",
+  "scalar_gates": {
+    "completed_one_b": true,
+    "positive_chain_strain": true,
+    "active_local_stress_drop": true,
+    "finite_positive_physical_clock": true,
+    "conserved_material": true,
+    "partition_closure": true,
+    "field_guard": true,
+    "topology": true
+  },
+  "within_event_warning_retained": true,
+  "morphology_assessment": "Bounded smooth profiles and healthy topology. The q=0.9 analogue flag is a maximum at the first sample outside 3W, with no unmasked local gradient peak within 0.75W of 3W through q=1. It does not establish a mask-edge spike. Retain the original three-completed-event monitor in the conditional descendant study; no monitor threshold is changed.",
+  "phase_b_enabled": false,
+  "stochastic_result": false
+}

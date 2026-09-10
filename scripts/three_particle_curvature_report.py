@@ -50,7 +50,7 @@ def main():
     flagged=[]
     for branch in rows[0]['watch']:
         history=[dict(avalanche_id=1,artifact_flag=0,**r['watch'][branch]) for r in rows];apply_progressive_flags(history)
-        flagged.extend(dict(branch=branch,q_over_b=r['q_over_b'],reason=h['artifact_reason']) for r,h in zip(rows,history) if h['artifact_flag'])
+        flagged.extend(dict(branch=branch,q_over_b=r['q_over_b'],reason='Within-event analogue: '+h['artifact_reason'].replace('three-event','three-snapshot')) for r,h in zip(rows,history) if h['artifact_flag'])
     report=dict(source_run=str(run),snapshots=rows,within_event_analog_screen=flagged,
         established_criterion='three completed events, not within-event snapshots',qualification_decision='PENDING physical profile review')
     (D/'forced_curvature_profiles.json').write_text(json.dumps(report,indent=2)+'\n');np.savez_compressed(run/'curvature_profiles.npz',**payload)

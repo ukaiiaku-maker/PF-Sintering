@@ -1,5 +1,5 @@
 {
-  "source_run": "runs/three_particle_production_065/forced_left_fine_increment",
+  "source_run": "runs/three_particle_production_065/forced_left_minimum_increment",
   "snapshots": [
     {
       "q_over_b": 0.0,
@@ -265,9 +265,121 @@
           "gradient_edge_tied": false
         }
       }
+    },
+    {
+      "q_over_b": 0.8999999999999979,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18117595.325837705,
+          "p95_abs_kappa_per_m": 9880768.272731045,
+          "p99_abs_kappa_per_m": 11959713.650264649,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1552012810429076e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 10772731.696539082,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 1320751854729697.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 2354063.084503712,
+          "p95_abs_kappa_per_m": 1830461.8379035797,
+          "p99_abs_kappa_per_m": 2249342.8351836847,
+          "kappa_max_index": 24,
+          "max_abs_dkappa_ds_per_m2": 1283259176528146.0,
+          "dkappa_max_index": 24,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 2354063.084503712,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 1283259176528146.0,
+          "curvature_edge_tied": true,
+          "gradient_edge_tied": true
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 2367453.7722995575,
+          "p95_abs_kappa_per_m": 1842670.6111226664,
+          "p99_abs_kappa_per_m": 2262497.1400641785,
+          "kappa_max_index": 41,
+          "max_abs_dkappa_ds_per_m2": 1285924220686414.8,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 665489.5676406249,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 198410070563619.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18169418.048274763,
+          "p95_abs_kappa_per_m": 7631435.878960639,
+          "p99_abs_kappa_per_m": 11812767.830712149,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1556984586242086e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8366389.5605845945,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 555800422402637.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
+    },
+    {
+      "q_over_b": 0.9999999999999959,
+      "watch": {
+        "LEFT_-1": {
+          "max_abs_kappa_per_m": 18116951.74191337,
+          "p95_abs_kappa_per_m": 10055183.033486253,
+          "p99_abs_kappa_per_m": 11959756.982326297,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1552229471782408e+16,
+          "dkappa_max_index": 459,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 10914617.7076084,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 1505830379211363.2,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "LEFT_+1": {
+          "max_abs_kappa_per_m": 2577474.972473101,
+          "p95_abs_kappa_per_m": 1972700.3191283564,
+          "p99_abs_kappa_per_m": 2456520.041804151,
+          "kappa_max_index": 24,
+          "max_abs_dkappa_ds_per_m2": 1451157009952856.8,
+          "dkappa_max_index": 24,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 2577474.972473101,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 1451157009952856.8,
+          "curvature_edge_tied": true,
+          "gradient_edge_tied": true
+        },
+        "RIGHT_-1": {
+          "max_abs_kappa_per_m": 2588078.984929616,
+          "p95_abs_kappa_per_m": 1982992.2019377453,
+          "p99_abs_kappa_per_m": 2467061.6283312407,
+          "kappa_max_index": 41,
+          "max_abs_dkappa_ds_per_m2": 1451863567659332.2,
+          "dkappa_max_index": 41,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 1849330.6095149787,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 245469504620663.5,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        },
+        "RIGHT_+1": {
+          "max_abs_kappa_per_m": 18152230.724735133,
+          "p95_abs_kappa_per_m": 7648150.423764028,
+          "p99_abs_kappa_per_m": 11844674.935842505,
+          "kappa_max_index": 462,
+          "max_abs_dkappa_ds_per_m2": 1.1555613506081218e+16,
+          "dkappa_max_index": 465,
+          "max_abs_kappa_within_1W_of_mask_edge_per_m": 8678940.400868144,
+          "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 589902740868447.0,
+          "curvature_edge_tied": false,
+          "gradient_edge_tied": false
+        }
+      }
     }
   ],
-  "within_event_analog_screen": [],
+  "within_event_analog_screen": [
+    {
+      "branch": "LEFT_+1",
+      "q_over_b": 0.8999999999999979,
+      "reason": "Within-event analogue: three-snapshot monotone >50% curvature/gradient growth tied within 0.75W of a transfer-mask edge"
+    }
+  ],
   "established_criterion": "three completed events, not within-event snapshots",
   "qualification_decision": "PENDING physical profile review"
 }

@@ -19,9 +19,9 @@ class ImplicitFastProbe(ContactEvent):
             try:
                 fn,error=advance(current[0],h,solver,rule,field_tol=2e-7)
                 if error>1:raise RuntimeError('fast implicit embedded error')
-            except (RuntimeError,FloatingPointError):
+            except (RuntimeError,FloatingPointError) as error:
                 h*=.5
-                if h<self.dt:raise RuntimeError('fast implicit probe timestep floor')
+                if h<self.dt:raise RuntimeError('fast implicit probe timestep floor: '+str(error))
                 continue
             phi=ownership_pair_step(self.g['ownership'],fn,self.op,self.pair,h,1.0937500000000001e-25)
             current=(fn,*(phi*fn[None]));native_equivalent+=h/self.dt;macro_steps+=1

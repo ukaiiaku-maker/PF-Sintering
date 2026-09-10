@@ -1,6 +1,6 @@
 """Report completed or stopped forced mechanical qualification without relabeling it stochastic."""
 from pathlib import Path
-import sys,json,argparse
+import sys,json,argparse,hashlib
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
 import numpy as np
 import matplotlib
@@ -44,6 +44,13 @@ def main():
         material_relative_error=after['total_volume_m3']/before['total_volume_m3']-1,
         inactive_source_isolation='bitwise unit regression; total inactive eta may change through physical f evolution',
         sparse_morphology=audits,one_b_scalar_gates_pass=all(gates.values()),one_b_qualified=False,phase_b_enabled=False)
+    review_path=D/'one_b_review.json'
+    if review_path.exists():
+        review=json.loads(review_path.read_text())
+        if review.get('final_checkpoint')==str(out/'final.npz') and review.get('final_checkpoint_sha256')==hashlib.sha256((out/'final.npz').read_bytes()).hexdigest():
+            report['one_b_qualified']=bool(report['one_b_scalar_gates_pass'] and review.get('one_b_qualified'))
+            report['qualification_review']=review_path.name
+            report['qualification_scope']=review['qualification_scope']
     (D/(args.prefix+'_summary.json')).write_text(json.dumps(report,indent=2,default=float)+'\n')
     packets=result['packets'];q=np.r_[0.,[p['q_end_over_b'] for p in packets]]
     fig,axes=plt.subplots(2,3,figsize=(13,7));ax=axes.ravel()

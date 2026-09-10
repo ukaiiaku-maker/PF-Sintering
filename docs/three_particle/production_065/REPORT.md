@@ -1,4 +1,21 @@
-# Selected 0.65 production qualification — reload passed, event pending
+# Selected 0.65 qualification — reload and one-b mechanics passed; descendants pending
+
+The selected 0.65 no-sink reload passes 30 physical seconds. The forced LEFT
+one-b mechanical test now completes in 0.121635 s, with chain strain +0.009925%,
+LEFT stress 17.151 -> 5.263 MPa, RIGHT stress 17.906 MPa, relative material error
+-6.07e-14, unchanged field bounds and a resolved 32.769 nm center span.
+Center volume grows 0.02942% during this event and tracked PF energy rises
+0.14036%; neither should be conflated with the shrinking, energy-decreasing
+no-sink reload. See [completed-event figure](forced_completed_event.pdf).
+
+The checkpoint-hashed [one-b review](one_b_review.json) qualifies this single
+mechanical event for the prescribed conditional descendant study. The retained
+q=0.9 within-event warning is a restricted-domain maximum, not an observed
+unmasked local peak at the mask edge. The original three-completed-event monitor
+remains active. Conditional descendants are running with seed 20260911;
+**genuine stochastic Phase B remains DISABLED** until their qualification.
+The predeclared genuine-root seed 20260910 has not been drawn.
+
 
 Rc/Ro = 0.65, Ro = 119.999 nm, W = 4 nm, dr = 0.5 nm and the aligned
 dz are fixed. The original CMC mapping, 200-step cleanup, surface and GB
@@ -124,7 +141,7 @@ transit and resume only after completion, as in the live bicrystal. Source-windo
 PF evolution retains the active-pair ownership flow; after extinction the new
 ownership is pinned. Production seed 20260910 was declared before any production
 threshold draw. The launch guard was exercised and correctly refused to start.
-Mechanical, descendant and complete renewal qualification are still pending.
+Single-event mechanical qualification has since passed; descendant and complete renewal qualification remain pending.
 
 ## First mechanical stop and continuing numerical audit
 
@@ -149,7 +166,7 @@ The same event continues from its exact checkpoint with a 240-block computationa
 ceiling and a finer 0.005b maximum increment. Convergence tolerances, physical
 coefficients, field guard, source construction and accumulated physical event
 clock are retained. The finer ceiling reduces rejected doubled trials; near q/b=0.8 the adaptive solver accepts 0.0025b and still rejects attempted 0.005b trials.
-See continuation_chain.json. This continuation is still pending completion.
+See continuation_chain.json and the completed checkpoint-hashed one-b review.
 
 Actual-field reflection of an accepted 0.0025b increment agrees to 3.3e-15 in
 material fields and 2.1e-14 relatively in its physical clock. Active-source PF
@@ -185,3 +202,64 @@ At the follow-up audit milestone, 62 focused regressions pass. The forced event
 has passed q/b=0.8 but is still running. Both descendants and genuine Phase B
 remain disabled; the descendant launch guard was exercised and refused entry.
 No production random thresholds have been drawn.
+
+The late increment audit at q/b=0.8 advances 0.0025b using one, two and four
+subincrements, with the original fast convergence tolerances. All complete.
+Field differences to the finest result decrease from 2.44e-6 to 1.35e-6;
+local-stress differences decrease from 1.85 kPa to 0.521 kPa. The coarse
+physical-clock difference is 0.00126%. This is a local refinement result,
+not a full-one-b convergence claim. See event_increment_refinement.json.
+
+## Late-event morphology review and source-window audit
+
+At q/b=0.9 the LEFT center-side watch raises a **within-event analogue** of
+its progressive-growth flag: gradients at q/b=0.7, 0.8 and 0.9 are
+6.54, 10.31 and 12.83e14/m2 and their restricted maxima lie near 3W.
+This is not the established three-completed-event test. The unmasked profile
+contains no local absolute-gradient peak within 0.75W of 3W; the flagged maximum
+is the first sample outside the TJ exclusion. Thus the flag alone cannot
+separate a transfer-mask artifact from a broad TJ-core tail in this short,
+two-contact center. The warning is retained, not automatically cleared.
+See forced_curvature_profiles.pdf and mask_edge_detail.pdf/json.
+
+A discarded q/b=0.8 field evolved for a full 9 ms without another source
+increment raises LEFT stress from 7.469 to 9.259 MPa. Its chain strain recovers
+by 1.9163e-5, center volume increases 0.01030%, and tracked PF energy decreases
+0.02850%. This is an off-trajectory numerical window audit, not a completed
+root/descendant or a sampled avalanche. It demonstrates why immediate-event
+strain and subsequent window relaxation must be recorded separately.
+
+Optional small-step preconditioner reuse retains the full current-field
+linear operator, the original residual limits and conservative flux update.
+Its two new equation/conservation regressions pass; the complete focused suite
+now has 64 passing tests. The full 9 ms cached result agrees with its uncached reference to 1.61e-15 in fields.
+The optional cache is enabled only in the still-gated descendant/renewal
+source-window drivers; solver defaults and the ongoing native event are unchanged.
+
+The cached implicit-fast prototype still stops at its timestep floor. A variant
+with 50 native startup steps completes its test increment, but differs from
+the native reference by 2.99e-5 in fields, exceeding the previously declared
+2e-5 overlap limit. Neither prototype is promoted. Their original negative
+results, inputs and outputs are preserved separately.
+
+The full 9 ms window partition audit completes with one, two and four outer
+partitions. Fields agree within 4.22e-6 and LEFT stress within 62 Pa; these
+are adaptive solves at the same error tolerances, not a fixed-step order test.
+All retain the unchanged field guard and roundoff-level conservation/closure.
+
+## Completed native performance and clock audits
+
+The buffered native implementation preserves the exact stencil formulas and
+checks after each ten-step block. At the retained q/b=0.8 increment it agrees
+with native fields to 3.14e-15, has identical local stress and the same 126
+blocks, and agrees in physical clock to 3.38e-14 relatively. Its nontrivial
+ownership-flow regression preserves the inactive fraction exactly. It is
+selected for the conditional descendant study; no physical coefficient or
+convergence tolerance changes.
+
+Before the first descendant draw, the launch audit aligned the new source
+window with the existing bicrystal's 1e-12 s crossing tolerance and 0.025
+model-time hazard subinterval. Root crossing keeps its separate original
+1e-4 model-time tolerance. A microsecond-crossing regression passes; all 66
+focused tests pass. The first conditional descendant threshold is drawn once
+from the predeclared seed and is not selected by its firing time.

@@ -21,10 +21,30 @@
     },
     {
       "run": "forced_left_fine_increment",
-      "status": "running same event from q=0.46",
+      "status": "exact checkpoint pause at q=0.82 to avoid repeatedly rejected 0.005b trials",
       "max_fast_blocks": 240,
       "maximum_q_increment_over_b": 0.005,
       "ownership_simplex_complement": true
+    },
+    {
+      "run": "forced_left_minimum_increment",
+      "status": "completed q/b=1 with original physical parameters and convergence tolerances",
+      "max_fast_blocks": 240,
+      "maximum_q_increment_over_b": 0.0025,
+      "ownership_simplex_complement": true
     }
-  ]
+  ],
+  "minimum_increment_continuation": {
+    "parent": "runs/three_particle_production_065/forced_left_fine_increment/checkpoint.npz",
+    "parent_sha256": "95cccfe122b143e2d2cb6e7108d07fdab32ce332864f6a7454f638a3b275aa92",
+    "run": "runs/three_particle_production_065/forced_left_minimum_increment",
+    "max_increment_over_b": 0.0025,
+    "max_fast_blocks": 240,
+    "reason": "0.005b doubled trials repeatedly exhaust 240 blocks; 0.0025b trials pass the unchanged tolerances",
+    "same_physical_event": true,
+    "physical_parameters_changed": false,
+    "source_process_intentionally_paused": true
+  },
+  "completed_one_b": true,
+  "event_duration_s": 0.12163465714678343
 }

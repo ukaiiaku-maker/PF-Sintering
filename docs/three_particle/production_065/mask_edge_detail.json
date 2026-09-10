@@ -1,0 +1,93 @@
+{
+  "rows": [
+    {
+      "q_over_b": 0.6000000000000003,
+      "masked_gradient_max_distance_W": 3.791324426595956,
+      "masked_max_is_first_valid_sample": false,
+      "unmasked_local_gradient_peaks_distance_W": [
+        1.4300804487386631,
+        3.791324426595956,
+        5.406883013518249,
+        6.525117612402656
+      ],
+      "unmasked_gradient_local_peaks_within_075W_of_3W": 0,
+      "absolute_gradient_at_distances_225_3_375W": [
+        1956544387082888.8,
+        238098718988834.25,
+        437423318019230.06
+      ],
+      "note": "A boundary maximum alone does not distinguish a mask artifact from a smooth TJ-core tail; the original warning remains retained."
+    },
+    {
+      "q_over_b": 0.7000000000000004,
+      "masked_gradient_max_distance_W": 3.0454981662799834,
+      "masked_max_is_first_valid_sample": true,
+      "unmasked_local_gradient_peaks_distance_W": [
+        1.5545258998469336,
+        3.9154875031187384,
+        5.282833404759793,
+        6.401620455914324
+      ],
+      "unmasked_gradient_local_peaks_within_075W_of_3W": 0,
+      "absolute_gradient_at_distances_225_3_375W": [
+        2234276714974133.0,
+        735409637146644.4,
+        198083768466918.06
+      ],
+      "note": "A boundary maximum alone does not distinguish a mask artifact from a smooth TJ-core tail; the original warning remains retained."
+    },
+    {
+      "q_over_b": 0.8,
+      "masked_gradient_max_distance_W": 3.04608211253417,
+      "masked_max_is_first_valid_sample": true,
+      "unmasked_local_gradient_peaks_distance_W": [
+        1.6793149925651634,
+        4.164880333449649,
+        5.15975487195508,
+        6.40361675984621
+      ],
+      "unmasked_gradient_local_peaks_within_075W_of_3W": 0,
+      "absolute_gradient_at_distances_225_3_375W": [
+        2516808573825242.5,
+        1087425646609006.0,
+        37002032280646.445
+      ],
+      "note": "A boundary maximum alone does not distinguish a mask artifact from a smooth TJ-core tail; the original warning remains retained."
+    },
+    {
+      "q_over_b": 0.8999999999999979,
+      "masked_gradient_max_distance_W": 3.0466953238588714,
+      "masked_max_is_first_valid_sample": true,
+      "unmasked_local_gradient_peaks_distance_W": [
+        1.6798412440771202,
+        4.912121003633201,
+        6.281080428196996
+      ],
+      "unmasked_gradient_local_peaks_within_075W_of_3W": 0,
+      "absolute_gradient_at_distances_225_3_375W": [
+        2734868735132848.5,
+        1320229256758476.0,
+        274947071315403.06
+      ],
+      "note": "A boundary maximum alone does not distinguish a mask artifact from a smooth TJ-core tail; the original warning remains retained."
+    },
+    {
+      "q_over_b": 0.9999999999999959,
+      "masked_gradient_max_distance_W": 3.0465030599515086,
+      "masked_max_is_first_valid_sample": true,
+      "unmasked_local_gradient_peaks_distance_W": [
+        1.6799330927869305,
+        4.911880665454243,
+        6.281156683155466
+      ],
+      "unmasked_gradient_local_peaks_within_075W_of_3W": 0,
+      "absolute_gradient_at_distances_225_3_375W": [
+        2923179923748135.0,
+        1478335488022666.2,
+        524873928110462.06
+      ],
+      "note": "A boundary maximum alone does not distinguish a mask artifact from a smooth TJ-core tail; the original warning remains retained."
+    }
+  ],
+  "clears_original_flag": false
+}

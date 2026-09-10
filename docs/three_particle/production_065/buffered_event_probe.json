@@ -1,0 +1,13 @@
+{
+  "label": "OFF_TRAJECTORY_BUFFERED_NATIVE_EVENT",
+  "source": "runs/three_particle_production_065/forced_left_minimum_increment/watch_q0.800000.npz",
+  "completed": true,
+  "stop_reason": null,
+  "wall_s": 20.96731475001434,
+  "fields_Linf_to_native": 3.1363800445660672e-15,
+  "sigma_difference_to_native_Pa": 0.0,
+  "relative_clock_difference": 3.375077994860476e-14,
+  "native_blocks": 126,
+  "production_promoted": false,
+  "native_overlap_pass": true
+}

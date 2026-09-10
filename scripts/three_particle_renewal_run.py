@@ -9,7 +9,8 @@ sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolv
 import numpy as np
 from three_particle_forced_event import ContactEvent,MANIFEST
 from three_particle_implicit_run import advance
-from three_particle_source_window import advance_source_window
+from three_particle_source_window import advance_source_window,DESCENDANT_CROSSING_TOLERANCE_S
+from three_particle_buffered_event_probe import BufferedContactEvent
 from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
 from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusion
 from pf_sintering.three_particle_contacts import evaluate_contacts
@@ -32,6 +33,7 @@ def require_qualification():
 
 def main():
     gate=require_qualification()
+    event_class=BufferedContactEvent if gate.get('event_engine')=='buffered_native' else ContactEvent
     out=Path('runs/three_particle_production_065/stochastic_seed20260910');out.mkdir(exist_ok=False)
     c,o=compatible_chain(.65,119.999e-9);g=map_to_pf(c,o,4e-9,.5e-9)
     source=Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/post_transient.npz')
@@ -104,7 +106,7 @@ def main():
             if contact is None:continue
             avalanche.start(avalanche_id=clocks.avalanche_id,root_cycle=clocks.avalanche_id,start_time_s=t)
             while avalanche.state.avalanche_active:
-                event_number+=1;avalanche.begin_transit();pair=(0,1) if contact=='LEFT' else (1,2);event=ContactEvent(g,pair,max_fast_blocks=gate.get('event_max_fast_blocks',60))
+                event_number+=1;avalanche.begin_transit();pair=(0,1) if contact=='LEFT' else (1,2);event=event_class(g,pair,max_fast_blocks=gate.get('event_max_fast_blocks',60))
                 event_start_t=t
                 zero=event.run(state,maximum_accepted_states=0)
                 save_event_checkpoint(out/f'event_{event_number}_q0.npz',state,zero[5]['event_restart'],contact=contact,label='GENUINE_STOCHASTIC_EVENT')
@@ -122,7 +124,7 @@ def main():
                 # through its 9 ms window, localizing any child in the full field.
                 window_end=avalanche.state.window_deadline_s
                 while t<window_end-1e-14:
-                    step=min(.001,window_end-t)
+                    step=min(MANIFEST['passive_hazard_quadrature_dt_model']*MANIFEST['seconds_per_model_time'],window_end-t)
                     def child_rates(fields):
                         reference.bind(fields)
                         cc=evaluate_contacts(fields[0],op,MANIFEST)[contact]
@@ -131,8 +133,8 @@ def main():
                     # A temporary clock performs field bisection without drawing RNG.
                     probe=RootClocks.__new__(RootClocks);probe.active=None;probe.hazard={'LEFT':avalanche.state.descendant_hazard,'RIGHT':0.};probe.threshold={'LEFT':avalanche.state.descendant_threshold,'RIGHT':float('inf')}
                     def window_advance(fields,seconds):
-                        return advance_source_window(fields,seconds,g,pair,rule)
-                    evolved,elapsed,increment,child=locate_first_root(state,step,window_advance,child_rates,probe,MANIFEST['passive_crossing_tolerance_model']*MANIFEST['seconds_per_model_time'])
+                        return advance_source_window(fields,seconds,g,pair,rule,reuse_small_step_preconditioner=True)
+                    evolved,elapsed,increment,child=locate_first_root(state,step,window_advance,child_rates,probe,DESCENDANT_CROSSING_TOLERANCE_S)
                     t+=elapsed;state=tuple(evolved);reference.bind(state)
                     if child:avalanche.commit_crossing(crossing_time_s=t)
                     else:
