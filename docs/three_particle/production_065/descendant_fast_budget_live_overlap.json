@@ -1,0 +1,15 @@
+{
+  "label": "AUDITED_FAST_BUDGET_LIVE_OVERLAP",
+  "q_over_b": 0.4250000000000003,
+  "fields_bitwise_equal": true,
+  "field_Linf": 0.0,
+  "local_event_clock_bitwise_equal": true,
+  "rng_unchanged": true,
+  "controller_unchanged": true,
+  "retained_rejection_counts": {
+    "fast_manifold": 1
+  },
+  "live_fast_ceiling": 512,
+  "audit_fast_ceiling": 1024,
+  "original_failed_ceiling": 240
+}

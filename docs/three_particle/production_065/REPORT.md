@@ -340,3 +340,38 @@ and relative event-clock differences are 1.13e-8 and 3.77e-9. This is strong
 local timestep agreement. It does not test refinement of the morphology
 already accumulated before the checkpoint, nor qualify a complete event.
 See native_timestep_audit.json and the retained input/output fields.
+
+The active-restart precision audit additionally finds a one-ULP
+(1.39e-17 s) global event-origin offset from subtracting the saved local
+event time from the global checkpoint time. The local event clock, RNG
+and prior history are preserved, but the reconstructed global origin is
+not bitwise identical. Future active restores use the unique saved source
+crossing timestamp directly and validate it against the checkpoint clock.
+The existing offset is far below the unchanged 1e-12 s crossing tolerance.
+
+## First descendant: retained 240-block failure and audited continuation
+
+At q/b=0.4225 the next 0.0025b trial fails the 240-block fast-relaxation
+ceiling and rolls back. Its rejection reason is fast_manifold; no field,
+mass, ownership or topology guard fails. The complete stopped history,
+controller/RNG and restart fields are retained under
+forced_descendant_family/fast_budget_240_stop.
+
+A discarded-copy retry from that exact failed checkpoint converges at
+block 241 with every original convergence tolerance unchanged. The audit
+then intentionally hits a one-accepted-increment cap at q/b=0.425; that
+cap is not a failed trial or a completed one-b event. The production
+continuation ceiling is raised to 512 blocks, which does not affect a
+trial that already converges earlier. The 0.0025b increment, field guard,
+physical coefficients, source law and stochastic parameters are unchanged.
+The live event resumes from the rolled-back checkpoint, not from the
+discarded audit output. Its original threshold and source crossing remain
+in force; the failed trial and rejection count remain in provenance.
+Phase B is still disabled. See descendant_fast_budget_audit.json.
+
+The live retry with the 512-block ceiling reaches q/b=0.425 and matches
+the discarded 1024-ceiling audit bit-for-bit in fields and local event
+clock. The original controller and RNG state are unchanged, and the
+fast_manifold rejection remains recorded. The continuation uses the saved
+source crossing directly for its global clock origin. See
+descendant_fast_budget_live_overlap.json.

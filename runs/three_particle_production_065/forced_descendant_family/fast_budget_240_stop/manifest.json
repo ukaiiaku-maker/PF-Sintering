@@ -1,0 +1,33 @@
+{
+  "label": "FAILED_FAST_BUDGET_240_AT_Q_0.4225",
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/event_2.npz",
+      "sha256": "ba6ac960e7296241bbca031e71a026ffc4b0d7a3c56cae22a47ba5c63b34f346"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/event_2_final.npz",
+      "sha256": "63ad22c6b53c0db79bdf3840647defa2e90441869299fa4a757d152383fa43e9"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/family.npz",
+      "sha256": "df5cc7698078178795f17b591c4542fdd9c3a2a91d5d02f28e789c4b93510d13"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/history.json",
+      "sha256": "eb1724f286c0c79c56d2f91e7a4a7583aa5e026dec3c9f3e67ee44603f3ae1f6"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/launch.json",
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/report.json",
+      "sha256": "b1eb6859481b54d8addbb11e3aa75fbe7a1ab1349ee4c598afecea9f708aee30"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/resume_log.json",
+      "sha256": "f5779e8d5d4b0084f4b3ae353b6c7afe185e0608aa4060cec076cbb0c785d011"
+    }
+  ]
+}

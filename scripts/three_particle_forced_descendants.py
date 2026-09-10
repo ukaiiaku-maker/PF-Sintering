@@ -19,7 +19,8 @@ D=Path('docs/three_particle/production_065');DESCENDANT_SEED=20260911
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--root-checkpoint',type=Path,required=True);ap.add_argument('--out-name',default='forced_descendant_family');ap.add_argument('--resume-active',action='store_true');args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--root-checkpoint',type=Path,required=True);ap.add_argument('--out-name',default='forced_descendant_family');ap.add_argument('--resume-active',action='store_true');ap.add_argument('--resume-computational-stop',action='store_true');args=ap.parse_args()
+    args.resume_active=args.resume_active or args.resume_computational_stop
     gate=json.loads((D/'qualification.json').read_text())
     if not gate.get('reload_qualified') or not gate.get('one_b_qualified'):raise RuntimeError('completed one-b mechanical qualification required')
     event_class=BufferedContactEvent if gate.get('event_engine')=='buffered_native' else ContactEvent
@@ -38,9 +39,17 @@ def main():
         with np.load(out/'family.npz') as data:
             saved=json.loads(str(data['metadata']));state=tuple(data['fields'].copy());g['gb']=data['gb'].copy()
         records=json.loads((out/'history.json').read_text())
-        if records[-1]['phase']!='ACTIVE_ONE_B':raise ValueError('resume-active requires an accepted active-event checkpoint')
+        expected_phase='ONE_B_FAILED' if args.resume_computational_stop else 'ACTIVE_ONE_B'
+        if records[-1]['phase']!=expected_phase:raise ValueError('resume requires the matching accepted checkpoint phase')
         event_number=saved['event_number'];t=saved['t_s']
-        fields,pending_restart,active_contact,active_label=load_event_checkpoint(out/f'event_{event_number}.npz')
+        checkpoint=out/(f'event_{event_number}_final.npz' if args.resume_computational_stop else f'event_{event_number}.npz')
+        fields,pending_restart,active_contact,active_label=load_event_checkpoint(checkpoint)
+        if args.resume_computational_stop:
+            audit=json.loads((D/'descendant_fast_budget_audit.json').read_text())
+            if pending_restart['last_rejection_reasons']!=['fast_manifold']:raise ValueError('only audited fast-budget stops may resume here')
+            if audit['source_sha256']!=hashlib.sha256(checkpoint.read_bytes()).hexdigest():raise ValueError('fast-budget audit checkpoint mismatch')
+            if audit['accepted_increments']!=1 or not audit['unchanged_convergence_tolerances']:raise ValueError('retry must pass the original tolerances')
+            if gate['event_max_fast_blocks']<audit['packet']['fast_relax_blocks']:raise ValueError('insufficient audited computational budget')
         if active_contact!='LEFT' or active_label!='DESCENDANT_AFTER_FORCED_ROOT':raise ValueError('wrong active checkpoint identity')
         if any(not np.array_equal(a,b) for a,b in zip(state,fields)):raise ValueError('family/event checkpoint mismatch')
         if records[-1]['time_since_forced_root_s']!=t:raise ValueError('history/checkpoint clock mismatch')
@@ -54,7 +63,8 @@ def main():
         completed_watches=[r['curvature'] for r in records if r['phase'] in ['FORCED_ROOT_COMPLETE','ONE_B_COMPLETE']]
         log=out/'resume_log.json';entries=json.loads(log.read_text()) if log.exists() else []
         entries.append(dict(event_number=event_number,q_over_b=records[-1]['q_over_b'],time_s=t,
-            checkpoint_sha256=hashlib.sha256((out/f'event_{event_number}.npz').read_bytes()).hexdigest(),
+            checkpoint_sha256=hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+            resume_computational_stop=args.resume_computational_stop,event_max_fast_blocks=gate['event_max_fast_blocks'],
             controller=saved['controller'],rng=saved['rng'],thresholds_redrawn=False,accepted_source_replayed=False))
         log.write_text(json.dumps(entries,indent=2)+'\n')
     else:
@@ -87,6 +97,8 @@ def main():
         (out/'launch.json').write_text(json.dumps(dict(label='DESCENDANT_QUALIFICATION_AFTER_FORCED_ROOT',seed=DESCENDANT_SEED,root_checkpoint=str(args.root_checkpoint),
             root_thresholds_drawn=False,qualification=gate,descendant_crossing_tolerance_s=DESCENDANT_CROSSING_TOLERANCE_S,descendant_parameters=controller.manifest(),physical_parameters_changed=False),indent=2)+'\n')
         record('FORCED_ROOT_COMPLETE',1.);save()
+    else:
+        record('ACTIVE_EVENT_RESUMED',pending_restart['cumulative_q_m']/MANIFEST['b_event_m']);save()
     try:
         while controller.state.avalanche_active:
             if pending_restart is None:
@@ -111,7 +123,11 @@ def main():
                 save_event_checkpoint(out/f'event_{event_number}_q0.npz',state,zero[5]['event_restart'],contact='LEFT',label='DESCENDANT_AFTER_FORCED_ROOT')
             else:
                 event=event_class(g,max_fast_blocks=gate.get('event_max_fast_blocks',240))
-                event_start=t-pending_restart['event_time_model']*MANIFEST['seconds_per_model_time']
+                crossings=[r for r in records if r['phase']=='CHILD_CROSSING' and r['event_number']==event_number-1]
+                if len(crossings)!=1:raise ValueError('active restart requires its unique saved source crossing')
+                event_start=crossings[0]['time_since_forced_root_s']
+                reconstructed=event_start+pending_restart['event_time_model']*MANIFEST['seconds_per_model_time']
+                if abs(reconstructed-t)>64*np.spacing(max(abs(t),1.)):raise ValueError('active event origin disagrees with saved clock')
             def progress(packet,fields,event_restart):
                 nonlocal state,t
                 state=fields;t=event_start+event_restart['event_time_model']*MANIFEST['seconds_per_model_time']
@@ -122,12 +138,12 @@ def main():
             result=event.run(state,restart=pending_restart,callback=progress,maximum_step_over_b=dq,initial_step_over_b=dq);pending_restart=None;state=result[:4];info=result[5];t=event_start+info['event_time_model']*MANIFEST['seconds_per_model_time']
             save_event_checkpoint(out/f'event_{event_number}_final.npz',state,info['event_restart'],contact='LEFT',label='DESCENDANT_AFTER_FORCED_ROOT')
             record('ONE_B_COMPLETE' if result[4] else 'ONE_B_FAILED',info['event_progress_over_b']);save()
-            if not result[4]:raise RuntimeError(info['stop_reason'])
+            if not result[4]:raise RuntimeError(str(info['stop_reason'])+': '+str(info.get('stop_detail')))
             controller.complete_transit(t)
             record('SOURCE_WINDOW_OPEN');save()
         cc=evaluate_contacts(state[0],reference.op,MANIFEST);g['gb']=np.array([cc[k]['z_TJ_m'] for k in ['LEFT','RIGHT']]);record('AVALANCHE_EXTINCT_REPINNED');status='FORCED_FAMILY_COMPLETE'
     except (RuntimeError,ValueError,FloatingPointError) as error:status='STOPPED: '+str(error)
-    save();report=dict(status=status,descendants_completed=controller.state.S_completed-1,controller=controller.manifest(),wall_s=time.perf_counter()-wall,
+    save();report=dict(status=status,descendants_completed=controller.state.S_completed-1,descendants_with_complete_quota=sum(r['phase']=='ONE_B_COMPLETE' for r in records),controller=controller.manifest(),wall_s=time.perf_counter()-wall,wall_time_includes_previous_launches=False,
         duration_s=t,stochastic_root_result=False,source=str(args.root_checkpoint),final=records[-1])
     (D/(args.out_name+'.json')).write_text(json.dumps(report,indent=2,default=float)+'\n');print(status,flush=True)
 if __name__=='__main__':main()

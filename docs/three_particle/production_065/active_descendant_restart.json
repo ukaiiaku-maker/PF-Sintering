@@ -14,5 +14,9 @@
   "code_sha256": {
     "scripts/three_particle_forced_descendants.py": "87bcfa20580e76c9c521bdab78e1abedaffe4000474b23fe8a2470a116cde18b",
     "pf_sintering/production_mass_transfer_event.py": "4fae1407db2ad4c38ce68d8e3a82cdef0f22e025d715d4f5e0ad6eb7ef3c88b8"
-  }
+  },
+  "global_event_origin_reconstruction_offset_s": 1.3877787807814457e-17,
+  "global_event_origin_bitwise_equal": false,
+  "local_event_clock_preserved": true,
+  "global_origin_note": "The live restart reconstructed the global origin by subtraction, introducing one ULP. Future restores use the unique saved CHILD_CROSSING timestamp directly; the existing offset is far below the unchanged 1e-12 s crossing tolerance."
 }

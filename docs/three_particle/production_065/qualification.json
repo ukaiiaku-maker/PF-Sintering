@@ -6,7 +6,7 @@
   "reason": "30 s reload and a complete forced one-b mechanical event pass; conditional descendants and repeated-event morphology are the remaining Phase B gates",
   "predeclared_production_seed": 20260910,
   "event_engine": "buffered_native",
-  "event_max_fast_blocks": 240,
+  "event_max_fast_blocks": 512,
   "event_max_increment_over_b": 0.0025,
   "one_b_review": "one_b_review.json",
   "event_overlap_report": "buffered_event_probe.json",
@@ -14,5 +14,6 @@
   "descendant_crossing_tolerance_s": 1e-12,
   "predeclared_descendant_seed": 20260911,
   "root_quadrature_qualified": true,
-  "root_macro_step_s": 0.2
+  "root_macro_step_s": 0.2,
+  "descendant_fast_budget_audit": "descendant_fast_budget_audit.json"
 }

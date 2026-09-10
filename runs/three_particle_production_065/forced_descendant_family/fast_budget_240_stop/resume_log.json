@@ -1,0 +1,68 @@
+[
+  {
+    "event_number": 2,
+    "q_over_b": 0.20250000000000012,
+    "time_s": 0.15297994089889888,
+    "checkpoint_sha256": "3b7a07e12478506e914f3b771969e8c168eadc3fa7e7566d75c028e3d2fcecff",
+    "controller": {
+      "state": {
+        "avalanche_active": true,
+        "avalanche_id": 1,
+        "root_cycle": 1,
+        "child_number": 1,
+        "S_completed": 1,
+        "q_avalanche_over_b": 1.0,
+        "descendant_threshold": 1.6748647310883076,
+        "descendant_hazard": 1.6748647310883076,
+        "pending_children": 0,
+        "delta_G_step_eV": 1.5,
+        "source_amplitude": 1.0,
+        "facilitation_decay_alpha": 0.7,
+        "avalanche_start_time_s": 0.0,
+        "last_child_completion_time_s": 0.12163465714678343,
+        "window_start_time_s": 0.12163465714678343,
+        "window_deadline_s": 0.13063465714678343,
+        "window_triggered": true,
+        "descendant_total_hazard": 1.6748647310883076,
+        "thresholds_drawn": [
+          1.6748647310883076
+        ]
+      },
+      "descendant_barrier": {
+        "root_G0_eV": 5.3646516047156325,
+        "root_Gfloor_eV": 2.9476002588459194,
+        "floor_fraction": 0.549448589775135,
+        "a": 0.9682214719449614,
+        "sigma_hat_Pa": 1697232928.2808514,
+        "n": 0.46101864227254197,
+        "delta_G_step_eV": 1.5,
+        "envelope": "max(root_G_floor, root_G_star(sigma) - delta_G_step); fixed and non-additive"
+      },
+      "temperature_K": 1830.15,
+      "attempt_frequency_per_s": 1000000000000.0,
+      "b_m": 2.5e-10,
+      "correlation_time_s": 0.009,
+      "crossings": [
+        {
+          "avalanche_id": 1,
+          "committed_child_index": 2,
+          "crossing_time_s": 0.12164236986502897,
+          "source": "facilitated_source_window",
+          "crossed_threshold": 1.6748647310883076,
+          "pending_children_after": 0
+        }
+      ]
+    },
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 171921648456880923849348372865529981970,
+        "inc": 160378821636518163781755759234662531153
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    },
+    "thresholds_redrawn": false,
+    "accepted_source_replayed": false
+  }
+]
