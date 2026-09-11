@@ -1,0 +1,21 @@
+{
+  "status": "RUNNING",
+  "snapshot_time_s": 76.07812618815916,
+  "center_loss_fraction": 0.01375446659055779,
+  "source_run": "runs/three_particle_volume_loading_065_cached",
+  "events_enabled": false,
+  "phase_b_enabled": false,
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "field_min": -1.3748789310120962e-108,
+  "field_max": 1.0,
+  "maximum_mass_error": 2.220446049250313e-15,
+  "maximum_mirror_error": 9.964110595048637e-09,
+  "energy_monotone": true,
+  "files": {
+    "loss_1pct.npz": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798",
+    "checkpoint.npz": "55732754c897d64be0e12329f9ae823d2ceafd2fb0ba805f6b94d8aea56d85c7",
+    "report.json": "8e12332baaf8a7789b05607d8a62a003af27af7eeb21398844f40fa46b51998f",
+    "launch.json": "6a30b435f90369a23b99ca3d7bffd991ec988fadb426ac095e6f9d023004fb44"
+  }
+}

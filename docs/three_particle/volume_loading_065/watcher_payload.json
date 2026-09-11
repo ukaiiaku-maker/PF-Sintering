@@ -1,0 +1,21 @@
+{
+  "files": {
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loss_1pct.npz": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/checkpoint.npz": "55732754c897d64be0e12329f9ae823d2ceafd2fb0ba805f6b94d8aea56d85c7",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/report.json": "8e12332baaf8a7789b05607d8a62a003af27af7eeb21398844f40fa46b51998f",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_diagnostics.pdf": "fbaed27eecc3db06970fac04b8989e6f5b2b42f2d492cbe176b51416ac07a2a3",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_decomposition.pdf": "2ea7bd59540c6cd8a631086dca4c2521c574060519ec6707e138885ae4c0a39d",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_decomposition.png": "e7d696033a2c10a85e5d9b814192221f1ebbc4749d730eb162211b18e9ff6e91",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_diagnostics.png": "845993c4ceef58d99bf2d4a5345fe19911f6047728769da7496c2d618459137b",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_vs_volume.png": "77782b9b5e3a131947328c7709d148ae58cd0a488ee9cf624007463f503fc7ec",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/loading_vs_volume.pdf": "55014e7ba4d47b71f98aca353a77be54c5802ba5f6f568a505d03e4f1cb423b8",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/analysis.json": "ebd3a507593ee5b9bc2eae3390e9eb068dabc3572645deeb47f940b1100a1ee2",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/verification.json": "66abba042c16356ac729f75d263140dc3eca9f2667b4d287b7283ff9027f8c01",
+    "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/launch.json": "6a30b435f90369a23b99ca3d7bffd991ec988fadb426ac095e6f9d023004fb44",
+    "docs/three_particle/volume_loading_065/loading_profiles.npz": "e08ea74bee352e51319774d71d9a1fc3194bfc537e2e794c2bb58c28a99385c3",
+    "docs/three_particle/volume_loading_065/loading_profiles.pdf": "e007c2aca01fd45d16c75d801b4943163b2d59e05b81b7d53e7119be490ad295",
+    "docs/three_particle/volume_loading_065/loading_profiles.png": "dd8da9aaf5ea95042ac66b51d85a5d2161259ebeefaa5fc08a1a17df3db0a539",
+    "docs/three_particle/volume_loading_065/loading_profiles_sources.json": "01b52ac9755aeb2fd5eccc705bd84a2ff1e10011eb7e5ec091ad8c48a6ffd8d1"
+  },
+  "live_checkpoint_excluded": true
+}

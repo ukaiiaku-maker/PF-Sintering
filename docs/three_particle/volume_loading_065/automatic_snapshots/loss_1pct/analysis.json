@@ -384,5 +384,5 @@
     "mirror_error": 1.1098222341132669e-10,
     "two_contact_wait_s": 9.527626542589346
   },
-  "decision": "INCOMPLETE: trajectory running; no A/B decision"
+  "decision": "Pending trajectory completion and physical review"
 }

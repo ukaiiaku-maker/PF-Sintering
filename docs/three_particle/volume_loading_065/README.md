@@ -172,3 +172,35 @@ separate vertical scales, for loss >=0.1%, to expose small changes without any
 activation correction. Candidate checkpoint diagnostics use a backward 0.05
 percentage-point window and report the actual stress slope and loss/time slope.
 Passing that descriptive loading screen does not qualify stochastic production.
+
+
+## Long-running milestone watcher
+
+The events-off extension remains INCOMPLETE; no A/B decision or production
+initial-state selection has been made. The unchanged adaptive field tolerance
+can require small steps during internal PF relaxation, so physical-time
+progress is uneven. Runtime is not used as the scientific stopping criterion.
+
+scripts/three_particle_volume_loading_watch.py watches the cached lineage,
+without signaling it or modifying any live state. It checks checkpoint/report
+coherence, preserves immutable milestone/final snapshots, verifies the accepted
+history's bounds, material conservation, reflection and energy descent, and
+regenerates all requested figures and candidate tables. It never launches
+stochastic events or commits/pushes results. Snapshot directories are keyed by
+the latest observed milestone; checkpoint.npz is the actual state when the
+watcher captured the report, while loss_Npct.npz is the exact retained milestone.
+The first watch snapshot was taken later than 1%: 76.078126188 s and
+1.375446659% loss. Its loss_1pct.npz remains the original ~1% field at 31.08377129 s.
+The actual snapshot time/loss and hashes are explicit in verification.json.
+
+loading_profiles shows actual surface profiles from four retained fields,
+30–76 s. Its signed curvature follows the existing arc-length monitor's branch
+orientation; it is a separate profile diagnostic, NOT a replacement for the
+bicrystal fitted one-sided curvature used in the activation stress. No new
+passive morphology failure is inferred from these profiles. The requested
+stress decomposition and root rates continue to use the original measurements.
+
+Until the running trajectory reaches its declared endpoint, the only retained
+requested milestone is 1%; 2, 3, 5, 7.5 and 10% have not yet been reached.
+Future automatically generated snapshots are local study outputs awaiting
+review and a subsequent experimental-branch preservation commit.

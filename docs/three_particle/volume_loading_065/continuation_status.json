@@ -1,0 +1,28 @@
+{
+  "verified_utc": "2026-09-11T04:18:27.815216+00:00",
+  "study_status": "INCOMPLETE_RUNNING",
+  "live_run": "runs/three_particle_volume_loading_065_cached",
+  "physical_time_s": 82.92487581401262,
+  "center_loss_fraction": 0.014136319132823538,
+  "sigma_LEFT_Pa": 18271160.33208444,
+  "sigma_RIGHT_Pa": 18271160.3320828,
+  "two_contact_wait_s": 9.52045033093392,
+  "saved_milestones": [
+    0.01
+  ],
+  "tests_passed": 21,
+  "production_HEAD": "0023db8509df151622ae94fec140e714b967ef31",
+  "production_tracked_diff_sha256": "ae7ec5aa058325a6f93dbf04308f60c573637422a13f2270861b7d7dddd99a2c",
+  "production_worktree_unchanged": true,
+  "production_worker_alive": true,
+  "production_monitor_alive": true,
+  "processes": "46790 Ts   /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/three_particle_forced_descendants.py --root-checkpoint runs/three_particle_production_065/forced_left_minimum_increment/final.npz --resume-computational-stop\n46880 Ss   /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/three_particle_family_watch.py --run runs/three_particle_production_065/forced_descendant_family\n67698 Rs   /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/three_particle_volume_loading.py --out runs/three_particle_volume_loading_065_cached --source runs/three_particle_volume_loading_065_full_jacobian/checkpoint.npz --history-source runs/three_particle_volume_loading_065_full_jacobian/report.json --full-jacobian --max-step-model 32 --reuse-preconditioner\n68843 Ss   /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/three_particle_volume_loading_watch.py --run runs/three_particle_volume_loading_065_cached\n49267 Rs+  /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/pr_large_avalanche_resume13_alpha0p70_enospc.py\n49324 Ss+  /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/monitor_current_state_transfer_curvature.py --campaign-root runs/pr_large_avalanche_current_state_transfer_event2_onset_v1 --out runs/pr_large_avalanche_current_state_transfer_artifact_monitor --watch --poll-seconds 60\n",
+  "forced_descendant_payload_unchanged": true,
+  "phase_b_enabled": false,
+  "events_enabled": false,
+  "thresholds_drawn": false,
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "scientific_decision": "Pending additional volume-loss support",
+  "plots_are_immutable_snapshot_at_loss_fraction": 0.01375446659055779
+}
