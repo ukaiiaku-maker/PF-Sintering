@@ -1,0 +1,7 @@
+{
+  "status": "SUPERSEDED_BY_QUALIFIED_FULL_JACOBIAN_RESTART",
+  "checkpoint_sha256": "d19f79ebbfccb304da4428ffbc8b4eb37aec12d3c89466e331f6ddca0905a025",
+  "report_sha256": "d2ca6f8cda03c8253b156b161a593e96560e0b5a3c78e0d14e3af9ec5381e598",
+  "time_s": 57.4841285095524,
+  "events_enabled": false
+}

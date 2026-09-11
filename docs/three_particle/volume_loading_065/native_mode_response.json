@@ -1,0 +1,26 @@
+{
+  "source_sha256": "0c2236ed86288b8a4831be2e59475c23997aa2a4d68bafca238965a4555bcfb6",
+  "rows": [
+    {
+      "epsilon": 1e-08,
+      "native_RHS_rayleigh_per_model_time": -3.822963787950708,
+      "response_norm_rate_per_model_time": 5.304752938387356,
+      "alignment": -0.720667641330887
+    },
+    {
+      "epsilon": 1e-09,
+      "native_RHS_rayleigh_per_model_time": -3.828923815415263,
+      "response_norm_rate_per_model_time": 5.3185154999492505,
+      "alignment": -0.7199234101041538
+    },
+    {
+      "epsilon": 1e-10,
+      "native_RHS_rayleigh_per_model_time": -3.8289828424852352,
+      "response_norm_rate_per_model_time": 6.205596719261506,
+      "alignment": -0.617020895122057
+    }
+  ],
+  "frozen_AH_rayleigh_per_model_time": -0.2340793128616253,
+  "no_accepted_fields_changed": true,
+  "no_symmetry_projection": true
+}

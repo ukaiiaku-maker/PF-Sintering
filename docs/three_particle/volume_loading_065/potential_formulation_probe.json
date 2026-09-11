@@ -1,0 +1,78 @@
+{
+  "source_sha256": "0c2236ed86288b8a4831be2e59475c23997aa2a4d68bafca238965a4555bcfb6",
+  "rows": [
+    {
+      "h_model": 20.0,
+      "status": "COMPUTED_DISCARDED",
+      "embedded_error": 0.033363949425435635,
+      "mirror_error": 9.099074792659955e-07,
+      "field_change": 0.0002390485128830333,
+      "energy_relative_change": -6.593836664459118e-07,
+      "solves": [
+        {
+          "info": 0,
+          "residual": 5.838864310021531e-11
+        },
+        {
+          "info": 0,
+          "residual": 2.9764753408387876e-11
+        },
+        {
+          "info": 0,
+          "residual": 2.993446528605864e-11
+        }
+      ],
+      "wall_s": 9.908533000038005
+    },
+    {
+      "h_model": 10.0,
+      "status": "COMPUTED_DISCARDED",
+      "embedded_error": 0.00915773802576689,
+      "mirror_error": 4.800625738396328e-07,
+      "field_change": 0.00011964770756223153,
+      "energy_relative_change": -3.3012968858603386e-07,
+      "solves": [
+        {
+          "info": 0,
+          "residual": 2.9764753408387876e-11
+        },
+        {
+          "info": 0,
+          "residual": 1.499449780334811e-11
+        },
+        {
+          "info": 0,
+          "residual": 1.5153485535312114e-11
+        }
+      ],
+      "wall_s": 9.315845249977428
+    },
+    {
+      "h_model": 5.0,
+      "status": "COMPUTED_DISCARDED",
+      "embedded_error": 0.003386094996059329,
+      "mirror_error": 2.046458556580579e-07,
+      "field_change": 5.985401468067142e-05,
+      "energy_relative_change": -1.6517277268146557e-07,
+      "solves": [
+        {
+          "info": 0,
+          "residual": 1.499449780334811e-11
+        },
+        {
+          "info": 0,
+          "residual": 7.636400241069e-12
+        },
+        {
+          "info": 0,
+          "residual": 7.580631359232359e-12
+        }
+      ],
+      "wall_s": 8.863410582998767
+    }
+  ],
+  "linear_rtol": 1e-09,
+  "identity": "(I-h H A) mu_eff = mu; f_new = f + h A mu_eff",
+  "physical_operator_unchanged": true,
+  "discarded_copies_only": true
+}

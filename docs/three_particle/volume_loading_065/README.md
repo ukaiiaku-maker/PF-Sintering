@@ -87,3 +87,60 @@ checkpoint at 49.042395826 s is retained in guard_recovery_check. At least one t
 was rejected by the unchanged reflection guard and smaller time steps restored
 symmetry within that bound. This is numerical continuation evidence, not a
 plateau or a production-start selection.
+
+
+## Full native-flux Jacobian continuation
+
+The guarded frozen-mobility lineage remained within every accepted-state bound,
+but needed increasingly small time steps in the dilute exterior tail. It was
+superseded at 57.4841285095524 s and 1.25344213910603% center loss. Its complete
+accepted history and exact field remain in the guarded run; handoff.json hashes
+the coherent checkpoint/report. Its RUNNING report is the original snapshot;
+the handoff records that this worker was retired. No failed trial was inserted.
+
+At the separately preserved 54.501293839 s accepted state, stricter linear
+solves stalled, and an algebraically equivalent potential formulation retained
+the same reflection amplification. Those discarded tests are not promoted.
+The linear-accuracy audit uses restart=80/maxiter=6 for every tolerance, whereas
+the original solver uses restart=40/maxiter=3. The potential probe's --strict
+flag reproduces its separate 1e-11 tolerance experiment.
+
+For the observed odd mode, the native finite-difference instantaneous response
+converges to a Rayleigh quotient near -3.82898 per model time. The frozen A H
+approximation gives only -0.23408. The full flux derivative includes the
+mobility and tangential-projector derivatives and gives -3.82898421. This is
+local mode-response evidence, not a global eigenvalue or stability proof.
+Whole-field finite differences in the dilute tail are limited by nonlinearity
+and roundoff; the independent moderate-field regression verifies second-order
+finite-difference convergence of the complete derivative.
+
+The opt-in FullJacobianSurfaceDiffusion solves (I-h F'(f)) delta = h F(f)
+and applies the increment through the common-face conservative native flux.
+It changes the implicit numerical linearization, not F, the mobility law,
+energy, grid, or physical parameters. It retains the established Richardson
+estimate, linear tolerances, and original invariant/energy acceptance guards.
+There is no clipping, reflection projection, fitted correction, or state replay.
+
+A 64-model-time refinement failed its coarsest linear solve. That failure is
+preserved in full_jacobian_refinement.json; its failed-row field is the input,
+so differences involving that row are not equal-time convergence evidence.
+The ceiling was NOT promoted. A separate 32-model-time audit, with 1/2/4
+partitions and the same predeclared limits, passed. Coarse-to-finest field
+error is 2.08450e-6 (bound 2e-5), contact stress difference 0.654981 Pa
+(bound 5000 Pa), and relative grain-volume difference 1.37427e-10
+(bound 1e-5). Refinement reduces field error to 2.42783e-7. Every completed
+step passes embedded-error, energy, reflection, and mass checks. This is local
+qualification; the live trajectory still checks every trial and may reduce h.
+
+The active lineage is runs/three_particle_volume_loading_065_full_jacobian.
+Its launch requires the passing audit, records source/audit/solver hashes, and
+uses ceiling 32 model time with an initial trial of 20. It restarts the exact
+accepted guarded handoff, retaining the earlier accepted history and 1%
+milestone. All audit outputs are discarded copies, never trajectory states.
+The focused loading/contact/mobility/implicit/full-Jacobian suite passes 20 tests.
+
+The volume-loading decision remains pending. PF-native stationary null: NOT
+YET FOUND. Phase A: NOT FULLY QUALIFIED. Phase B: DISABLED. Unequal 0.70 case
+and field guard: unchanged. No clipping. No fitted correction. An instantaneous
+scalar cancellation dot(V_center)=0 does not imply the full-field F(f)=0.
+The separate conditional-descendant morphology gate remains not qualified.

@@ -1,0 +1,44 @@
+{
+  "source_sha256": "0c2236ed86288b8a4831be2e59475c23997aa2a4d68bafca238965a4555bcfb6",
+  "rows": [
+    {
+      "h_model": 20.0,
+      "status": "FAILED",
+      "reason": "potential linear solve",
+      "solves": [
+        {
+          "info": 6,
+          "residual": 5.926885583050548e-11
+        }
+      ],
+      "wall_s": 9.23527008399833
+    },
+    {
+      "h_model": 10.0,
+      "status": "FAILED",
+      "reason": "potential linear solve",
+      "solves": [
+        {
+          "info": 6,
+          "residual": 2.9672142432882376e-11
+        }
+      ],
+      "wall_s": 9.182067708054092
+    },
+    {
+      "h_model": 5.0,
+      "status": "FAILED",
+      "reason": "potential linear solve",
+      "solves": [
+        {
+          "info": 6,
+          "residual": 1.4839964568972897e-11
+        }
+      ],
+      "wall_s": 8.822338292025961
+    }
+  ],
+  "identity": "(I-h H A) mu_eff = mu; f_new = f + h A mu_eff",
+  "physical_operator_unchanged": true,
+  "discarded_copies_only": true
+}
