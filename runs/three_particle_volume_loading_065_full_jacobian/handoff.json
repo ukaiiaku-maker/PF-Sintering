@@ -1,0 +1,7 @@
+{
+  "status": "SUPERSEDED_BY_PRECONDITIONER_REUSE_RESTART",
+  "checkpoint_sha256": "d3c13a3bdd240da34875a719bf0fa382aeda76bcb9bd403e36c1bdbab690b879",
+  "report_sha256": "215f627573937680a2b1871de9f20b4a2084604ba382dd29a7e34a56eec13ecf",
+  "time_s": 60.95841147437546,
+  "events_enabled": false
+}

@@ -1,0 +1,60 @@
+{
+  "time_s": 59.33251648557748,
+  "rows": [
+    {
+      "h": 32.0,
+      "status": "full-Jacobian field guard",
+      "fmax": 1.0062631672467854,
+      "fmin": -1.3748789310120962e-108,
+      "max_index": [
+        411,
+        228
+      ],
+      "max_initial": 0.999698162510877,
+      "min_index": [
+        118,
+        358
+      ],
+      "min_initial": -1.3748789310120962e-108,
+      "r_max_nm": 114.25000000000001,
+      "z_max_nm": -16.648479001509447
+    },
+    {
+      "h": 16.0,
+      "status": "full-Jacobian field guard",
+      "fmax": 1.000057745431511,
+      "fmin": -1.3748789310120962e-108,
+      "max_index": [
+        481,
+        230
+      ],
+      "max_initial": 0.9998622419345102,
+      "min_index": [
+        118,
+        358
+      ],
+      "min_initial": -1.3748789310120962e-108,
+      "r_max_nm": 115.25,
+      "z_max_nm": 18.1393875688088
+    },
+    {
+      "h": 8.0,
+      "status": "COMPUTED_DISCARDED",
+      "fmax": 1.0,
+      "fmin": -1.3748789310120962e-108,
+      "max_index": [
+        230,
+        0
+      ],
+      "max_initial": 1.0,
+      "min_index": [
+        118,
+        358
+      ],
+      "min_initial": -1.3748789310120962e-108,
+      "r_max_nm": 0.25,
+      "z_max_nm": -106.59996256190378
+    }
+  ],
+  "discarded_copies_only": true
+}

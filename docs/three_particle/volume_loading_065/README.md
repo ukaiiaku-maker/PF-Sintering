@@ -144,3 +144,31 @@ YET FOUND. Phase A: NOT FULLY QUALIFIED. Phase B: DISABLED. Unequal 0.70 case
 and field guard: unchanged. No clipping. No fitted correction. An instantaneous
 scalar cancellation dot(V_center)=0 does not imply the full-field F(f)=0.
 The separate conditional-descendant morphology gate remains not qualified.
+
+
+## Preconditioner reuse and later field-bound trials
+
+The full-Jacobian lineage was superseded coherently at 60.95841147437546 s,
+1.2786691071648537% loss, by runs/three_particle_volume_loading_065_cached.
+Its exact checkpoint/report remain preserved and hashed in handoff.json.
+The active solver optionally reuses only the LU preconditioner when the field
+and step remain close, rebuilding it if the unchanged linear solve fails.
+Every Jacobian and native flux is still recomputed from the current field.
+A discarded h=4 comparison gives maximum field difference 6.16174e-13 and
+embedded estimates 0.903361723553 versus 0.903361723587; wall time fell from
+11.03 to 6.01 s. Small-step consistency, reflection and conservation pass with
+reuse both enabled and disabled; the focused suite now passes 21 tests.
+
+A separate accepted-field probe at 59.33251649 s locates the larger-step bound
+failures near the GB: a raw h=32 trial gives f_max=1.00626317, h=16 gives
+1.00005775, and h=8 remains at 1. These are discarded numerical trials, not
+accepted physical overshoots or evidence for relaxing the bound. The adaptive
+continuation retains its original full-field error and invariant checks.
+The probe source, results and reproduction script are preserved. The original
+32-step qualification is local and does not override later trial rejections.
+
+loading_decomposition.pdf displays the exact curvature and TJ contributions on
+separate vertical scales, for loss >=0.1%, to expose small changes without any
+activation correction. Candidate checkpoint diagnostics use a backward 0.05
+percentage-point window and report the actual stress slope and loss/time slope.
+Passing that descriptive loading screen does not qualify stochastic production.

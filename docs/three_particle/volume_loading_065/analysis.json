@@ -1,5 +1,6 @@
 {
-  "source_run": "docs/three_particle/volume_loading_065/guard_recovery_check",
+  "candidate_checkpoints": [],
+  "source_run": "runs/three_particle_volume_loading_065_full_jacobian",
   "status": "RUNNING",
   "events_enabled": false,
   "thresholds_drawn": false,
@@ -49,7 +50,11 @@
         0.010750000000000001,
         0.011,
         0.01125,
-        0.0115
+        0.0115,
+        0.01175,
+        0.012,
+        0.01225,
+        0.0125
       ],
       "d_sigma_Pa_per_loss_fraction": [
         155352210.27410775,
@@ -93,7 +98,11 @@
         56777216.42314643,
         57763073.696538806,
         56618592.55296737,
-        56084444.77663934
+        56084444.77663934,
+        55736221.05477005,
+        57301248.641610146,
+        60239329.195812345,
+        60935030.40139377
       ],
       "window_loss_fraction": 0.0005
     },
@@ -140,7 +149,11 @@
         0.010750000000000001,
         0.011,
         0.01125,
-        0.0115
+        0.0115,
+        0.01175,
+        0.012,
+        0.01225,
+        0.0125
       ],
       "d_sigma_Pa_per_loss_fraction": [
         155352210.27041972,
@@ -184,7 +197,11 @@
         56777216.41973406,
         57763073.83429259,
         56618592.56400168,
-        56084444.76982951
+        56084444.76982951,
+        55736220.99377215,
+        57301248.661890626,
+        60239329.24698293,
+        60935030.33428639
       ],
       "window_loss_fraction": 0.0005
     }
@@ -194,7 +211,7 @@
       "target_loss_fraction": 0.01,
       "actual_loss_fraction": 0.00999592874476718,
       "time_s": 31.08377129012789,
-      "source": "docs/three_particle/volume_loading_065/guard_recovery_check/loss_1pct.npz",
+      "source": "runs/three_particle_volume_loading_065_full_jacobian/loss_1pct.npz",
       "center_span_over_W": 8.199997120146445,
       "topology": {
         "stop": false,
@@ -218,122 +235,122 @@
     "reason": "insufficient volume-loss support"
   },
   "final": {
-    "time_s": 49.04239582600023,
-    "center_loss_fraction": 0.011859209117943137,
+    "time_s": 60.95841147437546,
+    "center_loss_fraction": 0.012786691071648537,
     "grain_volumes_m3": [
-      7.262445517246562e-21,
-      1.9655242777945764e-21,
-      7.262445517246617e-21
+      7.263367950726713e-21,
+      1.963679410834275e-21,
+      7.26336795072676e-21
     ],
     "contacts": {
       "LEFT": {
-        "r_n_m": 1.3746252002854421e-07,
+        "r_n_m": 1.373969751974744e-07,
         "gamma_J_per_m2": 1.0,
-        "theta_negative_rad": 2.7954411546183824,
-        "kappa1_negative_per_m": 3391178.6636552103,
-        "L_f_negative_m": 2.327733565192579e-07,
-        "delta_phi_f_negative_rad": 1.5076213223959751,
-        "delta_phi_f_continuous_negative_rad": 1.6426687444335786,
-        "theta_positive_rad": 2.9473696135578855,
-        "kappa1_positive_per_m": 3564618.9613579013,
-        "L_f_positive_m": 3.286654706075123e-08,
-        "delta_phi_f_positive_rad": 0.07605665489790553,
-        "delta_phi_f_continuous_positive_rad": -0.059083192566150224,
-        "sigma_local_negative_Pa": 18106893.896217298,
-        "sigma_integral_negative_Pa": 15021294.697749589,
-        "sigma_integral_continuous_negative_Pa": 14441127.688702613,
-        "contact_negative_per_m": 7166024.186624169,
-        "line_3D_negative_per_m": 14332048.373248339,
-        "sigma_local_positive_Pa": 18156684.722327944,
-        "sigma_integral_positive_Pa": 19407198.25735917,
-        "sigma_integral_continuous_positive_Pa": 23518973.285452638,
-        "contact_positive_per_m": 7240434.561228615,
-        "line_3D_positive_per_m": 14480869.12245723,
-        "sigma_local_Pa": 18131789.30927262,
-        "sigma_integral_Pa": 17214246.47755438,
-        "sigma_integral_continuous_Pa": 18980050.487077624,
-        "G_fit_eV": 5.092522404922828,
-        "G_root_eV": 6.072873133201844,
-        "root_rate_per_s": 0.06534931916354234,
-        "root_rate_per_model_time": 0.0010181386787373762,
-        "constant_state_mean_wait_s": 19.127972808282312,
-        "barrier_reduction_from_zero_eV": 0.27212919979280414,
+        "theta_negative_rad": 2.7939963399331993,
+        "kappa1_negative_per_m": 3346601.3726938493,
+        "L_f_negative_m": 2.3299283813799082e-07,
+        "delta_phi_f_negative_rad": 1.50972698897588,
+        "delta_phi_f_continuous_negative_rad": 1.6447308072578004,
+        "theta_positive_rad": 2.9489663869954716,
+        "kappa1_positive_per_m": 3517689.9673446887,
+        "L_f_positive_m": 3.286562693799224e-08,
+        "delta_phi_f_positive_rad": 0.07758867710211265,
+        "delta_phi_f_continuous_positive_rad": -0.05751879474153081,
+        "sigma_local_negative_Pa": 18159004.779098265,
+        "sigma_integral_negative_Pa": 15025892.006751575,
+        "sigma_integral_continuous_negative_Pa": 14446458.667251397,
+        "contact_negative_per_m": 7168535.383930705,
+        "line_3D_negative_per_m": 14337070.76786141,
+        "sigma_local_positive_Pa": 18215659.10344829,
+        "sigma_integral_positive_Pa": 19372564.131302867,
+        "sigma_integral_continuous_positive_Pa": 23483469.184127554,
+        "contact_positive_per_m": 7244449.6902643265,
+        "line_3D_positive_per_m": 14488899.380528653,
+        "sigma_local_Pa": 18187331.94127328,
+        "sigma_integral_Pa": 17199228.069027223,
+        "sigma_integral_continuous_Pa": 18964963.925689474,
+        "G_fit_eV": 5.092160920650414,
+        "G_root_eV": 6.07251164892943,
+        "root_rate_per_s": 0.06546804550107478,
+        "root_rate_per_model_time": 0.0010199884283288616,
+        "constant_state_mean_wait_s": 19.093284218779356,
+        "barrier_reduction_from_zero_eV": 0.27249068406521815,
         "z_TJ_m": -1.639999424029289e-08,
-        "mu_GB_Pa": 141297502.84084958,
-        "mu_TJ_negative_Pa": 15587378.32969977,
-        "mu_TJ_positive_Pa": 15617936.10385203,
-        "transport_affinity_Pa": 125694845.62407368,
-        "one_b_transport_work_J": 1.8654170974218404e-15,
+        "mu_GB_Pa": 140700366.5650462,
+        "mu_TJ_negative_Pa": 15457740.586288847,
+        "mu_TJ_positive_Pa": 15482697.631929789,
+        "transport_affinity_Pa": 125230147.45593688,
+        "one_b_transport_work_J": 1.8567486505092976e-15,
         "work_is_transport_diagnostic_not_root_barrier": true
       },
       "RIGHT": {
-        "r_n_m": 1.374625200285506e-07,
+        "r_n_m": 1.3739697519747796e-07,
         "gamma_J_per_m2": 1.0,
-        "theta_positive_rad": 2.7954411546186386,
-        "kappa1_positive_per_m": 3391178.663667857,
-        "L_f_positive_m": 2.327733565192518e-07,
-        "delta_phi_f_positive_rad": 1.5076213223974837,
-        "delta_phi_f_continuous_positive_rad": 1.642668744433257,
-        "theta_negative_rad": 2.947369613558372,
-        "kappa1_negative_per_m": 3564618.961365332,
-        "L_f_negative_m": 3.286654706075123e-08,
-        "delta_phi_f_negative_rad": 0.07605665489790553,
-        "delta_phi_f_continuous_negative_rad": -0.05908319256760903,
-        "sigma_local_positive_Pa": 18106893.896204133,
-        "sigma_integral_positive_Pa": 15021294.697742421,
-        "sigma_integral_continuous_positive_Pa": 14441127.688703291,
-        "contact_positive_per_m": 7166024.186623997,
-        "line_3D_positive_per_m": 14332048.373247994,
-        "sigma_local_negative_Pa": 18156684.72232002,
-        "sigma_integral_negative_Pa": 19407198.257358674,
-        "sigma_integral_continuous_negative_Pa": 23518973.28549653,
-        "contact_negative_per_m": 7240434.56122845,
-        "line_3D_negative_per_m": 14480869.1224569,
-        "sigma_local_Pa": 18131789.309262075,
-        "sigma_integral_Pa": 17214246.477550548,
-        "sigma_integral_continuous_Pa": 18980050.48709991,
-        "G_fit_eV": 5.092522404922898,
-        "G_root_eV": 6.072873133201913,
-        "root_rate_per_s": 0.06534931916351659,
-        "root_rate_per_model_time": 0.001018138678736975,
-        "constant_state_mean_wait_s": 19.127972808289847,
-        "barrier_reduction_from_zero_eV": 0.27212919979273487,
+        "theta_positive_rad": 2.793996339934496,
+        "kappa1_positive_per_m": 3346601.3726215987,
+        "L_f_positive_m": 2.3299283813798224e-07,
+        "delta_phi_f_positive_rad": 1.5097269889848213,
+        "delta_phi_f_continuous_positive_rad": 1.644730807256946,
+        "theta_negative_rad": 2.948966386996646,
+        "kappa1_negative_per_m": 3517689.9672663105,
+        "L_f_negative_m": 3.286562693799223e-08,
+        "delta_phi_f_negative_rad": 0.07758867710211265,
+        "delta_phi_f_continuous_negative_rad": -0.05751879475009112,
+        "sigma_local_positive_Pa": 18159004.779172406,
+        "sigma_integral_positive_Pa": 15025892.006714849,
+        "sigma_integral_continuous_positive_Pa": 14446458.667256692,
+        "contact_positive_per_m": 7168535.383931334,
+        "line_3D_positive_per_m": 14337070.767862668,
+        "sigma_local_negative_Pa": 18215659.10352734,
+        "sigma_integral_negative_Pa": 19372564.131303534,
+        "sigma_integral_continuous_negative_Pa": 23483469.18438869,
+        "contact_negative_per_m": 7244449.69026455,
+        "line_3D_negative_per_m": 14488899.3805291,
+        "sigma_local_Pa": 18187331.94134987,
+        "sigma_integral_Pa": 17199228.069009192,
+        "sigma_integral_continuous_Pa": 18964963.92582269,
+        "G_fit_eV": 5.092160920649915,
+        "G_root_eV": 6.072511648928931,
+        "root_rate_per_s": 0.06546804550128396,
+        "root_rate_per_model_time": 0.0010199884283321205,
+        "constant_state_mean_wait_s": 19.093284218718352,
+        "barrier_reduction_from_zero_eV": 0.2724906840657173,
         "z_TJ_m": 1.639999424029289e-08,
-        "mu_GB_Pa": 141297502.83922106,
-        "mu_TJ_negative_Pa": 15617936.103432378,
-        "mu_TJ_positive_Pa": 15587378.33331348,
-        "transport_affinity_Pa": 125694845.62084813,
-        "one_b_transport_work_J": 1.8654170973741443e-15,
+        "mu_GB_Pa": 140700366.56443992,
+        "mu_TJ_negative_Pa": 15482697.641638787,
+        "mu_TJ_positive_Pa": 15457740.59668422,
+        "transport_affinity_Pa": 125230147.44527842,
+        "one_b_transport_work_J": 1.856748650351365e-15,
         "work_is_transport_diagnostic_not_root_barrier": true
       }
     },
     "decomposition": {
       "LEFT": {
         "negative": {
-          "curvature_Pa": -3391178.6636552103,
-          "TJ_Pa": 21498072.559872508
+          "curvature_Pa": -3346601.3726938493,
+          "TJ_Pa": 21505606.151792113
         },
         "positive": {
-          "curvature_Pa": -3564618.9613579013,
-          "TJ_Pa": 21721303.683685847
+          "curvature_Pa": -3517689.9673446887,
+          "TJ_Pa": 21733349.07079298
         },
         "production": {
-          "curvature_Pa": -3477898.8125065556,
-          "TJ_Pa": 21609688.121779177
+          "curvature_Pa": -3432145.670019269,
+          "TJ_Pa": 21619477.61129255
         }
       },
       "RIGHT": {
         "negative": {
-          "curvature_Pa": -3564618.961365332,
-          "TJ_Pa": 21721303.683685347
+          "curvature_Pa": -3517689.9672663105,
+          "TJ_Pa": 21733349.070793647
         },
         "positive": {
-          "curvature_Pa": -3391178.663667857,
-          "TJ_Pa": 21498072.55987199
+          "curvature_Pa": -3346601.3726215987,
+          "TJ_Pa": 21505606.151794
         },
         "production": {
-          "curvature_Pa": -3477898.8125165943,
-          "TJ_Pa": 21609688.121778667
+          "curvature_Pa": -3432145.669943955,
+          "TJ_Pa": 21619477.611293823
         }
       }
     },
@@ -342,14 +359,14 @@
       "stop": false,
       "reasons": [],
       "center_span_m": 3.279998848058578e-08,
-      "center_min_radius_m": 1.3824231235012713e-07
+      "center_min_radius_m": 1.381782696997895e-07
     },
-    "energy_J": 3.5914804711548835e-13,
+    "energy_J": 3.591384565113487e-13,
     "f_min": -1.3748789310120962e-108,
     "f_max": 1.0,
-    "mass_relative_error": -1.3322676295501878e-15,
-    "mirror_error": 2.0707613385519477e-11,
-    "two_contact_wait_s": 9.56398640414304
+    "mass_relative_error": -1.7763568394002505e-15,
+    "mirror_error": 1.5620835273075576e-11,
+    "two_contact_wait_s": 9.546642109374426
   },
   "decision": "Pending trajectory completion and physical review"
 }

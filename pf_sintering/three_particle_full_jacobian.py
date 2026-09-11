@@ -10,6 +10,10 @@ from .three_particle_bounded_mobility import HarmonicSurfaceDiffusion,harmonic,_
 from .axisym_numba_kernel import flux_kernel,div_and_update_kernel
 
 class FullJacobianSurfaceDiffusion(HarmonicSurfaceDiffusion):
+    def __init__(self,op,*,reuse_preconditioner=False):
+        super().__init__(op)
+        self.reuse_preconditioner=bool(reuse_preconditioner)
+
     def native_fluxes(self,f):
         op=self.op;g=op.g;mu=op.potential(f).copy()
         flux_kernel(f,mu,g['dr'],g['dz'],op.W,op.physics.M_s,1e-6/op.W,op.Jr,op.Jz)
@@ -45,9 +49,18 @@ class FullJacobianSurfaceDiffusion(HarmonicSurfaceDiffusion):
         mu,jr,jz=self.native_fluxes(f);Kr,Kz=self.flux_jacobian(f,mu);J=(self.Dr@Kr+self.Dz@Kz).tocsr()
         lhs=(self.identity-h*J).tocsc();lhs.eliminate_zeros()
         rhs=-h*(self.Dr@jr[:,1:-1].ravel()+self.Dz@jz[:-1].ravel())
-        pre=lhs.copy();pre.data[abs(pre.data)<1e-7]=0;pre.eliminate_zeros();lu=splu(pre)
-        delta,info=gmres(lhs,rhs,M=LinearOperator(lhs.shape,lu.solve),rtol=(1e-9 if h>.05 else 1e-11),atol=0.,restart=40,maxiter=3)
-        residual=float(np.linalg.norm(lhs@delta-rhs)/max(np.linalg.norm(rhs),1e-300))
+        reuse=(self.reuse_preconditioner and self._preconditioner is not None
+               and .3<h/self._preconditioner_h<3.
+               and np.max(abs(f-self._preconditioner_field))<.005)
+        for attempt in range(2):
+            if reuse and attempt==0:lu=self._preconditioner
+            else:
+                pre=lhs.copy();pre.data[abs(pre.data)<1e-7]=0;pre.eliminate_zeros();lu=splu(pre)
+                if self.reuse_preconditioner:
+                    self._preconditioner=lu;self._preconditioner_h=h;self._preconditioner_field=f.copy()
+            delta,info=gmres(lhs,rhs,M=LinearOperator(lhs.shape,lu.solve),rtol=(1e-9 if h>.05 else 1e-11),atol=0.,restart=40,maxiter=3)
+            residual=float(np.linalg.norm(lhs@delta-rhs)/max(np.linalg.norm(rhs),1e-300))
+            if not info and residual<=1e-8:break
         if info or residual>1e-8:raise FloatingPointError('full-Jacobian linear convergence')
         jr[:,1:-1]-=(Kr@delta).reshape(jr[:,1:-1].shape);jz[:-1]-=(Kz@delta).reshape(jz[:-1].shape)
         op=self.op;g=op.g;div_and_update_kernel(f,jr,jz,g['r_c'],g['r_f'],g['dr'],g['dz'],h,op.out);result=op.out.copy()

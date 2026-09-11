@@ -1,0 +1,17 @@
+{
+  "files": {
+    "docs/three_particle/volume_loading_065/full_jacobian_bound_probe_source.npz": "de075dcb178660bc4cd5fd0bb1c45e64535d87b7082d81e34d48f2044e133f55",
+    "docs/three_particle/volume_loading_065/full_jacobian_bound_probe.json": "0363549ffbfcf75319162462b93dcb751b1ccb6e4a6d29e678f53f87d0724c9e",
+    "docs/three_particle/volume_loading_065/preconditioner_reuse_probe.json": "5497b17a67c93a69cfa78882871319e424e41de7f2683c52d02bf90fa30a9df4",
+    "runs/three_particle_volume_loading_065_full_jacobian/checkpoint.npz": "d3c13a3bdd240da34875a719bf0fa382aeda76bcb9bd403e36c1bdbab690b879",
+    "runs/three_particle_volume_loading_065_full_jacobian/report.json": "215f627573937680a2b1871de9f20b4a2084604ba382dd29a7e34a56eec13ecf",
+    "runs/three_particle_volume_loading_065_full_jacobian/handoff.json": "80d6c8320c0e1895e5ed9882e20c4659f4006ccff54459a27f62ae58f97d79eb",
+    "runs/three_particle_volume_loading_065_full_jacobian/launch.json": "c51712dfd2f7fe6a221b31e7d4d5dca215111bcfcec22d4b5aafd8c50cb9925d",
+    "runs/three_particle_volume_loading_065_full_jacobian/loss_1pct.npz": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798",
+    "runs/three_particle_volume_loading_065_cached/launch.json": "6a30b435f90369a23b99ca3d7bffd991ec988fadb426ac095e6f9d023004fb44",
+    "runs/three_particle_volume_loading_065_cached/loss_1pct.npz": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798"
+  },
+  "events_enabled": false,
+  "phase_b_enabled": false,
+  "live_checkpoint_excluded": true
+}

@@ -1,0 +1,16 @@
+{
+  "rows": [
+    {
+      "reuse": false,
+      "error": 0.9033617235532087,
+      "wall_s": 11.03339275001781
+    },
+    {
+      "reuse": true,
+      "error": 0.9033617235865153,
+      "wall_s": 6.01426733302651
+    }
+  ],
+  "field_difference": 6.161737786669619e-13,
+  "discarded_copies_only": true
+}
