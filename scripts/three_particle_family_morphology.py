@@ -51,7 +51,7 @@ def main():
   axes[row,1].set_ylabel('Meridional curvature (1/µm)');axes[row,2].set_ylabel('Curvature gradient (10¹⁴/m²)')
  axes[0,0].legend(fontsize=7)
  fig.suptitle('Conditional descendants after a forced root — unmasked profiles; no qualification override')
- fig.tight_layout();fig.savefig(args.run/'family_morphology.pdf');fig.savefig(args.run/'family_morphology.png',dpi=130);plt.close(fig)
+ fig.tight_layout(rect=[0,0,1,.94]);fig.savefig(args.run/'family_morphology.pdf',bbox_inches='tight');fig.savefig(args.run/'family_morphology.png',dpi=130,bbox_inches='tight');plt.close(fig)
  report=dict(label='CONDITIONAL_DESCENDANT_MORPHOLOGY',genuine_stochastic_result=False,qualification_changed=False,rows=rows,
   note='Unmasked local peaks supplement the unchanged three-completed-event monitor; partial-event snapshots do not establish completed-event qualification.')
  (args.run/'family_morphology.json').write_text(json.dumps(report,indent=2)+'\n');np.savez_compressed(args.run/'family_morphology_profiles.npz',**payload)

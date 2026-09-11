@@ -1,4 +1,4 @@
-# Selected 0.65 qualification — reload and one-b mechanics passed; descendants pending
+# Selected 0.65 — reload and event mechanics pass; descendant morphology not qualified
 
 The selected 0.65 no-sink reload passes 30 physical seconds. The forced LEFT
 one-b mechanical test now completes in 0.121635 s, with geometric centroid strain +0.009925%,
@@ -12,7 +12,8 @@ The checkpoint-hashed [one-b review](one_b_review.json) qualifies this single
 mechanical event for the prescribed conditional descendant study. The retained
 q=0.9 within-event warning is a restricted-domain maximum, not an observed
 unmasked local peak at the mask edge. The original three-completed-event monitor
-remains active. Conditional descendants are running with seed 20260911;
+remains active. One conditional descendant completed with seed 20260911. The family is paused
+at its saved source-window boundary because curvature growth remains unresolved;
 **genuine stochastic Phase B remains DISABLED** until their qualification.
 The predeclared genuine-root seed 20260910 has not been drawn.
 
@@ -475,3 +476,44 @@ this distinction reviewable. See descendant_three_quarter_warning.json and the
 immutable descendant_three_quarter_review profiles. The accepted native event
 continues under the unchanged guards; repeated-event qualification and Phase B
 remain disabled.
+
+
+## Completed first descendant: mechanics pass, morphology NOT QUALIFIED
+
+The first conditional descendant completes exactly q/b = 1 in 400 accepted
+increments and 0.1674295387 physical seconds. LEFT local stress drops from
+5.2574995 to -1.0304245 MPa; RIGHT reaches 19.8482730 MPa. The independent
+geometric strain increment is +0.004320066%, bringing the forced-root-plus-child
+geometric strain to +0.014242322%. The quota-based increment is +0.156088672%.
+Center volume **grows +0.06067746%**, and tracked PF energy rises +0.22701095%.
+These results do not support a claim that this event's strain accompanies
+center disappearance. Relative material error is -2.33e-13, ownership closure
+1.11e-16, f_max = 1, and the 32.739493 nm center span remains resolved.
+
+The within-event LEFT-center analogue warning persists through completion.
+The outside peak reaches 3.7921W, amplitude 2.25899e15 /m2 and prominence
+5.52454e14 /m2 (24.46%). The feature has moved beyond the narrow edge window;
+that is not evidence of disappearance. Only two events are complete including
+the forced root, so **no three-completed-event monitor failure is claimed**.
+Nor is the numerical origin of the feature proven. However, the existing local
+timestep overlap does not establish full-event spatial morphology convergence,
+and the stricter fixed-quota tolerance audit did not converge. Available evidence
+does not meet the requested artifact-free repeated-event qualification.
+
+The isolated worker is therefore **PAUSED_MORPHOLOGY_REVIEW_REQUIRED**, preserving
+its in-memory state and the exact saved fields/controller/RNG. The source window
+has opened at 0.2890719085 s since the forced-root start, with h = 0.70,
+threshold 0.8474313521006446 and hazard zero. Its 9 ms lifetime has not advanced.
+No second descendant quota is accepted; the avalanche has **not** gone extinct.
+The atomic checkpoint's RUNNING label predates the operating-system pause;
+completed_descendant_review_pause/pause.json records the effective state.
+
+**Descendant morphology: NOT QUALIFIED. Phase B: DISABLED.** No genuine-root
+thresholds were drawn and no >=20 s genuine stochastic trajectory is claimed.
+The completed mechanics do not authorize overriding the unresolved morphology
+requirement. Field guard, physical laws and original completed-event monitor
+remain unchanged. No clipping. No fitted correction. No production/main merge.
+The failed stationary-null study remains preserved (instantaneous dot(Vc)=0 is
+only scalar cancellation, not F(f)=0), and the unequal 0.70 case is unchanged.
+See [completed descendant review](completed_descendant_review.json) and the full
+conditional-family fields, profiles, volume/strain analysis and pause provenance.

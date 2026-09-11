@@ -1,0 +1,201 @@
+{
+  "label": "COMPLETED_FIRST_CONDITIONAL_DESCENDANT_WITH_UNQUALIFIED_MORPHOLOGY",
+  "phase_b_enabled": false,
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/completed_descendant_review_pause/event_2_final.npz",
+      "bytes": 6162276,
+      "sha256": "4ac40d97170b0426c109084bff71091544a17326945cc5c0de3a692ad19d1bcf"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/completed_descendant_review_pause/family.npz",
+      "bytes": 3082453,
+      "sha256": "d9062e1a77b3934c067cc6080bed481f3b82effa7885693d68681ba474fe4a44"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/completed_descendant_review_pause/history.json",
+      "bytes": 5676956,
+      "sha256": "357917c344e39c4dbe6e36de4a4ffdcf09c791fa5d450f2b31039c5acfb91ea2"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/completed_descendant_review_pause/pause.json",
+      "bytes": 1005,
+      "sha256": "22c704a8f500b767ec7ceca51fb20b44381a2f5ae24bcdd032e02e42233003b8"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2.npz",
+      "bytes": 6162276,
+      "sha256": "4ac40d97170b0426c109084bff71091544a17326945cc5c0de3a692ad19d1bcf"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_final.npz",
+      "bytes": 6162276,
+      "sha256": "4ac40d97170b0426c109084bff71091544a17326945cc5c0de3a692ad19d1bcf"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.250000.npz",
+      "bytes": 6161783,
+      "sha256": "e7047a7153851a0a3d66d2dd4c9bece6233bcf8989ecd38b8ca75f062b12a150"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.500000.npz",
+      "bytes": 6162048,
+      "sha256": "4ea6c74529f3aed4b01aa9e4d6db1877f4156854f4c937803a9ec8215fb1ca94"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.750000.npz",
+      "bytes": 6162113,
+      "sha256": "214a2e3e10015ee47a6d2894c857506757a9018c59590d15ebc926d8a8fd11eb"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.npz",
+      "bytes": 6161201,
+      "sha256": "051bfac3bcd5fc74ddacce58f52317e0bc04138628a83080de710b26451da942"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q1.000000.npz",
+      "bytes": 6162276,
+      "sha256": "4ac40d97170b0426c109084bff71091544a17326945cc5c0de3a692ad19d1bcf"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/family.npz",
+      "bytes": 3082453,
+      "sha256": "d9062e1a77b3934c067cc6080bed481f3b82effa7885693d68681ba474fe4a44"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/family_morphology.json",
+      "bytes": 83438,
+      "sha256": "d2b73850ab5492ee084897ce18e698b6677452afec2c3a40de56212c5e8fcffb"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/family_morphology.pdf",
+      "bytes": 51531,
+      "sha256": "a8e76f61fe6d10a259cfbedc4e90d21dea6a4064b7490d4211452f15c7252f25"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/family_morphology.png",
+      "bytes": 311977,
+      "sha256": "7e5932dbeb661198c9e793f7b1ffa60de4b452f32a8f74960ea08d80326103f2"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/family_morphology_profiles.npz",
+      "bytes": 203264,
+      "sha256": "c3383b327ce8f05db2c2e6e4ad3f916a0748a619baea3956550cd14342f25f91"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/event_2.npz",
+      "bytes": 6161961,
+      "sha256": "ba6ac960e7296241bbca031e71a026ffc4b0d7a3c56cae22a47ba5c63b34f346"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/event_2_final.npz",
+      "bytes": 6161975,
+      "sha256": "63ad22c6b53c0db79bdf3840647defa2e90441869299fa4a757d152383fa43e9"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/family.npz",
+      "bytes": 3082175,
+      "sha256": "df5cc7698078178795f17b591c4542fdd9c3a2a91d5d02f28e789c4b93510d13"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/history.json",
+      "bytes": 2408210,
+      "sha256": "eb1724f286c0c79c56d2f91e7a4a7583aa5e026dec3c9f3e67ee44603f3ae1f6"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/launch.json",
+      "bytes": 2311,
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/manifest.json",
+      "bytes": 1521,
+      "sha256": "eb0f069dbaa253442bd4cf13bb943e224735209724c0c16b0221053d682db4a7"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/report.json",
+      "bytes": 17986,
+      "sha256": "b1eb6859481b54d8addbb11e3aa75fbe7a1ab1349ee4c598afecea9f708aee30"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_240_stop/resume_log.json",
+      "bytes": 2187,
+      "sha256": "f5779e8d5d4b0084f4b3ae353b6c7afe185e0608aa4060cec076cbb0c785d011"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/fast_budget_512_first_increment.npz",
+      "bytes": 6162069,
+      "sha256": "cb3f30be57471cd8662462ab3a44dcd064c73e3c472f8adc70202b350ca66a57"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/history.json",
+      "bytes": 5676956,
+      "sha256": "357917c344e39c4dbe6e36de4a4ffdcf09c791fa5d450f2b31039c5acfb91ea2"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/launch.json",
+      "bytes": 2311,
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/event_2.npz",
+      "bytes": 6161573,
+      "sha256": "3b7a07e12478506e914f3b771969e8c168eadc3fa7e7566d75c028e3d2fcecff"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/family.npz",
+      "bytes": 3081740,
+      "sha256": "e4e1b2fe6f3821fec314557fb1b3cf03cfdb2f1d601b1d796eda4b4aef9e0d20"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/history.json",
+      "bytes": 1161847,
+      "sha256": "2f37a4a5381a7a48cb707363e1598371c9ac513b444d476d06c6b996da538a22"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/launch.json",
+      "bytes": 2311,
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/restart_before_quota_fix/provenance.json",
+      "bytes": 582,
+      "sha256": "794e7de5b595cbf70f062df3f79eef67cc973d7e903b1230f31ffb996178217d"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/resume_log.json",
+      "bytes": 4442,
+      "sha256": "4d729d719d6d9477d45e883c9c88126c6f792dc8b3a4507d7e2390cb1084b718"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/strain_accounting.json",
+      "bytes": 144359,
+      "sha256": "269190f9a3c27d679ba148f22738a0d1054b79ec27c2aeced5b3f1fd70fb1c32"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/strain_accounting.pdf",
+      "bytes": 31377,
+      "sha256": "fd68aa536f0298df6f85e42ccfc33c0db0f059322bc344d13494e10a0135d4b5"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/strain_accounting.png",
+      "bytes": 140232,
+      "sha256": "1f8dd67b8b4055be5d5cd0c0784283ae2f86bceebe46c64d7d0929b03b50e80c"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/volume_strain_analysis.json",
+      "bytes": 2657,
+      "sha256": "01e680e728cdc0f80134d68bfd96e43d414025e70e94dade81d5b96fbf6a07a1"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/volume_strain_analysis.pdf",
+      "bytes": 40448,
+      "sha256": "73f8ed3295ebeee5e76d67b93a687ba5153cde2dc338b8bab852c7eb6e937a05"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/volume_strain_analysis.png",
+      "bytes": 339964,
+      "sha256": "121474d72ae508dbd8d50beb528f05320c49512ebb76a3a4cb7ee395234e60af"
+    }
+  ]
+}

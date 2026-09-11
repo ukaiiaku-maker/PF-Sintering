@@ -3,7 +3,7 @@
   "one_b_qualified": true,
   "descendant_qualified": false,
   "phase_b_enabled": false,
-  "reason": "30 s reload and a complete forced one-b mechanical event pass; conditional descendants and repeated-event morphology are the remaining Phase B gates",
+  "reason": "30 s reload and forced one-b mechanics pass. One conditional descendant completes, but growing curvature features remain unresolved; family morphology is NOT QUALIFIED and the experimental worker is paused at its saved source-window boundary.",
   "predeclared_production_seed": 20260910,
   "event_engine": "buffered_native",
   "event_max_fast_blocks": 512,
@@ -15,5 +15,6 @@
   "predeclared_descendant_seed": 20260911,
   "root_quadrature_qualified": true,
   "root_macro_step_s": 0.2,
-  "descendant_fast_budget_audit": "descendant_fast_budget_audit.json"
+  "descendant_fast_budget_audit": "descendant_fast_budget_audit.json",
+  "completed_descendant_review": "completed_descendant_review.json"
 }

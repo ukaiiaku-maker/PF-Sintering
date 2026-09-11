@@ -1,0 +1,107 @@
+{
+  "status": "NOT_QUALIFIED_MORPHOLOGY_REVIEW_REQUIRED",
+  "phase_b_enabled": false,
+  "label": "CONDITIONAL_DESCENDANT_AFTER_FORCED_ROOT",
+  "genuine_stochastic_result": false,
+  "descendants_completed": 1,
+  "completed_events_including_forced_root": 2,
+  "avalanche_extinct": false,
+  "q_over_b": 1.0,
+  "accepted_steps": 400,
+  "duration_s": 0.16742953865717564,
+  "geometric_chain_strain_increment": 4.320065989038557e-05,
+  "geometric_chain_strain_total": 0.0001424232202004161,
+  "production_quota_strain_increment": 0.001560886715736951,
+  "center_relative_volume_change": 0.0006067746417433018,
+  "relative_PF_energy_change": 0.002270109482086502,
+  "relative_material_error": -2.332578574737454e-13,
+  "f_min": -1.3748789310120962e-108,
+  "f_max": 1.0,
+  "ownership_closure": 1.1102230246251565e-16,
+  "LEFT_stress_before_Pa": 5257499.505483545,
+  "LEFT_stress_after_Pa": -1030424.456590876,
+  "RIGHT_stress_after_Pa": 19848273.010946177,
+  "transport_affinity_after_Pa": 76544991.78581668,
+  "actual_center_span_m": 3.273949269507324e-08,
+  "topology_stop": false,
+  "completed_event_monitor": {
+    "completed_profiles": 2,
+    "three_completed_event_condition_evaluated": false,
+    "reason": "There are only the forced root and one completed descendant; no three-completed-event failure is claimed."
+  },
+  "within_event_analogue": {
+    "quotas": [
+      0.0,
+      0.25000000000000017,
+      0.5000000000000003,
+      0.749999999999995,
+      1.0
+    ],
+    "flags": {
+      "LEFT_-1": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "LEFT_+1": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "RIGHT_-1": [
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "RIGHT_+1": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "morphology_assessment": "The partial-profile growth warning persists through q=1. The moving outside local peak reaches 3.7921W with amplitude 2.25899e15 /m2 and prominence 5.52454e14 /m2. Its narrow-window absence is not disappearance. This does not prove a numerical artifact, but available audits do not establish artifact-free repeated-event behavior. The local timestep overlap does not resolve full-event spatial morphology; the stricter fixed-quota tolerance audit did not converge. No criterion is relaxed to grant qualification.",
+  "source_window": {
+    "avalanche_active": true,
+    "avalanche_id": 1,
+    "root_cycle": 1,
+    "child_number": 1,
+    "S_completed": 2,
+    "q_avalanche_over_b": 2.0,
+    "descendant_threshold": 0.8474313521006446,
+    "descendant_hazard": 0.0,
+    "pending_children": 0,
+    "delta_G_step_eV": 1.5,
+    "source_amplitude": 0.7,
+    "facilitation_decay_alpha": 0.7,
+    "avalanche_start_time_s": 0.0,
+    "last_child_completion_time_s": 0.2890719085222046,
+    "window_start_time_s": 0.2890719085222046,
+    "window_deadline_s": 0.2980719085222046,
+    "window_triggered": false,
+    "descendant_total_hazard": 1.6748647310883076,
+    "thresholds_drawn": [
+      1.6748647310883076,
+      0.8474313521006446
+    ]
+  },
+  "rng": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 8550035001126649074364663924414721323,
+      "inc": 160378821636518163781755759234662531153
+    },
+    "has_uint32": 0,
+    "uinteger": 0
+  },
+  "checkpoint_sha256": "4ac40d97170b0426c109084bff71091544a17326945cc5c0de3a692ad19d1bcf",
+  "operational_status": "Experimental worker paused at saved source-window opening for morphology review; raw checkpoint status RUNNING predates the operating-system pause. No second descendant quota has been accepted."
+}

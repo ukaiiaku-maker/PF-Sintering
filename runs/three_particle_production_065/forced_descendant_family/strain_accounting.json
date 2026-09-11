@@ -1,0 +1,4068 @@
+{
+  "reference_length_m": 1.6016537105446885e-07,
+  "b_event_m": 2.5e-10,
+  "production_definition": "cumulative accepted event quota times b / initial outer-grain centroid separation",
+  "geometric_definition": "1 - current outer-grain centroid separation / initial separation",
+  "rows": [
+    {
+      "time_s": 0.12163465714678343,
+      "phase": "FORCED_ROOT_COMPLETE",
+      "event_number": 1,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0,
+      "production_densification_strain": 0.001560886715736951,
+      "geometric_chain_strain": 9.925086485962353e-05,
+      "center_volume_m3": 1.9873804315407618e-21
+    },
+    {
+      "time_s": 0.12164236986502897,
+      "phase": "CHILD_CROSSING",
+      "event_number": 1,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0,
+      "production_densification_strain": 0.001560886715736951,
+      "geometric_chain_strain": 9.922256031003052e-05,
+      "center_volume_m3": 1.987380747979071e-21
+    },
+    {
+      "time_s": 0.12201907322623678,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0025,
+      "production_densification_strain": 0.0015647889325262933,
+      "geometric_chain_strain": 9.943333093120899e-05,
+      "center_volume_m3": 1.9873826222173096e-21
+    },
+    {
+      "time_s": 0.12239604351059906,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.005,
+      "production_densification_strain": 0.0015686911493156357,
+      "geometric_chain_strain": 9.961561577376266e-05,
+      "center_volume_m3": 1.9873848169626736e-21
+    },
+    {
+      "time_s": 0.12277328003273284,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0075,
+      "production_densification_strain": 0.0015725933661049783,
+      "geometric_chain_strain": 9.979791723480069e-05,
+      "center_volume_m3": 1.9873870109752296e-21
+    },
+    {
+      "time_s": 0.12315078304022672,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.01,
+      "production_densification_strain": 0.0015764955828943205,
+      "geometric_chain_strain": 9.997948204187868e-05,
+      "center_volume_m3": 1.987389212802394e-21
+    },
+    {
+      "time_s": 0.1235285517267874,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0125,
+      "production_densification_strain": 0.001580397799683663,
+      "geometric_chain_strain": 0.00010016100842880071,
+      "center_volume_m3": 1.987391414876607e-21
+    },
+    {
+      "time_s": 0.12390658538740963,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.015,
+      "production_densification_strain": 0.0015843000164730051,
+      "geometric_chain_strain": 0.00010034178609508171,
+      "center_volume_m3": 1.9873936251877476e-21
+    },
+    {
+      "time_s": 0.12428488329414031,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0175,
+      "production_densification_strain": 0.0015882022332623477,
+      "geometric_chain_strain": 0.00010052251941328194,
+      "center_volume_m3": 1.98739583585121e-21
+    },
+    {
+      "time_s": 0.12466344485459818,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.02,
+      "production_densification_strain": 0.00159210445005169,
+      "geometric_chain_strain": 0.00010070250042060191,
+      "center_volume_m3": 1.9873980548102876e-21
+    },
+    {
+      "time_s": 0.12504226943207444,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0225,
+      "production_densification_strain": 0.0015960066668410323,
+      "geometric_chain_strain": 0.00010088243520112172,
+      "center_volume_m3": 1.9874002741555357e-21
+    },
+    {
+      "time_s": 0.12542135650631034,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.025,
+      "production_densification_strain": 0.0015999088836303745,
+      "geometric_chain_strain": 0.00010106161593981255,
+      "center_volume_m3": 1.9874025018230294e-21
+    },
+    {
+      "time_s": 0.12580070549923605,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0275,
+      "production_densification_strain": 0.0016038111004197176,
+      "geometric_chain_strain": 0.00010124074961992413,
+      "center_volume_m3": 1.9874047298927935e-21
+    },
+    {
+      "time_s": 0.12618031593971055,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.03,
+      "production_densification_strain": 0.0016077133172090598,
+      "geometric_chain_strain": 0.00010141912815064824,
+      "center_volume_m3": 1.9874069663006317e-21
+    },
+    {
+      "time_s": 0.12656018729119292,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0325,
+      "production_densification_strain": 0.001611615533998402,
+      "geometric_chain_strain": 0.00010159745917648344,
+      "center_volume_m3": 1.9874092031202984e-21
+    },
+    {
+      "time_s": 0.1269403191178008,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.035,
+      "production_densification_strain": 0.0016155177507877444,
+      "geometric_chain_strain": 0.00010177503418762335,
+      "center_volume_m3": 1.98741144828969e-21
+    },
+    {
+      "time_s": 0.12732071091277464,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0375,
+      "production_densification_strain": 0.001619419967577087,
+      "geometric_chain_strain": 0.00010195256140221876,
+      "center_volume_m3": 1.9874136938776376e-21
+    },
+    {
+      "time_s": 0.127701362351423,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.04,
+      "production_densification_strain": 0.0016233221843664292,
+      "geometric_chain_strain": 0.00010213003200554294,
+      "center_volume_m3": 1.9874159399626075e-21
+    },
+    {
+      "time_s": 0.12808227315802143,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0425,
+      "production_densification_strain": 0.0016272244011557716,
+      "geometric_chain_strain": 0.00010230674171929355,
+      "center_volume_m3": 1.9874181944652948e-21
+    },
+    {
+      "time_s": 0.12846344287669587,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.045,
+      "production_densification_strain": 0.0016311266179451138,
+      "geometric_chain_strain": 0.0001024826964016734,
+      "center_volume_m3": 1.9874204572947056e-21
+    },
+    {
+      "time_s": 0.12884487100273503,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0475,
+      "production_densification_strain": 0.0016350288347344564,
+      "geometric_chain_strain": 0.00010265860399583104,
+      "center_volume_m3": 1.9874227205348856e-21
+    },
+    {
+      "time_s": 0.12922655721320736,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.05,
+      "production_densification_strain": 0.0016389310515237986,
+      "geometric_chain_strain": 0.0001028344584590446,
+      "center_volume_m3": 1.9874249842735058e-21
+    },
+    {
+      "time_s": 0.12960850122738748,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0525,
+      "production_densification_strain": 0.001642833268313141,
+      "geometric_chain_strain": 0.00010300955102715559,
+      "center_volume_m3": 1.987427256441718e-21
+    },
+    {
+      "time_s": 0.12999070257711354,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.055,
+      "production_densification_strain": 0.0016467354851024832,
+      "geometric_chain_strain": 0.00010318388741015205,
+      "center_volume_m3": 1.987429536951129e-21
+    },
+    {
+      "time_s": 0.1303731607549513,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0575,
+      "production_densification_strain": 0.0016506377018918258,
+      "geometric_chain_strain": 0.0001033581721390231,
+      "center_volume_m3": 1.9874318178487448e-21
+    },
+    {
+      "time_s": 0.1307558754472445,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.06,
+      "production_densification_strain": 0.001654539918681168,
+      "geometric_chain_strain": 0.0001035324035694174,
+      "center_volume_m3": 1.9874340992579008e-21
+    },
+    {
+      "time_s": 0.13113884637427897,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0625,
+      "production_densification_strain": 0.0016584421354705104,
+      "geometric_chain_strain": 0.00010370587182240154,
+      "center_volume_m3": 1.9874363891130988e-21
+    },
+    {
+      "time_s": 0.1315220731670966,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.065,
+      "production_densification_strain": 0.0016623443522598526,
+      "geometric_chain_strain": 0.00010387928864519225,
+      "center_volume_m3": 1.987438679449544e-21
+    },
+    {
+      "time_s": 0.13190555552674743,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0675000000000001,
+      "production_densification_strain": 0.0016662465690491953,
+      "geometric_chain_strain": 0.00010405194240803439,
+      "center_volume_m3": 1.9874409782277265e-21
+    },
+    {
+      "time_s": 0.13228929294064726,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.07,
+      "production_densification_strain": 0.0016701487858385377,
+      "geometric_chain_strain": 0.00010422383131403201,
+      "center_volume_m3": 1.9874432852795263e-21
+    },
+    {
+      "time_s": 0.1326732849937964,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0725,
+      "production_densification_strain": 0.0016740510026278803,
+      "geometric_chain_strain": 0.0001043963797136005,
+      "center_volume_m3": 1.9874455848736845e-21
+    },
+    {
+      "time_s": 0.13305753145926164,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.075,
+      "production_densification_strain": 0.0016779532194172225,
+      "geometric_chain_strain": 0.00010456745107356724,
+      "center_volume_m3": 1.9874479008983926e-21
+    },
+    {
+      "time_s": 0.13344203185765469,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0775000000000001,
+      "production_densification_strain": 0.0016818554362065651,
+      "geometric_chain_strain": 0.00010473918376929792,
+      "center_volume_m3": 1.9874502094402028e-21
+    },
+    {
+      "time_s": 0.13382678595196779,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.08,
+      "production_densification_strain": 0.0016857576529959073,
+      "geometric_chain_strain": 0.00010490943873342484,
+      "center_volume_m3": 1.9874525344175793e-21
+    },
+    {
+      "time_s": 0.13421179324469185,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0825,
+      "production_densification_strain": 0.0016896598697852497,
+      "geometric_chain_strain": 0.0001050803556774671,
+      "center_volume_m3": 1.9874548519078457e-21
+    },
+    {
+      "time_s": 0.13459705348398507,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.085,
+      "production_densification_strain": 0.001693562086574592,
+      "geometric_chain_strain": 0.00010524979381520971,
+      "center_volume_m3": 1.987457185845388e-21
+    },
+    {
+      "time_s": 0.1349825661607578,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0875000000000001,
+      "production_densification_strain": 0.0016974643033639345,
+      "geometric_chain_strain": 0.0001054198943756246,
+      "center_volume_m3": 1.987459512294929e-21
+    },
+    {
+      "time_s": 0.13536833114629926,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.09,
+      "production_densification_strain": 0.0017013665201532767,
+      "geometric_chain_strain": 0.00010558922377856828,
+      "center_volume_m3": 1.9874618473035332e-21
+    },
+    {
+      "time_s": 0.135754347998758,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0925,
+      "production_densification_strain": 0.0017052687369426191,
+      "geometric_chain_strain": 0.00010575778877330855,
+      "center_volume_m3": 1.9874641907652068e-21
+    },
+    {
+      "time_s": 0.1361406162580962,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.095,
+      "production_densification_strain": 0.0017091709537319613,
+      "geometric_chain_strain": 0.00010592629855576963,
+      "center_volume_m3": 1.987466534663319e-21
+    },
+    {
+      "time_s": 0.13652713553748635,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.0975000000000001,
+      "production_densification_strain": 0.001713073170521304,
+      "geometric_chain_strain": 0.00010609404190720095,
+      "center_volume_m3": 1.9874688870477165e-21
+    },
+    {
+      "time_s": 0.13691390537651044,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1,
+      "production_densification_strain": 0.0017169753873106464,
+      "geometric_chain_strain": 0.00010626173359729041,
+      "center_volume_m3": 1.9874712399332876e-21
+    },
+    {
+      "time_s": 0.1373009255402829,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1025,
+      "production_densification_strain": 0.0017208776040999886,
+      "geometric_chain_strain": 0.00010642936692506488,
+      "center_volume_m3": 1.98747359337988e-21
+    },
+    {
+      "time_s": 0.13768819577590527,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.105,
+      "production_densification_strain": 0.0017247798208893308,
+      "geometric_chain_strain": 0.00010659622887476683,
+      "center_volume_m3": 1.9874759553831313e-21
+    },
+    {
+      "time_s": 0.13807571523077322,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1075000000000002,
+      "production_densification_strain": 0.0017286820376786734,
+      "geometric_chain_strain": 0.00010676302704226703,
+      "center_volume_m3": 1.9874783174901456e-21
+    },
+    {
+      "time_s": 0.1384634832721472,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.11,
+      "production_densification_strain": 0.0017325842544680158,
+      "geometric_chain_strain": 0.00010692905392217789,
+      "center_volume_m3": 1.987480688152033e-21
+    },
+    {
+      "time_s": 0.1388515006301846,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1125,
+      "production_densification_strain": 0.001736486471257358,
+      "geometric_chain_strain": 0.00010709502754957523,
+      "center_volume_m3": 1.987483059173777e-21
+    },
+    {
+      "time_s": 0.1392397687602704,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.115,
+      "production_densification_strain": 0.0017403886880467004,
+      "geometric_chain_strain": 0.00010726023008800212,
+      "center_volume_m3": 1.987485438743225e-21
+    },
+    {
+      "time_s": 0.13962828855875054,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1175000000000002,
+      "production_densification_strain": 0.0017442909048360432,
+      "geometric_chain_strain": 0.00010742537847452382,
+      "center_volume_m3": 1.9874878188538527e-21
+    },
+    {
+      "time_s": 0.14001706036566533,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.12,
+      "production_densification_strain": 0.0017481931216253854,
+      "geometric_chain_strain": 0.00010758975511948599,
+      "center_volume_m3": 1.9874902075281862e-21
+    },
+    {
+      "time_s": 0.140406083923813,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1225,
+      "production_densification_strain": 0.0017520953384147278,
+      "geometric_chain_strain": 0.00010775407745922116,
+      "center_volume_m3": 1.9874925967500342e-21
+    },
+    {
+      "time_s": 0.14079535867109083,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.125,
+      "production_densification_strain": 0.00175599755520407,
+      "geometric_chain_strain": 0.00010791832307077698,
+      "center_volume_m3": 1.9874949859275185e-21
+    },
+    {
+      "time_s": 0.14118488397121587,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1275,
+      "production_densification_strain": 0.0017598997719934124,
+      "geometric_chain_strain": 0.00010808179245602734,
+      "center_volume_m3": 1.9874973837270172e-21
+    },
+    {
+      "time_s": 0.14157465909420144,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1300000000000001,
+      "production_densification_strain": 0.001763801988782755,
+      "geometric_chain_strain": 0.0001082444863350629,
+      "center_volume_m3": 1.9874997900151967e-21
+    },
+    {
+      "time_s": 0.1419646830011242,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1325,
+      "production_densification_strain": 0.0017677042055720973,
+      "geometric_chain_strain": 0.00010840712739668135,
+      "center_volume_m3": 1.9875021968329395e-21
+    },
+    {
+      "time_s": 0.14235495404933468,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.135,
+      "production_densification_strain": 0.0017716064223614394,
+      "geometric_chain_strain": 0.00010856970985317904,
+      "center_volume_m3": 1.9875046042694776e-21
+    },
+    {
+      "time_s": 0.14274546906432184,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1375000000000002,
+      "production_densification_strain": 0.001775508639150782,
+      "geometric_chain_strain": 0.00010873150640899887,
+      "center_volume_m3": 1.9875070202559202e-21
+    },
+    {
+      "time_s": 0.1431362252908523,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1400000000000001,
+      "production_densification_strain": 0.0017794108559401245,
+      "geometric_chain_strain": 0.0001088925317213052,
+      "center_volume_m3": 1.9875094447884596e-21
+    },
+    {
+      "time_s": 0.1435272211189515,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1425,
+      "production_densification_strain": 0.0017833130727294667,
+      "geometric_chain_strain": 0.00010905350387246937,
+      "center_volume_m3": 1.987511869861409e-21
+    },
+    {
+      "time_s": 0.14391845374539752,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.145,
+      "production_densification_strain": 0.001787215289518809,
+      "geometric_chain_strain": 0.00010921441697842038,
+      "center_volume_m3": 1.987514295565284e-21
+    },
+    {
+      "time_s": 0.14430992084537433,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1475,
+      "production_densification_strain": 0.0017911175063081513,
+      "geometric_chain_strain": 0.0001093745518636613,
+      "center_volume_m3": 1.98751672992092e-21
+    },
+    {
+      "time_s": 0.1447016216237706,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1500000000000001,
+      "production_densification_strain": 0.001795019723097494,
+      "geometric_chain_strain": 0.00010953462944240933,
+      "center_volume_m3": 1.9875191648799803e-21
+    },
+    {
+      "time_s": 0.14509355545808028,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1525,
+      "production_densification_strain": 0.001798921939886836,
+      "geometric_chain_strain": 0.00010969392884929707,
+      "center_volume_m3": 1.987521608488866e-21
+    },
+    {
+      "time_s": 0.145485721674068,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.155,
+      "production_densification_strain": 0.0018028241566761785,
+      "geometric_chain_strain": 0.00010985317121159355,
+      "center_volume_m3": 1.987524052699571e-21
+    },
+    {
+      "time_s": 0.14587811928453745,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1575000000000002,
+      "production_densification_strain": 0.0018067263734655211,
+      "geometric_chain_strain": 0.000110011634970264,
+      "center_volume_m3": 1.9875265055664378e-21
+    },
+    {
+      "time_s": 0.14627074667847048,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1600000000000001,
+      "production_densification_strain": 0.0018106285902548633,
+      "geometric_chain_strain": 0.00011017004173097256,
+      "center_volume_m3": 1.9875289590370928e-21
+    },
+    {
+      "time_s": 0.14666360276808857,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1625,
+      "production_densification_strain": 0.0018145308070442057,
+      "geometric_chain_strain": 0.00011032766726692955,
+      "center_volume_m3": 1.9875314211187224e-21
+    },
+    {
+      "time_s": 0.1470566869687428,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.165,
+      "production_densification_strain": 0.001818433023833548,
+      "geometric_chain_strain": 0.00011048523136614197,
+      "center_volume_m3": 1.9875338837962336e-21
+    },
+    {
+      "time_s": 0.1474499988041182,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1675,
+      "production_densification_strain": 0.0018223352406228906,
+      "geometric_chain_strain": 0.00011064201579380484,
+      "center_volume_m3": 1.9875363551460697e-21
+    },
+    {
+      "time_s": 0.14784353772905753,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1700000000000002,
+      "production_densification_strain": 0.0018262374574122332,
+      "geometric_chain_strain": 0.00011079874321584526,
+      "center_volume_m3": 1.987538827105194e-21
+    },
+    {
+      "time_s": 0.14823730329241996,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1725,
+      "production_densification_strain": 0.0018301396742015754,
+      "geometric_chain_strain": 0.00011095469040367512,
+      "center_volume_m3": 1.9875413077450842e-21
+    },
+    {
+      "time_s": 0.1486312949703143,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.175,
+      "production_densification_strain": 0.0018340418909909178,
+      "geometric_chain_strain": 0.00011111058072410529,
+      "center_volume_m3": 1.9875437889768123e-21
+    },
+    {
+      "time_s": 0.1490255125181733,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1775000000000002,
+      "production_densification_strain": 0.0018379441077802604,
+      "geometric_chain_strain": 0.00011126640806480292,
+      "center_volume_m3": 1.98754627088057e-21
+    },
+    {
+      "time_s": 0.14941995551740148,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1800000000000002,
+      "production_densification_strain": 0.0018418463245696026,
+      "geometric_chain_strain": 0.0001114214508564082,
+      "center_volume_m3": 1.987548761525036e-21
+    },
+    {
+      "time_s": 0.14981462242651378,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1825,
+      "production_densification_strain": 0.0018457485413589448,
+      "geometric_chain_strain": 0.00011157571462938609,
+      "center_volume_m3": 1.9875512608277175e-21
+    },
+    {
+      "time_s": 0.15020951187529624,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.185,
+      "production_densification_strain": 0.0018496507581482872,
+      "geometric_chain_strain": 0.00011172991981100999,
+      "center_volume_m3": 1.987553760720805e-21
+    },
+    {
+      "time_s": 0.15060462362296878,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1875,
+      "production_densification_strain": 0.0018535529749376294,
+      "geometric_chain_strain": 0.00011188406342876878,
+      "center_volume_m3": 1.9875562612995726e-21
+    },
+    {
+      "time_s": 0.1509999573753626,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1900000000000002,
+      "production_densification_strain": 0.001857455191726972,
+      "geometric_chain_strain": 0.00011203742178589327,
+      "center_volume_m3": 1.9875587706306122e-21
+    },
+    {
+      "time_s": 0.15139551255610964,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1925000000000001,
+      "production_densification_strain": 0.0018613574085163144,
+      "geometric_chain_strain": 0.00011219000029960569,
+      "center_volume_m3": 1.987561288632455e-21
+    },
+    {
+      "time_s": 0.1517912888520042,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.195,
+      "production_densification_strain": 0.0018652596253056566,
+      "geometric_chain_strain": 0.00011234324357745074,
+      "center_volume_m3": 1.9875637992173496e-21
+    },
+    {
+      "time_s": 0.15218728604558648,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.1975000000000002,
+      "production_densification_strain": 0.0018691618420949992,
+      "geometric_chain_strain": 0.00011249497542964448,
+      "center_volume_m3": 1.9875663266583267e-21
+    },
+    {
+      "time_s": 0.15258350346978686,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2000000000000002,
+      "production_densification_strain": 0.0018730640588843414,
+      "geometric_chain_strain": 0.00011264665309729249,
+      "center_volume_m3": 1.987568854677166e-21
+    },
+    {
+      "time_s": 0.15297994089889888,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2025000000000001,
+      "production_densification_strain": 0.0018769662756736838,
+      "geometric_chain_strain": 0.00011279827005583609,
+      "center_volume_m3": 1.9875713833755504e-21
+    },
+    {
+      "time_s": 0.15337659803716305,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.205,
+      "production_densification_strain": 0.001880868492463026,
+      "geometric_chain_strain": 0.00011294910068671005,
+      "center_volume_m3": 1.9875739208423644e-21
+    },
+    {
+      "time_s": 0.15377347451027973,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2075,
+      "production_densification_strain": 0.0018847707092523684,
+      "geometric_chain_strain": 0.00011309987216967521,
+      "center_volume_m3": 1.9875764589645155e-21
+    },
+    {
+      "time_s": 0.15417057001906234,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2100000000000002,
+      "production_densification_strain": 0.0018886729260417109,
+      "geometric_chain_strain": 0.00011324985742566795,
+      "center_volume_m3": 1.987579005852881e-21
+    },
+    {
+      "time_s": 0.15456788388323112,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2125000000000001,
+      "production_densification_strain": 0.0018925751428310535,
+      "geometric_chain_strain": 0.00011339978390889627,
+      "center_volume_m3": 1.9875815533931218e-21
+    },
+    {
+      "time_s": 0.15496541507908054,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.215,
+      "production_densification_strain": 0.0018964773596203959,
+      "geometric_chain_strain": 0.0001135496466724284,
+      "center_volume_m3": 1.98758410165985e-21
+    },
+    {
+      "time_s": 0.15536316257789434,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2175000000000002,
+      "production_densification_strain": 0.0019003795764097385,
+      "geometric_chain_strain": 0.00011369799626204102,
+      "center_volume_m3": 1.987586666794072e-21
+    },
+    {
+      "time_s": 0.15576112589300517,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2200000000000002,
+      "production_densification_strain": 0.0019042817931990807,
+      "geometric_chain_strain": 0.00011384701641015127,
+      "center_volume_m3": 1.9875892244437875e-21
+    },
+    {
+      "time_s": 0.1561593049927206,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2225000000000001,
+      "production_densification_strain": 0.0019081840099884231,
+      "geometric_chain_strain": 0.00011399524517219373,
+      "center_volume_m3": 1.9875917908865086e-21
+    },
+    {
+      "time_s": 0.15655769937947522,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.225,
+      "production_densification_strain": 0.0019120862267777653,
+      "geometric_chain_strain": 0.0001141426885282737,
+      "center_volume_m3": 1.9875943660802435e-21
+    },
+    {
+      "time_s": 0.15695630863408278,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2275,
+      "production_densification_strain": 0.0019159884435671075,
+      "geometric_chain_strain": 0.0001142900744156572,
+      "center_volume_m3": 1.9875969419127507e-21
+    },
+    {
+      "time_s": 0.1573551326321086,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2300000000000002,
+      "production_densification_strain": 0.0019198906603564501,
+      "geometric_chain_strain": 0.00011443738669780767,
+      "center_volume_m3": 1.9875995182337685e-21
+    },
+    {
+      "time_s": 0.15775417116512824,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2325000000000002,
+      "production_densification_strain": 0.0019237928771457925,
+      "geometric_chain_strain": 0.00011458390818452902,
+      "center_volume_m3": 1.9876021033855283e-21
+    },
+    {
+      "time_s": 0.15815342393596804,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.235,
+      "production_densification_strain": 0.0019276950939351347,
+      "geometric_chain_strain": 0.0001147303691874102,
+      "center_volume_m3": 1.987604689220073e-21
+    },
+    {
+      "time_s": 0.15855289071067527,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2375000000000003,
+      "production_densification_strain": 0.0019315973107244774,
+      "geometric_chain_strain": 0.00011487603963789006,
+      "center_volume_m3": 1.987607283881403e-21
+    },
+    {
+      "time_s": 0.15895257115822203,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2400000000000002,
+      "production_densification_strain": 0.0019354995275138195,
+      "geometric_chain_strain": 0.00011502164998289377,
+      "center_volume_m3": 1.9876098792225877e-21
+    },
+    {
+      "time_s": 0.15935246501903114,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2425000000000002,
+      "production_densification_strain": 0.001939401744303162,
+      "geometric_chain_strain": 0.0001151664695925314,
+      "center_volume_m3": 1.987612483393934e-21
+    },
+    {
+      "time_s": 0.1597525719436813,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.245,
+      "production_densification_strain": 0.0019433039610925042,
+      "geometric_chain_strain": 0.00011531122946639716,
+      "center_volume_m3": 1.9876150882421637e-21
+    },
+    {
+      "time_s": 0.16015289164403543,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2475,
+      "production_densification_strain": 0.0019472061778818466,
+      "geometric_chain_strain": 0.0001154551821876959,
+      "center_volume_m3": 1.9876177014021348e-21
+    },
+    {
+      "time_s": 0.16055342373759704,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2500000000000002,
+      "production_densification_strain": 0.0019511083946711892,
+      "geometric_chain_strain": 0.0001155990753526348,
+      "center_volume_m3": 1.987620315238519e-21
+    },
+    {
+      "time_s": 0.16095416794988537,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2525000000000002,
+      "production_densification_strain": 0.0019550106114605316,
+      "geometric_chain_strain": 0.00011574217736498582,
+      "center_volume_m3": 1.9876229379121753e-21
+    },
+    {
+      "time_s": 0.16135512335849858,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2550000000000001,
+      "production_densification_strain": 0.001958912828249874,
+      "geometric_chain_strain": 0.00011588522063021856,
+      "center_volume_m3": 1.987625561252245e-21
+    },
+    {
+      "time_s": 0.16175628910093892,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2575000000000003,
+      "production_densification_strain": 0.0019628150450392164,
+      "geometric_chain_strain": 0.00011602820061307195,
+      "center_volume_m3": 1.9876281853225903e-21
+    },
+    {
+      "time_s": 0.16215766483534216,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2600000000000002,
+      "production_densification_strain": 0.001966717261828559,
+      "geometric_chain_strain": 0.00011617038648115141,
+      "center_volume_m3": 1.9876308182693677e-21
+    },
+    {
+      "time_s": 0.16255925040486663,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2625000000000002,
+      "production_densification_strain": 0.0019706194786179012,
+      "geometric_chain_strain": 0.00011631251170884926,
+      "center_volume_m3": 1.9876334519081303e-21
+    },
+    {
+      "time_s": 0.1629610456947493,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2650000000000001,
+      "production_densification_strain": 0.0019745216954072434,
+      "geometric_chain_strain": 0.00011645384355796207,
+      "center_volume_m3": 1.9876360944109166e-21
+    },
+    {
+      "time_s": 0.16336305046738997,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2675,
+      "production_densification_strain": 0.0019784239121965856,
+      "geometric_chain_strain": 0.00011659511550643487,
+      "center_volume_m3": 1.9876387375965007e-21
+    },
+    {
+      "time_s": 0.16376526453025228,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2700000000000002,
+      "production_densification_strain": 0.0019823261289859282,
+      "geometric_chain_strain": 0.00011673559404079548,
+      "center_volume_m3": 1.9876413896472958e-21
+    },
+    {
+      "time_s": 0.16416768758103653,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2725000000000002,
+      "production_densification_strain": 0.0019862283457752704,
+      "geometric_chain_strain": 0.00011687600673826459,
+      "center_volume_m3": 1.9876440423622903e-21
+    },
+    {
+      "time_s": 0.16457031934366023,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2750000000000001,
+      "production_densification_strain": 0.001990130562564613,
+      "geometric_chain_strain": 0.00011701562580801461,
+      "center_volume_m3": 1.9876467039461643e-21
+    },
+    {
+      "time_s": 0.1649731594044545,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2775000000000003,
+      "production_densification_strain": 0.0019940327793539557,
+      "geometric_chain_strain": 0.00011715518558563787,
+      "center_volume_m3": 1.9876493662085875e-21
+    },
+    {
+      "time_s": 0.1653762074154822,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2800000000000002,
+      "production_densification_strain": 0.001997934996143298,
+      "geometric_chain_strain": 0.00011729395143655896,
+      "center_volume_m3": 1.9876520373450093e-21
+    },
+    {
+      "time_s": 0.16577946294185977,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2825000000000002,
+      "production_densification_strain": 0.00200183721293264,
+      "geometric_chain_strain": 0.00011743265819630366,
+      "center_volume_m3": 1.987654709159442e-21
+    },
+    {
+      "time_s": 0.1661829258739703,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2850000000000001,
+      "production_densification_strain": 0.0020057394297219823,
+      "geometric_chain_strain": 0.00011757130103362545,
+      "center_volume_m3": 1.9876573817241475e-21
+    },
+    {
+      "time_s": 0.16658659598924744,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2875,
+      "production_densification_strain": 0.0020096416465113245,
+      "geometric_chain_strain": 0.00011770914611952676,
+      "center_volume_m3": 1.987660063216485e-21
+    },
+    {
+      "time_s": 0.1669904727209668,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2900000000000003,
+      "production_densification_strain": 0.002013543863300667,
+      "geometric_chain_strain": 0.0001178461988855517,
+      "center_volume_m3": 1.987662753555906e-21
+    },
+    {
+      "time_s": 0.1673945555989984,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2925000000000002,
+      "production_densification_strain": 0.0020174460800900097,
+      "geometric_chain_strain": 0.00011798319396028045,
+      "center_volume_m3": 1.9876654445561477e-21
+    },
+    {
+      "time_s": 0.16779884448885543,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2950000000000002,
+      "production_densification_strain": 0.002021348296879352,
+      "geometric_chain_strain": 0.00011812012611744915,
+      "center_volume_m3": 1.9876681362960477e-21
+    },
+    {
+      "time_s": 0.1682033391513861,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.2975000000000003,
+      "production_densification_strain": 0.0020252505136686945,
+      "geometric_chain_strain": 0.00011825626032513359,
+      "center_volume_m3": 1.9876708369676186e-21
+    },
+    {
+      "time_s": 0.16860803925732193,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3000000000000003,
+      "production_densification_strain": 0.0020291527304580367,
+      "geometric_chain_strain": 0.00011839233377120006,
+      "center_volume_m3": 1.9876735383451934e-21
+    },
+    {
+      "time_s": 0.1690129445427248,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3025000000000002,
+      "production_densification_strain": 0.002033054947247379,
+      "geometric_chain_strain": 0.00011852760980546329,
+      "center_volume_m3": 1.9876762486460277e-21
+    },
+    {
+      "time_s": 0.16941805465103577,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3050000000000002,
+      "production_densification_strain": 0.002036957164036721,
+      "geometric_chain_strain": 0.0001186628257817679,
+      "center_volume_m3": 1.9876789596444056e-21
+    },
+    {
+      "time_s": 0.1698233689045731,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3075,
+      "production_densification_strain": 0.0020408593808260637,
+      "geometric_chain_strain": 0.00011879797706093598,
+      "center_volume_m3": 1.9876816714095204e-21
+    },
+    {
+      "time_s": 0.170228886035407,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3100000000000003,
+      "production_densification_strain": 0.0020447615976154064,
+      "geometric_chain_strain": 0.00011893159468689962,
+      "center_volume_m3": 1.9876844003031436e-21
+    },
+    {
+      "time_s": 0.1706346053669989,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3125000000000002,
+      "production_densification_strain": 0.0020486638144047485,
+      "geometric_chain_strain": 0.00011906589163668269,
+      "center_volume_m3": 1.9876871216433757e-21
+    },
+    {
+      "time_s": 0.17104052692293228,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3150000000000002,
+      "production_densification_strain": 0.002052566031194091,
+      "geometric_chain_strain": 0.00011919938605708946,
+      "center_volume_m3": 1.9876898519621257e-21
+    },
+    {
+      "time_s": 0.17144665043967658,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3175000000000003,
+      "production_densification_strain": 0.002056468247983434,
+      "geometric_chain_strain": 0.00011933281574671994,
+      "center_volume_m3": 1.987692583001971e-21
+    },
+    {
+      "time_s": 0.17185297572037045,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3200000000000003,
+      "production_densification_strain": 0.002060370464772776,
+      "geometric_chain_strain": 0.00011946544527741132,
+      "center_volume_m3": 1.987695323003018e-21
+    },
+    {
+      "time_s": 0.17225950220539385,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3225000000000002,
+      "production_densification_strain": 0.002064272681562118,
+      "geometric_chain_strain": 0.00011959727977650658,
+      "center_volume_m3": 1.987698071890182e-21
+    },
+    {
+      "time_s": 0.1726662297112842,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3250000000000002,
+      "production_densification_strain": 0.0020681748983514604,
+      "geometric_chain_strain": 0.00011972979158358932,
+      "center_volume_m3": 1.987700813262464e-21
+    },
+    {
+      "time_s": 0.1730731583570474,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3275000000000001,
+      "production_densification_strain": 0.0020720771151408026,
+      "geometric_chain_strain": 0.00011986149816622937,
+      "center_volume_m3": 1.987703563671762e-21
+    },
+    {
+      "time_s": 0.17348028769844936,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3300000000000003,
+      "production_densification_strain": 0.002075979331930145,
+      "geometric_chain_strain": 0.00011999240626714425,
+      "center_volume_m3": 1.9877063230153818e-21
+    },
+    {
+      "time_s": 0.1738876173897336,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3325000000000002,
+      "production_densification_strain": 0.002079881548719488,
+      "geometric_chain_strain": 0.00012012325518229172,
+      "center_volume_m3": 1.9877090830501212e-21
+    },
+    {
+      "time_s": 0.1742951471532593,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3350000000000002,
+      "production_densification_strain": 0.00208378376550883,
+      "geometric_chain_strain": 0.00012025330459708439,
+      "center_volume_m3": 1.9877118520378962e-21
+    },
+    {
+      "time_s": 0.1747028766221174,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3375000000000004,
+      "production_densification_strain": 0.0020876859822981726,
+      "geometric_chain_strain": 0.00012038329264263403,
+      "center_volume_m3": 1.9877146216313818e-21
+    },
+    {
+      "time_s": 0.17511080577269666,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3400000000000003,
+      "production_densification_strain": 0.002091588199087515,
+      "geometric_chain_strain": 0.00012051321703843154,
+      "center_volume_m3": 1.9877173919856315e-21
+    },
+    {
+      "time_s": 0.1755189344521219,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3425000000000002,
+      "production_densification_strain": 0.002095490415876857,
+      "geometric_chain_strain": 0.00012064233847364214,
+      "center_volume_m3": 1.9877201713414638e-21
+    },
+    {
+      "time_s": 0.17592726240376264,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3450000000000002,
+      "production_densification_strain": 0.002099392632666199,
+      "geometric_chain_strain": 0.00012077139889610233,
+      "center_volume_m3": 1.987722951416859e-21
+    },
+    {
+      "time_s": 0.17633578942677436,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3475000000000001,
+      "production_densification_strain": 0.002103294849455542,
+      "geometric_chain_strain": 0.00012089965726214125,
+      "center_volume_m3": 1.9877257404799942e-21
+    },
+    {
+      "time_s": 0.17674451522143794,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3500000000000003,
+      "production_densification_strain": 0.0021071970662448845,
+      "geometric_chain_strain": 0.0001210278555660027,
+      "center_volume_m3": 1.9877285302506436e-21
+    },
+    {
+      "time_s": 0.17715343955606616,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3525000000000003,
+      "production_densification_strain": 0.0021110992830342267,
+      "geometric_chain_strain": 0.00012115525206435329,
+      "center_volume_m3": 1.987731329006244e-21
+    },
+    {
+      "time_s": 0.17756256179625998,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3550000000000002,
+      "production_densification_strain": 0.0021150014998235693,
+      "geometric_chain_strain": 0.00012128258043742068,
+      "center_volume_m3": 1.9877341284322423e-21
+    },
+    {
+      "time_s": 0.17797188134829844,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3575000000000004,
+      "production_densification_strain": 0.002118903716612912,
+      "geometric_chain_strain": 0.00012140910713209774,
+      "center_volume_m3": 1.987736936842009e-21
+    },
+    {
+      "time_s": 0.1783813978714108,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3600000000000003,
+      "production_densification_strain": 0.002122805933402254,
+      "geometric_chain_strain": 0.0001215355749660807,
+      "center_volume_m3": 1.9877397459460155e-21
+    },
+    {
+      "time_s": 0.1787911114502886,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3625000000000003,
+      "production_densification_strain": 0.0021267081501915963,
+      "geometric_chain_strain": 0.0001216619793946716,
+      "center_volume_m3": 1.987742555811611e-21
+    },
+    {
+      "time_s": 0.17920102203868843,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3650000000000002,
+      "production_densification_strain": 0.0021306103669809385,
+      "geometric_chain_strain": 0.0001217875789346623,
+      "center_volume_m3": 1.9877453747053865e-21
+    },
+    {
+      "time_s": 0.17961112948061683,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3675000000000002,
+      "production_densification_strain": 0.002134512583770281,
+      "geometric_chain_strain": 0.00012191311794673698,
+      "center_volume_m3": 1.987748194316983e-21
+    },
+    {
+      "time_s": 0.18002143366533524,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3700000000000003,
+      "production_densification_strain": 0.0021384148005596237,
+      "geometric_chain_strain": 0.00012203785306386106,
+      "center_volume_m3": 1.987751022941784e-21
+    },
+    {
+      "time_s": 0.18043193358520956,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3725000000000003,
+      "production_densification_strain": 0.002142317017348966,
+      "geometric_chain_strain": 0.0001221625285395822,
+      "center_volume_m3": 1.9877538522723962e-21
+    },
+    {
+      "time_s": 0.1808426282604927,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3750000000000002,
+      "production_densification_strain": 0.002146219234138308,
+      "geometric_chain_strain": 0.0001222863967540455,
+      "center_volume_m3": 1.9877566905826485e-21
+    },
+    {
+      "time_s": 0.18125351740256213,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3775000000000004,
+      "production_densification_strain": 0.0021501214509276508,
+      "geometric_chain_strain": 0.00012241020612868692,
+      "center_volume_m3": 1.9877595295889265e-21
+    },
+    {
+      "time_s": 0.18166460082005143,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3800000000000003,
+      "production_densification_strain": 0.002154023667716993,
+      "geometric_chain_strain": 0.00012253321228472558,
+      "center_volume_m3": 1.9877623775998163e-21
+    },
+    {
+      "time_s": 0.18207587850809176,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3825000000000003,
+      "production_densification_strain": 0.002157925884506335,
+      "geometric_chain_strain": 0.00012265690044932498,
+      "center_volume_m3": 1.9877652180530903e-21
+    },
+    {
+      "time_s": 0.1824873504620059,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3850000000000002,
+      "production_densification_strain": 0.0021618281012956778,
+      "geometric_chain_strain": 0.00012277903709245752,
+      "center_volume_m3": 1.987768075871578e-21
+    },
+    {
+      "time_s": 0.1828990161216628,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3875000000000002,
+      "production_densification_strain": 0.00216573031808502,
+      "geometric_chain_strain": 0.00012290111833745954,
+      "center_volume_m3": 1.9877709343353256e-21
+    },
+    {
+      "time_s": 0.18331087548942157,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3900000000000003,
+      "production_densification_strain": 0.0021696325348743626,
+      "geometric_chain_strain": 0.00012302313850243163,
+      "center_volume_m3": 1.987773793531289e-21
+    },
+    {
+      "time_s": 0.18372292841173085,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3925000000000003,
+      "production_densification_strain": 0.0021735347516637048,
+      "geometric_chain_strain": 0.00012314433938254155,
+      "center_volume_m3": 1.987776661391896e-21
+    },
+    {
+      "time_s": 0.18413517463938767,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3950000000000002,
+      "production_densification_strain": 0.002177436968453047,
+      "geometric_chain_strain": 0.00012326548140850768,
+      "center_volume_m3": 1.9877795299501406e-21
+    },
+    {
+      "time_s": 0.18454761426782218,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.3975000000000004,
+      "production_densification_strain": 0.0021813391852423896,
+      "geometric_chain_strain": 0.00012338655999166726,
+      "center_volume_m3": 1.9877823992746327e-21
+    },
+    {
+      "time_s": 0.1849602472166686,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4000000000000004,
+      "production_densification_strain": 0.0021852414020317322,
+      "geometric_chain_strain": 0.00012350683065165402,
+      "center_volume_m3": 1.9877852776634506e-21
+    },
+    {
+      "time_s": 0.18537307300307987,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4025000000000003,
+      "production_densification_strain": 0.0021891436188210744,
+      "geometric_chain_strain": 0.0001236262990973458,
+      "center_volume_m3": 1.9877881650362025e-21
+    },
+    {
+      "time_s": 0.18578609155390438,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4050000000000002,
+      "production_densification_strain": 0.0021930458356104166,
+      "geometric_chain_strain": 0.00012374645385038185,
+      "center_volume_m3": 1.9877910447962866e-21
+    },
+    {
+      "time_s": 0.1861993028022214,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4075000000000002,
+      "production_densification_strain": 0.0021969480523997592,
+      "geometric_chain_strain": 0.00012386505484263122,
+      "center_volume_m3": 1.987793941946061e-21
+    },
+    {
+      "time_s": 0.18661270642415234,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4100000000000004,
+      "production_densification_strain": 0.002200850269189102,
+      "geometric_chain_strain": 0.00012398434506377676,
+      "center_volume_m3": 1.9877968314397856e-21
+    },
+    {
+      "time_s": 0.18702630231798473,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4125000000000003,
+      "production_densification_strain": 0.002204752485978444,
+      "geometric_chain_strain": 0.00012410208207180862,
+      "center_volume_m3": 1.9877997383135893e-21
+    },
+    {
+      "time_s": 0.18744008996106915,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4150000000000003,
+      "production_densification_strain": 0.0022086547027677862,
+      "geometric_chain_strain": 0.00012422049854676764,
+      "center_volume_m3": 1.98780263748448e-21
+    },
+    {
+      "time_s": 0.18785406968392926,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4175000000000004,
+      "production_densification_strain": 0.002212556919557129,
+      "geometric_chain_strain": 0.00012433810530432243,
+      "center_volume_m3": 1.9878055457484108e-21
+    },
+    {
+      "time_s": 0.18826824178695434,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4200000000000004,
+      "production_densification_strain": 0.002216459136346471,
+      "geometric_chain_strain": 0.0001244556524319096,
+      "center_volume_m3": 1.9878084547211975e-21
+    },
+    {
+      "time_s": 0.1886826063454553,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4225000000000003,
+      "production_densification_strain": 0.0022203613531358132,
+      "geometric_chain_strain": 0.00012457239220198257,
+      "center_volume_m3": 1.987811372749296e-21
+    },
+    {
+      "time_s": 0.1886826063454553,
+      "phase": "ONE_B_FAILED",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4225000000000003,
+      "production_densification_strain": 0.0022203613531358132,
+      "geometric_chain_strain": 0.00012457239220198257,
+      "center_volume_m3": 1.987811372749296e-21
+    },
+    {
+      "time_s": 0.1886826063454553,
+      "phase": "ACTIVE_EVENT_RESUMED",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4225000000000003,
+      "production_densification_strain": 0.0022203613531358132,
+      "geometric_chain_strain": 0.00012457239220198257,
+      "center_volume_m3": 1.987811372749296e-21
+    },
+    {
+      "time_s": 0.1890971629300598,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4250000000000003,
+      "production_densification_strain": 0.002224263569925156,
+      "geometric_chain_strain": 0.0001246883297912893,
+      "center_volume_m3": 1.98781429975783e-21
+    },
+    {
+      "time_s": 0.18951191148569804,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4275000000000002,
+      "production_densification_strain": 0.002228165786714498,
+      "geometric_chain_strain": 0.00012480495744660036,
+      "center_volume_m3": 1.9878172191068912e-21
+    },
+    {
+      "time_s": 0.18992685223771383,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4300000000000004,
+      "production_densification_strain": 0.0022320680035038407,
+      "geometric_chain_strain": 0.00012492077338965846,
+      "center_volume_m3": 1.9878201475763595e-21
+    },
+    {
+      "time_s": 0.19034198477981942,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4325000000000003,
+      "production_densification_strain": 0.002235970220293183,
+      "geometric_chain_strain": 0.00012503578430977935,
+      "center_volume_m3": 1.9878230850655584e-21
+    },
+    {
+      "time_s": 0.190757308811294,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4350000000000003,
+      "production_densification_strain": 0.002239872437082525,
+      "geometric_chain_strain": 0.00012515073935071008,
+      "center_volume_m3": 1.9878260232133527e-21
+    },
+    {
+      "time_s": 0.1911728243756322,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4375000000000004,
+      "production_densification_strain": 0.0022437746538718677,
+      "geometric_chain_strain": 0.0001252656339587599,
+      "center_volume_m3": 1.9878289620872524e-21
+    },
+    {
+      "time_s": 0.19158853129147962,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4400000000000004,
+      "production_densification_strain": 0.00224767687066121,
+      "geometric_chain_strain": 0.00012537971967863104,
+      "center_volume_m3": 1.9878319100378014e-21
+    },
+    {
+      "time_s": 0.19200443024403008,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4425000000000003,
+      "production_densification_strain": 0.0022515790874505525,
+      "geometric_chain_strain": 0.00012549373469594727,
+      "center_volume_m3": 1.9878348586437516e-21
+    },
+    {
+      "time_s": 0.192420521837253,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4450000000000003,
+      "production_densification_strain": 0.0022554813042398947,
+      "geometric_chain_strain": 0.00012560694192342847,
+      "center_volume_m3": 1.9878378163097073e-21
+    },
+    {
+      "time_s": 0.1928368054122096,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4475000000000002,
+      "production_densification_strain": 0.002259383521029237,
+      "geometric_chain_strain": 0.00012572009253453142,
+      "center_volume_m3": 1.987840774645143e-21
+    },
+    {
+      "time_s": 0.1932532800898561,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4500000000000004,
+      "production_densification_strain": 0.00226328573781858,
+      "geometric_chain_strain": 0.00012583243600383653,
+      "center_volume_m3": 1.987843742032882e-21
+    },
+    {
+      "time_s": 0.19366994458973041,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4525000000000003,
+      "production_densification_strain": 0.002267187954607922,
+      "geometric_chain_strain": 0.00012594472374583,
+      "center_volume_m3": 1.98784671007899e-21
+    },
+    {
+      "time_s": 0.19408679842453302,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4550000000000003,
+      "production_densification_strain": 0.0022710901713972644,
+      "geometric_chain_strain": 0.00012605695141743034,
+      "center_volume_m3": 1.9878496788466728e-21
+    },
+    {
+      "time_s": 0.1945038414230173,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4575000000000005,
+      "production_densification_strain": 0.002274992388186607,
+      "geometric_chain_strain": 0.00012616836919143726,
+      "center_volume_m3": 1.9878526567026245e-21
+    },
+    {
+      "time_s": 0.1949210733185073,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4600000000000004,
+      "production_densification_strain": 0.002278894604975949,
+      "geometric_chain_strain": 0.00012627972977485857,
+      "center_volume_m3": 1.987855635235846e-21
+    },
+    {
+      "time_s": 0.19533849390253372,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4625000000000004,
+      "production_densification_strain": 0.0022827968217652914,
+      "geometric_chain_strain": 0.00012639028172589661,
+      "center_volume_m3": 1.987858622838661e-21
+    },
+    {
+      "time_s": 0.19575610287536965,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4650000000000003,
+      "production_densification_strain": 0.002286699038554634,
+      "geometric_chain_strain": 0.00012650077777431878,
+      "center_volume_m3": 1.9878616111015664e-21
+    },
+    {
+      "time_s": 0.19617390030665283,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4675000000000002,
+      "production_densification_strain": 0.002290601255343976,
+      "geometric_chain_strain": 0.00012661121376722484,
+      "center_volume_m3": 1.987864600085413e-21
+    },
+    {
+      "time_s": 0.19659188608626377,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4700000000000004,
+      "production_densification_strain": 0.002294503472133319,
+      "geometric_chain_strain": 0.00012672083888098928,
+      "center_volume_m3": 1.987867598168818e-21
+    },
+    {
+      "time_s": 0.19701005999294502,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4725000000000004,
+      "production_densification_strain": 0.002298405688922661,
+      "geometric_chain_strain": 0.0001268304069543813,
+      "center_volume_m3": 1.987870596926941e-21
+    },
+    {
+      "time_s": 0.1974284218532479,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4750000000000003,
+      "production_densification_strain": 0.002302307905712003,
+      "geometric_chain_strain": 0.00012693916553330187,
+      "center_volume_m3": 1.9878736047642605e-21
+    },
+    {
+      "time_s": 0.1978469713953567,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4775000000000005,
+      "production_densification_strain": 0.002306210122501346,
+      "geometric_chain_strain": 0.000127047868460628,
+      "center_volume_m3": 1.9878766132576948e-21
+    },
+    {
+      "time_s": 0.19826570840943705,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4800000000000004,
+      "production_densification_strain": 0.002310112339290688,
+      "geometric_chain_strain": 0.00012715576267641193,
+      "center_volume_m3": 1.987879630819743e-21
+    },
+    {
+      "time_s": 0.19868463259622093,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4825000000000004,
+      "production_densification_strain": 0.0023140145560800306,
+      "geometric_chain_strain": 0.000127263602433203,
+      "center_volume_m3": 1.987882649023939e-21
+    },
+    {
+      "time_s": 0.19910374403061656,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4850000000000003,
+      "production_densification_strain": 0.002317916772869373,
+      "geometric_chain_strain": 0.00012737138345098042,
+      "center_volume_m3": 1.987885667931401e-21
+    },
+    {
+      "time_s": 0.19952304260344894,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4875000000000003,
+      "production_densification_strain": 0.002321818989658715,
+      "geometric_chain_strain": 0.0001274783534376267,
+      "center_volume_m3": 1.987888695938576e-21
+    },
+    {
+      "time_s": 0.19994252809438914,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4900000000000004,
+      "production_densification_strain": 0.0023257212064480576,
+      "geometric_chain_strain": 0.00012758526767486789,
+      "center_volume_m3": 1.9878917246031756e-21
+    },
+    {
+      "time_s": 0.20036220033083524,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4925000000000004,
+      "production_densification_strain": 0.0023296234232374,
+      "geometric_chain_strain": 0.00012769137227752747,
+      "center_volume_m3": 1.987894762346938e-21
+    },
+    {
+      "time_s": 0.20078205904168409,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4950000000000003,
+      "production_densification_strain": 0.0023335256400267425,
+      "geometric_chain_strain": 0.00012779741977608783,
+      "center_volume_m3": 1.9878978007191e-21
+    },
+    {
+      "time_s": 0.20120210432705837,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.4975000000000005,
+      "production_densification_strain": 0.002337427856816085,
+      "geometric_chain_strain": 0.00012790340886681406,
+      "center_volume_m3": 1.9879008397890703e-21
+    },
+    {
+      "time_s": 0.20162233609601715,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5000000000000004,
+      "production_densification_strain": 0.0023413300736054273,
+      "geometric_chain_strain": 0.00012800858629158363,
+      "center_volume_m3": 1.987903887964884e-21
+    },
+    {
+      "time_s": 0.2020427541228162,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5025000000000004,
+      "production_densification_strain": 0.00234523229039477,
+      "geometric_chain_strain": 0.0001281137058851689,
+      "center_volume_m3": 1.987906936519075e-21
+    },
+    {
+      "time_s": 0.20246335821618172,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5050000000000003,
+      "production_densification_strain": 0.002349134507184112,
+      "geometric_chain_strain": 0.00012821801537943323,
+      "center_volume_m3": 1.9879099941564772e-21
+    },
+    {
+      "time_s": 0.2028841481021878,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5075000000000003,
+      "production_densification_strain": 0.0023530367239734543,
+      "geometric_chain_strain": 0.00012832227059988988,
+      "center_volume_m3": 1.9879130524333344e-21
+    },
+    {
+      "time_s": 0.20330512356715533,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5100000000000002,
+      "production_densification_strain": 0.0023569389407627965,
+      "geometric_chain_strain": 0.0001284257160576452,
+      "center_volume_m3": 1.9879161197912985e-21
+    },
+    {
+      "time_s": 0.20372628431238454,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5125000000000002,
+      "production_densification_strain": 0.0023608411575521387,
+      "geometric_chain_strain": 0.00012852910852900745,
+      "center_volume_m3": 1.987919187770467e-21
+    },
+    {
+      "time_s": 0.20414763042738204,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5150000000000001,
+      "production_densification_strain": 0.0023647433743414813,
+      "geometric_chain_strain": 0.00012863244412641972,
+      "center_volume_m3": 1.9879222564263046e-21
+    },
+    {
+      "time_s": 0.2045691618171458,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5175,
+      "production_densification_strain": 0.0023686455911308235,
+      "geometric_chain_strain": 0.0001287349683604111,
+      "center_volume_m3": 1.9879253341804213e-21
+    },
+    {
+      "time_s": 0.20499087828009693,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.52,
+      "production_densification_strain": 0.0023725478079201657,
+      "geometric_chain_strain": 0.00012883743906144662,
+      "center_volume_m3": 1.9879284125586487e-21
+    },
+    {
+      "time_s": 0.205412779975806,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5225,
+      "production_densification_strain": 0.002376450024709508,
+      "geometric_chain_strain": 0.00012893985224338156,
+      "center_volume_m3": 1.987931491603859e-21
+    },
+    {
+      "time_s": 0.20583486685355734,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.525,
+      "production_densification_strain": 0.00238035224149885,
+      "geometric_chain_strain": 0.00012904144997649691,
+      "center_volume_m3": 1.987934579741156e-21
+    },
+    {
+      "time_s": 0.2062571387400515,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5274999999999999,
+      "production_densification_strain": 0.0023842544582881927,
+      "geometric_chain_strain": 0.00012914299384936268,
+      "center_volume_m3": 1.9879376685041024e-21
+    },
+    {
+      "time_s": 0.20667959549777348,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5299999999999998,
+      "production_densification_strain": 0.002388156675077535,
+      "geometric_chain_strain": 0.00012924372713252197,
+      "center_volume_m3": 1.987940766348537e-21
+    },
+    {
+      "time_s": 0.20710223687975787,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5324999999999998,
+      "production_densification_strain": 0.002392058891866877,
+      "geometric_chain_strain": 0.00012934440493694854,
+      "center_volume_m3": 1.98794386478798e-21
+    },
+    {
+      "time_s": 0.20752506269016135,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5349999999999997,
+      "production_densification_strain": 0.0023959611086562193,
+      "geometric_chain_strain": 0.00012944427317551632,
+      "center_volume_m3": 1.987946972294977e-21
+    },
+    {
+      "time_s": 0.20794807263636444,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5374999999999996,
+      "production_densification_strain": 0.0023998633254455615,
+      "geometric_chain_strain": 0.0001295440904161005,
+      "center_volume_m3": 1.987950080389733e-21
+    },
+    {
+      "time_s": 0.208371266804185,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5399999999999996,
+      "production_densification_strain": 0.002403765542234904,
+      "geometric_chain_strain": 0.000129643852621375,
+      "center_volume_m3": 1.98795318913115e-21
+    },
+    {
+      "time_s": 0.2087946450768828,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5424999999999995,
+      "production_densification_strain": 0.0024076677590242463,
+      "geometric_chain_strain": 0.0001297428032485115,
+      "center_volume_m3": 1.9879563069670614e-21
+    },
+    {
+      "time_s": 0.20921820669400898,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5449999999999995,
+      "production_densification_strain": 0.0024115699758135885,
+      "geometric_chain_strain": 0.00012984170210184054,
+      "center_volume_m3": 1.9879594254024623e-21
+    },
+    {
+      "time_s": 0.209641951045754,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5474999999999994,
+      "production_densification_strain": 0.0024154721926029307,
+      "geometric_chain_strain": 0.00012994054524162468,
+      "center_volume_m3": 1.987962544492426e-21
+    },
+    {
+      "time_s": 0.21006587783826952,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5499999999999994,
+      "production_densification_strain": 0.0024193744093922733,
+      "geometric_chain_strain": 0.0001300385757165845,
+      "center_volume_m3": 1.9879656726892234e-21
+    },
+    {
+      "time_s": 0.2104899865500175,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5524999999999993,
+      "production_densification_strain": 0.0024232766261816155,
+      "geometric_chain_strain": 0.00013013579915299722,
+      "center_volume_m3": 1.9879688099117178e-21
+    },
+    {
+      "time_s": 0.2109142771387676,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5549999999999993,
+      "production_densification_strain": 0.0024271788429709577,
+      "geometric_chain_strain": 0.00013023372914089393,
+      "center_volume_m3": 1.987971939259969e-21
+    },
+    {
+      "time_s": 0.2113387495239839,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5574999999999992,
+      "production_densification_strain": 0.0024310810597603,
+      "geometric_chain_strain": 0.00013033008861684792,
+      "center_volume_m3": 1.987975086182556e-21
+    },
+    {
+      "time_s": 0.21176340337211946,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5599999999999992,
+      "production_densification_strain": 0.002434983276549642,
+      "geometric_chain_strain": 0.00013042715759636891,
+      "center_volume_m3": 1.987978225187861e-21
+    },
+    {
+      "time_s": 0.2121882388804185,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5624999999999991,
+      "production_densification_strain": 0.0024388854933389847,
+      "geometric_chain_strain": 0.00013052341246766463,
+      "center_volume_m3": 1.987981373321739e-21
+    },
+    {
+      "time_s": 0.2126132558783972,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.564999999999999,
+      "production_densification_strain": 0.0024427877101283273,
+      "geometric_chain_strain": 0.00013061960557114727,
+      "center_volume_m3": 1.9879845218834237e-21
+    },
+    {
+      "time_s": 0.21303845423216883,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.567499999999999,
+      "production_densification_strain": 0.0024466899269176695,
+      "geometric_chain_strain": 0.00013071498765682144,
+      "center_volume_m3": 1.9879876795251652e-21
+    },
+    {
+      "time_s": 0.21346383370214264,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.569999999999999,
+      "production_densification_strain": 0.0024505921437070117,
+      "geometric_chain_strain": 0.00013081031991779568,
+      "center_volume_m3": 1.987990837734915e-21
+    },
+    {
+      "time_s": 0.2138893941017508,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.572499999999999,
+      "production_densification_strain": 0.002454494360496354,
+      "geometric_chain_strain": 0.00013090484230426913,
+      "center_volume_m3": 1.987994005009305e-21
+    },
+    {
+      "time_s": 0.2143151351512075,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5749999999999988,
+      "production_densification_strain": 0.002458396577285696,
+      "geometric_chain_strain": 0.00013099931613347326,
+      "center_volume_m3": 1.987997172835733e-21
+    },
+    {
+      "time_s": 0.21474105696082235,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5774999999999988,
+      "production_densification_strain": 0.0024622987940750387,
+      "geometric_chain_strain": 0.0001310937374813248,
+      "center_volume_m3": 1.988000341271235e-21
+    },
+    {
+      "time_s": 0.21516715943230436,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5799999999999987,
+      "production_densification_strain": 0.002466201010864381,
+      "geometric_chain_strain": 0.00013118734721007108,
+      "center_volume_m3": 1.988003518794318e-21
+    },
+    {
+      "time_s": 0.21559344211780374,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5824999999999987,
+      "production_densification_strain": 0.002470103227653723,
+      "geometric_chain_strain": 0.00013128090771463707,
+      "center_volume_m3": 1.9880066968770523e-21
+    },
+    {
+      "time_s": 0.2160199041596877,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5849999999999986,
+      "production_densification_strain": 0.0024740054444430653,
+      "geometric_chain_strain": 0.00013137441535893135,
+      "center_volume_m3": 1.9880098755719274e-21
+    },
+    {
+      "time_s": 0.21644654394229257,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5874999999999986,
+      "production_densification_strain": 0.0024779076612324075,
+      "geometric_chain_strain": 0.00013146711063416472,
+      "center_volume_m3": 1.988013063361357e-21
+    },
+    {
+      "time_s": 0.21687336000033786,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5899999999999985,
+      "production_densification_strain": 0.00248180987802175,
+      "geometric_chain_strain": 0.00013155975669731923,
+      "center_volume_m3": 1.9880162517072242e-21
+    },
+    {
+      "time_s": 0.21730035133086206,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5924999999999985,
+      "production_densification_strain": 0.0024857120948110923,
+      "geometric_chain_strain": 0.0001316515878021507,
+      "center_volume_m3": 1.9880194490901743e-21
+    },
+    {
+      "time_s": 0.21772751734977142,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5949999999999984,
+      "production_densification_strain": 0.0024896143116004345,
+      "geometric_chain_strain": 0.00013174337140708925,
+      "center_volume_m3": 1.9880226470066036e-21
+    },
+    {
+      "time_s": 0.21815485809839302,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5974999999999984,
+      "production_densification_strain": 0.0024935165283897767,
+      "geometric_chain_strain": 0.0001318351037203902,
+      "center_volume_m3": 1.9880258455114372e-21
+    },
+    {
+      "time_s": 0.21858237261563937,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.5999999999999983,
+      "production_densification_strain": 0.002497418745179119,
+      "geometric_chain_strain": 0.00013192602430434075,
+      "center_volume_m3": 1.988029053098409e-21
+    },
+    {
+      "time_s": 0.21901005994574285,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6024999999999983,
+      "production_densification_strain": 0.0025013209619684615,
+      "geometric_chain_strain": 0.00013201689695030439,
+      "center_volume_m3": 1.988032261222992e-21
+    },
+    {
+      "time_s": 0.21943791988355374,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6049999999999982,
+      "production_densification_strain": 0.0025052231787578037,
+      "geometric_chain_strain": 0.00013210695971332953,
+      "center_volume_m3": 1.9880354784028453e-21
+    },
+    {
+      "time_s": 0.21986595135440867,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6074999999999982,
+      "production_densification_strain": 0.002509125395547146,
+      "geometric_chain_strain": 0.00013219697628819027,
+      "center_volume_m3": 1.9880386960964386e-21
+    },
+    {
+      "time_s": 0.22029415375424813,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.609999999999998,
+      "production_densification_strain": 0.002513027612336488,
+      "geometric_chain_strain": 0.00013228694287592546,
+      "center_volume_m3": 1.988041914358744e-21
+    },
+    {
+      "time_s": 0.2207225270413904,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.612499999999998,
+      "production_densification_strain": 0.0025169298291258307,
+      "geometric_chain_strain": 0.0001323760982129274,
+      "center_volume_m3": 1.9880451416932535e-21
+    },
+    {
+      "time_s": 0.2211510710580656,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.614999999999998,
+      "production_densification_strain": 0.002520832045915173,
+      "geometric_chain_strain": 0.00013246520687570928,
+      "center_volume_m3": 1.9880483695463334e-21
+    },
+    {
+      "time_s": 0.22157978568953735,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.617499999999998,
+      "production_densification_strain": 0.002524734262704515,
+      "geometric_chain_strain": 0.00013255350611296457,
+      "center_volume_m3": 1.9880516064451153e-21
+    },
+    {
+      "time_s": 0.22200867065133614,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6199999999999979,
+      "production_densification_strain": 0.0025286364794938573,
+      "geometric_chain_strain": 0.0001326417603998431,
+      "center_volume_m3": 1.988054843839019e-21
+    },
+    {
+      "time_s": 0.22243772519596933,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6224999999999978,
+      "production_densification_strain": 0.0025325386962831995,
+      "geometric_chain_strain": 0.0001327299659391601,
+      "center_volume_m3": 1.9880580817829508e-21
+    },
+    {
+      "time_s": 0.2228669484401153,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6249999999999978,
+      "production_densification_strain": 0.002536440913072542,
+      "geometric_chain_strain": 0.00013281736068182504,
+      "center_volume_m3": 1.988061328789603e-21
+    },
+    {
+      "time_s": 0.22329634023056935,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6274999999999977,
+      "production_densification_strain": 0.0025403431298618843,
+      "geometric_chain_strain": 0.0001329047099727365,
+      "center_volume_m3": 1.9880645762964465e-21
+    },
+    {
+      "time_s": 0.22372590077783533,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6299999999999977,
+      "production_densification_strain": 0.0025442453466512265,
+      "geometric_chain_strain": 0.0001329920102226545,
+      "center_volume_m3": 1.9880678243551837e-21
+    },
+    {
+      "time_s": 0.22415562947581386,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6324999999999976,
+      "production_densification_strain": 0.0025481475634405687,
+      "geometric_chain_strain": 0.0001330784990289935,
+      "center_volume_m3": 1.988071081482274e-21
+    },
+    {
+      "time_s": 0.2245855253632029,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6349999999999976,
+      "production_densification_strain": 0.0025520497802299113,
+      "geometric_chain_strain": 0.00013316494228565734,
+      "center_volume_m3": 1.9880743391086127e-21
+    },
+    {
+      "time_s": 0.22501558811876748,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6374999999999975,
+      "production_densification_strain": 0.0025559519970192535,
+      "geometric_chain_strain": 0.0001332505760661684,
+      "center_volume_m3": 1.9880776057748583e-21
+    },
+    {
+      "time_s": 0.22544581755405413,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6399999999999975,
+      "production_densification_strain": 0.002559854213808596,
+      "geometric_chain_strain": 0.0001333361661246535,
+      "center_volume_m3": 1.9880808729155255e-21
+    },
+    {
+      "time_s": 0.22587621385619638,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6424999999999974,
+      "production_densification_strain": 0.0025637564305979383,
+      "geometric_chain_strain": 0.00013342170894270478,
+      "center_volume_m3": 1.9880841405839468e-21
+    },
+    {
+      "time_s": 0.226306777000154,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6449999999999974,
+      "production_densification_strain": 0.0025676586473872805,
+      "geometric_chain_strain": 0.0001335064410665776,
+      "center_volume_m3": 1.988087417307244e-21
+    },
+    {
+      "time_s": 0.22673750684468458,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6474999999999973,
+      "production_densification_strain": 0.0025715608641766227,
+      "geometric_chain_strain": 0.0001335911290839542,
+      "center_volume_m3": 1.988090694508521e-21
+    },
+    {
+      "time_s": 0.2271684032905213,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6499999999999972,
+      "production_densification_strain": 0.002575463080965965,
+      "geometric_chain_strain": 0.00013367500830430146,
+      "center_volume_m3": 1.988093980737274e-21
+    },
+    {
+      "time_s": 0.22759946613830379,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6524999999999972,
+      "production_densification_strain": 0.0025793652977553075,
+      "geometric_chain_strain": 0.00013375884519473136,
+      "center_volume_m3": 1.9880972674199086e-21
+    },
+    {
+      "time_s": 0.22803069489071573,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6549999999999971,
+      "production_densification_strain": 0.0025832675145446497,
+      "geometric_chain_strain": 0.0001338426360116829,
+      "center_volume_m3": 1.988100554610451e-21
+    },
+    {
+      "time_s": 0.22846208833978882,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.657499999999997,
+      "production_densification_strain": 0.002587169731333992,
+      "geometric_chain_strain": 0.00013392561679348436,
+      "center_volume_m3": 1.9881038508436337e-21
+    },
+    {
+      "time_s": 0.2288936454028666,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.659999999999997,
+      "production_densification_strain": 0.002591071948123334,
+      "geometric_chain_strain": 0.00013400855483414187,
+      "center_volume_m3": 1.9881071475345173e-21
+    },
+    {
+      "time_s": 0.22932536586529045,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.662499999999997,
+      "production_densification_strain": 0.0025949741649126763,
+      "geometric_chain_strain": 0.00013409144659493055,
+      "center_volume_m3": 1.9881104447339627e-21
+    },
+    {
+      "time_s": 0.22975724973333497,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.664999999999997,
+      "production_densification_strain": 0.002598876381702019,
+      "geometric_chain_strain": 0.00013417352782174596,
+      "center_volume_m3": 1.988113750977479e-21
+    },
+    {
+      "time_s": 0.23018929669225008,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6674999999999969,
+      "production_densification_strain": 0.002602778598491361,
+      "geometric_chain_strain": 0.00013425556629376167,
+      "center_volume_m3": 1.9881170576765612e-21
+    },
+    {
+      "time_s": 0.2306215058592856,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6699999999999968,
+      "production_densification_strain": 0.0026066808152807033,
+      "geometric_chain_strain": 0.00013433679624264006,
+      "center_volume_m3": 1.9881203733927995e-21
+    },
+    {
+      "time_s": 0.23105387676297712,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6724999999999968,
+      "production_densification_strain": 0.0026105830320700455,
+      "geometric_chain_strain": 0.00013441874309361168,
+      "center_volume_m3": 1.9881236806142833e-21
+    },
+    {
+      "time_s": 0.23148640953624636,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6749999999999967,
+      "production_densification_strain": 0.002614485248859388,
+      "geometric_chain_strain": 0.00013449911195795305,
+      "center_volume_m3": 1.9881270054668688e-21
+    },
+    {
+      "time_s": 0.23191910397441096,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6774999999999967,
+      "production_densification_strain": 0.0026183874656487303,
+      "geometric_chain_strain": 0.00013458020601908594,
+      "center_volume_m3": 1.9881303221823465e-21
+    },
+    {
+      "time_s": 0.23235196010191456,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6799999999999966,
+      "production_densification_strain": 0.0026222896824380725,
+      "geometric_chain_strain": 0.00013466048779553486,
+      "center_volume_m3": 1.9881336479619197e-21
+    },
+    {
+      "time_s": 0.2327849774338029,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6824999999999966,
+      "production_densification_strain": 0.0026261918992274147,
+      "geometric_chain_strain": 0.00013474072708230533,
+      "center_volume_m3": 1.9881369741850503e-21
+    },
+    {
+      "time_s": 0.23321815556690056,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6849999999999965,
+      "production_densification_strain": 0.002630094116016757,
+      "geometric_chain_strain": 0.00013482015762511512,
+      "center_volume_m3": 1.9881403094172784e-21
+    },
+    {
+      "time_s": 0.2336514941190389,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6874999999999964,
+      "production_densification_strain": 0.0026339963328060995,
+      "geometric_chain_strain": 0.0001348995480324744,
+      "center_volume_m3": 1.9881436450606493e-21
+    },
+    {
+      "time_s": 0.23408499321705734,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6899999999999964,
+      "production_densification_strain": 0.0026378985495954417,
+      "geometric_chain_strain": 0.00013497889468483404,
+      "center_volume_m3": 1.988146981167945e-21
+    },
+    {
+      "time_s": 0.2345186528778272,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6924999999999963,
+      "production_densification_strain": 0.002641800766384784,
+      "geometric_chain_strain": 0.00013505743173725104,
+      "center_volume_m3": 1.988150326295572e-21
+    },
+    {
+      "time_s": 0.23495247306469108,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6949999999999963,
+      "production_densification_strain": 0.002645702983174126,
+      "geometric_chain_strain": 0.00013513592637470762,
+      "center_volume_m3": 1.9881536716836288e-21
+    },
+    {
+      "time_s": 0.2353864541485166,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6974999999999962,
+      "production_densification_strain": 0.0026496051999634683,
+      "geometric_chain_strain": 0.00013521437739194564,
+      "center_volume_m3": 1.988157017532963e-21
+    },
+    {
+      "time_s": 0.23582059631504693,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.6999999999999962,
+      "production_densification_strain": 0.002653507416752811,
+      "geometric_chain_strain": 0.0001352920185890838,
+      "center_volume_m3": 1.988160372403863e-21
+    },
+    {
+      "time_s": 0.23625489964158441,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7024999999999961,
+      "production_densification_strain": 0.002657409633542153,
+      "geometric_chain_strain": 0.0001353696195256493,
+      "center_volume_m3": 1.988163727687552e-21
+    },
+    {
+      "time_s": 0.23668936424578357,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.704999999999996,
+      "production_densification_strain": 0.0026613118503314957,
+      "geometric_chain_strain": 0.00013544641249108036,
+      "center_volume_m3": 1.988167091968465e-21
+    },
+    {
+      "time_s": 0.23712399013736224,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.707499999999996,
+      "production_densification_strain": 0.002665214067120838,
+      "geometric_chain_strain": 0.00013552316704801282,
+      "center_volume_m3": 1.988170456638017e-21
+    },
+    {
+      "time_s": 0.23755877769409026,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.709999999999996,
+      "production_densification_strain": 0.00266911628391018,
+      "geometric_chain_strain": 0.00013559987961431208,
+      "center_volume_m3": 1.9881738217476903e-21
+    },
+    {
+      "time_s": 0.23799372706499644,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.712499999999996,
+      "production_densification_strain": 0.0026730185006995223,
+      "geometric_chain_strain": 0.00013567578337991826,
+      "center_volume_m3": 1.9881771958635442e-21
+    },
+    {
+      "time_s": 0.2384288379583994,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7149999999999959,
+      "production_densification_strain": 0.002676920717488865,
+      "geometric_chain_strain": 0.00013575164872881018,
+      "center_volume_m3": 1.988180570365671e-21
+    },
+    {
+      "time_s": 0.23886410996971638,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7174999999999958,
+      "production_densification_strain": 0.002680822934278207,
+      "geometric_chain_strain": 0.0001358274722851327,
+      "center_volume_m3": 1.9881839453022428e-21
+    },
+    {
+      "time_s": 0.23929954276972568,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7199999999999958,
+      "production_densification_strain": 0.0026847251510675493,
+      "geometric_chain_strain": 0.0001359024869579395,
+      "center_volume_m3": 1.988187329242028e-21
+    },
+    {
+      "time_s": 0.2397351363614767,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7224999999999957,
+      "production_densification_strain": 0.0026886273678568915,
+      "geometric_chain_strain": 0.0001359774635533162,
+      "center_volume_m3": 1.988190713560289e-21
+    },
+    {
+      "time_s": 0.2401708910976207,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7249999999999956,
+      "production_densification_strain": 0.0026925295846462337,
+      "geometric_chain_strain": 0.00013605239872427344,
+      "center_volume_m3": 1.9881940983050604e-21
+    },
+    {
+      "time_s": 0.2406068070932761,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7274999999999956,
+      "production_densification_strain": 0.0026964318014355763,
+      "geometric_chain_strain": 0.00013612652501859834,
+      "center_volume_m3": 1.9881974920491114e-21
+    },
+    {
+      "time_s": 0.24104288433040724,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7299999999999955,
+      "production_densification_strain": 0.0027003340182249185,
+      "geometric_chain_strain": 0.00013620061361541147,
+      "center_volume_m3": 1.988200886163967e-21
+    },
+    {
+      "time_s": 0.24147912281751172,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7324999999999955,
+      "production_densification_strain": 0.0027042362350142607,
+      "geometric_chain_strain": 0.0001362738956082188,
+      "center_volume_m3": 1.9882042892454578e-21
+    },
+    {
+      "time_s": 0.24191552245068965,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7349999999999954,
+      "production_densification_strain": 0.002708138451803603,
+      "geometric_chain_strain": 0.00013634714195653874,
+      "center_volume_m3": 1.9882076926698942e-21
+    },
+    {
+      "time_s": 0.24235208349489676,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7374999999999954,
+      "production_densification_strain": 0.0027120406685929455,
+      "geometric_chain_strain": 0.00013642034493455135,
+      "center_volume_m3": 1.988211096477762e-21
+    },
+    {
+      "time_s": 0.24278880599286626,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7399999999999953,
+      "production_densification_strain": 0.0027159428853822877,
+      "geometric_chain_strain": 0.00013649274054705618,
+      "center_volume_m3": 1.988214509260628e-21
+    },
+    {
+      "time_s": 0.24322568986743853,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7424999999999953,
+      "production_densification_strain": 0.00271984510217163,
+      "geometric_chain_strain": 0.00013656510044190995,
+      "center_volume_m3": 1.9882179223856e-21
+    },
+    {
+      "time_s": 0.2436627354000696,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7449999999999952,
+      "production_densification_strain": 0.002723747318960972,
+      "geometric_chain_strain": 0.00013663742121650113,
+      "center_volume_m3": 1.988221335901476e-21
+    },
+    {
+      "time_s": 0.24409994263892287,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7474999999999952,
+      "production_densification_strain": 0.0027276495357503143,
+      "geometric_chain_strain": 0.00013670893444561738,
+      "center_volume_m3": 1.9882247583916462e-21
+    },
+    {
+      "time_s": 0.24453731150183916,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7499999999999951,
+      "production_densification_strain": 0.002731551752539657,
+      "geometric_chain_strain": 0.0001367804121806815,
+      "center_volume_m3": 1.9882281812187827e-21
+    },
+    {
+      "time_s": 0.24497484193443692,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.752499999999995,
+      "production_densification_strain": 0.002735453969328999,
+      "geometric_chain_strain": 0.00013685108458794115,
+      "center_volume_m3": 1.98823161298858e-21
+    },
+    {
+      "time_s": 0.24541253409462527,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.754999999999995,
+      "production_densification_strain": 0.0027393561861183413,
+      "geometric_chain_strain": 0.00013692249010577306,
+      "center_volume_m3": 1.9882350365045424e-21
+    },
+    {
+      "time_s": 0.24585038838449305,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.757499999999995,
+      "production_densification_strain": 0.0027432584029076835,
+      "geometric_chain_strain": 0.0001369930843762024,
+      "center_volume_m3": 1.988238469044461e-21
+    },
+    {
+      "time_s": 0.2462884044821015,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.759999999999995,
+      "production_densification_strain": 0.0027471606196970257,
+      "geometric_chain_strain": 0.0001370628744091773,
+      "center_volume_m3": 1.9882419105053613e-21
+    },
+    {
+      "time_s": 0.24672658219727966,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7624999999999948,
+      "production_densification_strain": 0.0027510628364863683,
+      "geometric_chain_strain": 0.0001371326316692567,
+      "center_volume_m3": 1.9882453522634815e-21
+    },
+    {
+      "time_s": 0.24716492171211263,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7649999999999948,
+      "production_densification_strain": 0.0027549650532757105,
+      "geometric_chain_strain": 0.00013720235241976297,
+      "center_volume_m3": 1.9882487943730244e-21
+    },
+    {
+      "time_s": 0.2476034229883808,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7674999999999947,
+      "production_densification_strain": 0.0027588672700650527,
+      "geometric_chain_strain": 0.00013727126174600812,
+      "center_volume_m3": 1.988252245388567e-21
+    },
+    {
+      "time_s": 0.24804208587058807,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7699999999999947,
+      "production_densification_strain": 0.002762769486854395,
+      "geometric_chain_strain": 0.00013734013798660794,
+      "center_volume_m3": 1.9882556967046824e-21
+    },
+    {
+      "time_s": 0.24848091056822053,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7724999999999946,
+      "production_densification_strain": 0.002766671703643737,
+      "geometric_chain_strain": 0.00013740897774539018,
+      "center_volume_m3": 1.98825914836998e-21
+    },
+    {
+      "time_s": 0.24891989647479315,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7749999999999946,
+      "production_densification_strain": 0.0027705739204330797,
+      "geometric_chain_strain": 0.0001374770114251911,
+      "center_volume_m3": 1.9882626089798542e-21
+    },
+    {
+      "time_s": 0.24935904270353607,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7774999999999945,
+      "production_densification_strain": 0.0027744761372224223,
+      "geometric_chain_strain": 0.00013754501225393678,
+      "center_volume_m3": 1.9882660698849507e-21
+    },
+    {
+      "time_s": 0.249798349315759,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7799999999999945,
+      "production_densification_strain": 0.0027783783540117645,
+      "geometric_chain_strain": 0.00013761297690706442,
+      "center_volume_m3": 1.9882695311328424e-21
+    },
+    {
+      "time_s": 0.2502378162971003,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7824999999999944,
+      "production_densification_strain": 0.0027822805708011067,
+      "geometric_chain_strain": 0.00013768013574122495,
+      "center_volume_m3": 1.9882730013204695e-21
+    },
+    {
+      "time_s": 0.2506774435047704,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7849999999999944,
+      "production_densification_strain": 0.002786182787590449,
+      "geometric_chain_strain": 0.00013774725343596028,
+      "center_volume_m3": 1.9882764716743825e-21
+    },
+    {
+      "time_s": 0.25111723115700335,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7874999999999943,
+      "production_densification_strain": 0.002790085004379791,
+      "geometric_chain_strain": 0.0001378143354675565,
+      "center_volume_m3": 1.9882799423614167e-21
+    },
+    {
+      "time_s": 0.25155717924042204,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7899999999999943,
+      "production_densification_strain": 0.0027939872211691337,
+      "geometric_chain_strain": 0.00013788061167741006,
+      "center_volume_m3": 1.98828342198239e-21
+    },
+    {
+      "time_s": 0.25199728730912996,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7924999999999942,
+      "production_densification_strain": 0.002797889437958476,
+      "geometric_chain_strain": 0.0001379468558779795,
+      "center_volume_m3": 1.9882869018825134e-21
+    },
+    {
+      "time_s": 0.2524375545796132,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.7949999999999942,
+      "production_densification_strain": 0.002801791654747818,
+      "geometric_chain_strain": 0.00013801229648235935,
+      "center_volume_m3": 1.9882903906852664e-21
+    },
+    {
+      "time_s": 0.2528779807998702,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.797499999999994,
+      "production_densification_strain": 0.0028056938715371603,
+      "geometric_chain_strain": 0.00013807847546265517,
+      "center_volume_m3": 1.9882938711634602e-21
+    },
+    {
+      "time_s": 0.2533185660063523,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.799999999999994,
+      "production_densification_strain": 0.0028095960883265025,
+      "geometric_chain_strain": 0.00013814307662962655,
+      "center_volume_m3": 1.98829736920076e-21
+    },
+    {
+      "time_s": 0.2537593099659866,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.802499999999994,
+      "production_densification_strain": 0.002813498305115845,
+      "geometric_chain_strain": 0.0001382084200096667,
+      "center_volume_m3": 1.988300858857633e-21
+    },
+    {
+      "time_s": 0.25420021295958267,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.804999999999994,
+      "production_densification_strain": 0.0028174005219051873,
+      "geometric_chain_strain": 0.00013827295636248405,
+      "center_volume_m3": 1.988304357462684e-21
+    },
+    {
+      "time_s": 0.25464127488404015,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.807499999999994,
+      "production_densification_strain": 0.0028213027386945295,
+      "geometric_chain_strain": 0.00013833746105751388,
+      "center_volume_m3": 1.9883078563388684e-21
+    },
+    {
+      "time_s": 0.2550824956613983,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8099999999999938,
+      "production_densification_strain": 0.0028252049554838717,
+      "geometric_chain_strain": 0.000138401162315005,
+      "center_volume_m3": 1.988311364108966e-21
+    },
+    {
+      "time_s": 0.25552387509886376,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8124999999999938,
+      "production_densification_strain": 0.0028291071722732143,
+      "geometric_chain_strain": 0.0001384648345023054,
+      "center_volume_m3": 1.9883148721140936e-21
+    },
+    {
+      "time_s": 0.2559654133781716,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8149999999999937,
+      "production_densification_strain": 0.0028330093890625565,
+      "geometric_chain_strain": 0.00013852847424733472,
+      "center_volume_m3": 1.9883183804024834e-21
+    },
+    {
+      "time_s": 0.2564071104508908,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8174999999999937,
+      "production_densification_strain": 0.0028369116058518987,
+      "geometric_chain_strain": 0.0001385913103401082,
+      "center_volume_m3": 1.9883218975850385e-21
+    },
+    {
+      "time_s": 0.25684896614377817,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8199999999999936,
+      "production_densification_strain": 0.002840813822641241,
+      "geometric_chain_strain": 0.00013865411323399357,
+      "center_volume_m3": 1.988325414958183e-21
+    },
+    {
+      "time_s": 0.25729098064680067,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8224999999999936,
+      "production_densification_strain": 0.002844716039430583,
+      "geometric_chain_strain": 0.00013871688402122828,
+      "center_volume_m3": 1.9883289325980262e-21
+    },
+    {
+      "time_s": 0.2577331539188429,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8249999999999935,
+      "production_densification_strain": 0.0028486182562199257,
+      "geometric_chain_strain": 0.00013877885140223256,
+      "center_volume_m3": 1.988332459125171e-21
+    },
+    {
+      "time_s": 0.258175485798402,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8274999999999935,
+      "production_densification_strain": 0.002852520473009268,
+      "geometric_chain_strain": 0.0001388407905545952,
+      "center_volume_m3": 1.9883359858713125e-21
+    },
+    {
+      "time_s": 0.2586179764896963,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8299999999999934,
+      "production_densification_strain": 0.00285642268979861,
+      "geometric_chain_strain": 0.0001389026982526742,
+      "center_volume_m3": 1.98833951288237e-21
+    },
+    {
+      "time_s": 0.25906062595545765,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8324999999999934,
+      "production_densification_strain": 0.0028603249065879523,
+      "geometric_chain_strain": 0.00013896380188360702,
+      "center_volume_m3": 1.9883430487525404e-21
+    },
+    {
+      "time_s": 0.25950343403294956,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8349999999999933,
+      "production_densification_strain": 0.0028642271233772945,
+      "geometric_chain_strain": 0.00013902487787398332,
+      "center_volume_m3": 1.988346584831237e-21
+    },
+    {
+      "time_s": 0.25994640195158114,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8374999999999932,
+      "production_densification_strain": 0.002868129340166637,
+      "geometric_chain_strain": 0.00013908591251532432,
+      "center_volume_m3": 1.9883501207441587e-21
+    },
+    {
+      "time_s": 0.26038953240916207,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8399999999999932,
+      "production_densification_strain": 0.0028720315569559793,
+      "geometric_chain_strain": 0.0001391469145455293,
+      "center_volume_m3": 1.9883536569325563e-21
+    },
+    {
+      "time_s": 0.26083282698474447,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8424999999999931,
+      "production_densification_strain": 0.0028759337737453215,
+      "geometric_chain_strain": 0.00013920711268766706,
+      "center_volume_m3": 1.988357202001187e-21
+    },
+    {
+      "time_s": 0.26127628494400457,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.844999999999993,
+      "production_densification_strain": 0.0028798359905346637,
+      "geometric_chain_strain": 0.00013926651275653068,
+      "center_volume_m3": 1.988360755868969e-21
+    },
+    {
+      "time_s": 0.2617199046200307,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.847499999999993,
+      "production_densification_strain": 0.002883738207324006,
+      "geometric_chain_strain": 0.00013932666038951602,
+      "center_volume_m3": 1.988364301069844e-21
+    },
+    {
+      "time_s": 0.26216368451954797,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.849999999999993,
+      "production_densification_strain": 0.0028876404241133485,
+      "geometric_chain_strain": 0.0001393860026941418,
+      "center_volume_m3": 1.988367855176319e-21
+    },
+    {
+      "time_s": 0.2626076234809264,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.852499999999993,
+      "production_densification_strain": 0.002891542640902691,
+      "geometric_chain_strain": 0.00013944531678367067,
+      "center_volume_m3": 1.9883714094952113e-21
+    },
+    {
+      "time_s": 0.2630517204087009,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8549999999999929,
+      "production_densification_strain": 0.0028954448576920333,
+      "geometric_chain_strain": 0.00013950382944505346,
+      "center_volume_m3": 1.988374972665588e-21
+    },
+    {
+      "time_s": 0.26349597421096616,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8574999999999928,
+      "production_densification_strain": 0.0028993470744813755,
+      "geometric_chain_strain": 0.00013956231664369323,
+      "center_volume_m3": 1.9883785360110326e-21
+    },
+    {
+      "time_s": 0.2639403843038184,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8599999999999928,
+      "production_densification_strain": 0.0029032492912707177,
+      "geometric_chain_strain": 0.0001396207750802292,
+      "center_volume_m3": 1.988382099579022e-21
+    },
+    {
+      "time_s": 0.2643849499874191,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8624999999999927,
+      "production_densification_strain": 0.00290715150806006,
+      "geometric_chain_strain": 0.00013967843209738984,
+      "center_volume_m3": 1.988385671993249e-21
+    },
+    {
+      "time_s": 0.26482967031096366,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8649999999999927,
+      "production_densification_strain": 0.002911053724849402,
+      "geometric_chain_strain": 0.00013973604800487927,
+      "center_volume_m3": 1.9883892439596513e-21
+    },
+    {
+      "time_s": 0.2652745452147516,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8674999999999926,
+      "production_densification_strain": 0.0029149559416387443,
+      "geometric_chain_strain": 0.00013979363638128017,
+      "center_volume_m3": 1.988392816127319e-21
+    },
+    {
+      "time_s": 0.2657195745901869,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8699999999999926,
+      "production_densification_strain": 0.0029188581584280865,
+      "geometric_chain_strain": 0.00013985042449216056,
+      "center_volume_m3": 1.9883963971191358e-21
+    },
+    {
+      "time_s": 0.26616475795907746,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8724999999999925,
+      "production_densification_strain": 0.002922760375217429,
+      "geometric_chain_strain": 0.00013990718220124876,
+      "center_volume_m3": 1.9883999782017033e-21
+    },
+    {
+      "time_s": 0.2666100956429749,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8749999999999925,
+      "production_densification_strain": 0.0029266625920067713,
+      "geometric_chain_strain": 0.00013996391257253826,
+      "center_volume_m3": 1.9884035594803042e-21
+    },
+    {
+      "time_s": 0.26705558794231576,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8774999999999924,
+      "production_densification_strain": 0.0029305648087961135,
+      "geometric_chain_strain": 0.0001400198423460175,
+      "center_volume_m3": 1.988407149584341e-21
+    },
+    {
+      "time_s": 0.26750123506951357,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8799999999999923,
+      "production_densification_strain": 0.0029344670255854557,
+      "geometric_chain_strain": 0.00014007574819308033,
+      "center_volume_m3": 1.9884107398341726e-21
+    },
+    {
+      "time_s": 0.2679470372441961,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8824999999999923,
+      "production_densification_strain": 0.002938369242374798,
+      "geometric_chain_strain": 0.0001401308519524136,
+      "center_volume_m3": 1.988414338854382e-21
+    },
+    {
+      "time_s": 0.26839299486692736,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8849999999999922,
+      "production_densification_strain": 0.002942271459164141,
+      "geometric_chain_strain": 0.00014018669749216173,
+      "center_volume_m3": 1.9884179293080234e-21
+    },
+    {
+      "time_s": 0.26883910821706036,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8874999999999922,
+      "production_densification_strain": 0.002946173675953483,
+      "geometric_chain_strain": 0.0001402409678209482,
+      "center_volume_m3": 1.9884215372329123e-21
+    },
+    {
+      "time_s": 0.2692853772521449,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.8899999999999921,
+      "production_densification_strain": 0.0029500758927428258,
+      "geometric_chain_strain": 0.0001402959913038293,
+      "center_volume_m3": 1.9884251366189064e-21
+    },
+    {
+      "time_s": 0.26973180240658473,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.892499999999992,
+      "production_densification_strain": 0.002953978109532168,
+      "geometric_chain_strain": 0.00014035021325342623,
+      "center_volume_m3": 1.988428744839904e-21
+    },
+    {
+      "time_s": 0.2701783837062428,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.894999999999992,
+      "production_densification_strain": 0.00295788032632151,
+      "geometric_chain_strain": 0.00014040441173612805,
+      "center_volume_m3": 1.988432353196764e-21
+    },
+    {
+      "time_s": 0.2706251211643441,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.897499999999992,
+      "production_densification_strain": 0.0029617825431108523,
+      "geometric_chain_strain": 0.00014045781229876653,
+      "center_volume_m3": 1.9884359703343598e-21
+    },
+    {
+      "time_s": 0.2710720149891358,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.899999999999992,
+      "production_densification_strain": 0.0029656847599001945,
+      "geometric_chain_strain": 0.000140511963617862,
+      "center_volume_m3": 1.988439578967111e-21
+    },
+    {
+      "time_s": 0.27151906529004693,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9024999999999919,
+      "production_densification_strain": 0.002969586976689537,
+      "geometric_chain_strain": 0.00014056454007727037,
+      "center_volume_m3": 1.9884432050564477e-21
+    },
+    {
+      "time_s": 0.27196627187927547,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9049999999999918,
+      "production_densification_strain": 0.0029734891934788794,
+      "geometric_chain_strain": 0.00014061787127261915,
+      "center_volume_m3": 1.988446822583217e-21
+    },
+    {
+      "time_s": 0.2724136350689384,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9074999999999918,
+      "production_densification_strain": 0.0029773914102682215,
+      "geometric_chain_strain": 0.00014067040187848434,
+      "center_volume_m3": 1.988450448924556e-21
+    },
+    {
+      "time_s": 0.2728611547843621,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9099999999999917,
+      "production_densification_strain": 0.0029812936270575637,
+      "geometric_chain_strain": 0.00014072291041977714,
+      "center_volume_m3": 1.9884540753775704e-21
+    },
+    {
+      "time_s": 0.27330882998958284,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9124999999999917,
+      "production_densification_strain": 0.002985195843846906,
+      "geometric_chain_strain": 0.0001407746221512296,
+      "center_volume_m3": 1.9884577105883254e-21
+    },
+    {
+      "time_s": 0.2737566587519918,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9149999999999916,
+      "production_densification_strain": 0.0029890980606362486,
+      "geometric_chain_strain": 0.00014082631453893324,
+      "center_volume_m3": 1.988461345872845e-21
+    },
+    {
+      "time_s": 0.27420464047788995,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9174999999999915,
+      "production_densification_strain": 0.0029930002774255907,
+      "geometric_chain_strain": 0.00014087798433737309,
+      "center_volume_m3": 1.988464981277283e-21
+    },
+    {
+      "time_s": 0.2746527754490977,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9199999999999915,
+      "production_densification_strain": 0.002996902494214933,
+      "geometric_chain_strain": 0.00014092962775924534,
+      "center_volume_m3": 1.988468616783872e-21
+    },
+    {
+      "time_s": 0.27510106370718257,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9224999999999914,
+      "production_densification_strain": 0.003000804711004275,
+      "geometric_chain_strain": 0.0001409804673155879,
+      "center_volume_m3": 1.9884722610485412e-21
+    },
+    {
+      "time_s": 0.27554950409043744,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9249999999999914,
+      "production_densification_strain": 0.0030047069277936173,
+      "geometric_chain_strain": 0.00014103051456193505,
+      "center_volume_m3": 1.9884759140003177e-21
+    },
+    {
+      "time_s": 0.2759980957396593,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9274999999999913,
+      "production_densification_strain": 0.00300860914458296,
+      "geometric_chain_strain": 0.00014108131827628156,
+      "center_volume_m3": 1.9884795583656447e-21
+    },
+    {
+      "time_s": 0.27644683879330617,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9299999999999913,
+      "production_densification_strain": 0.003012511361372302,
+      "geometric_chain_strain": 0.00014113132291226904,
+      "center_volume_m3": 1.9884832115138028e-21
+    },
+    {
+      "time_s": 0.27689573310014504,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9324999999999912,
+      "production_densification_strain": 0.0030164135781616443,
+      "geometric_chain_strain": 0.00014118130767970527,
+      "center_volume_m3": 1.988486864736143e-21
+    },
+    {
+      "time_s": 0.27734477786933087,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9349999999999912,
+      "production_densification_strain": 0.0030203157949509865,
+      "geometric_chain_strain": 0.00014123049743086646,
+      "center_volume_m3": 1.9884905266800198e-21
+    },
+    {
+      "time_s": 0.27779397223220703,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9374999999999911,
+      "production_densification_strain": 0.003024218011740329,
+      "geometric_chain_strain": 0.0001412796703236241,
+      "center_volume_m3": 1.9884941886337324e-21
+    },
+    {
+      "time_s": 0.27824331633174026,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.939999999999991,
+      "production_densification_strain": 0.0030281202285296713,
+      "geometric_chain_strain": 0.0001413288223588438,
+      "center_volume_m3": 1.9884978506520418e-21
+    },
+    {
+      "time_s": 0.2786928104235084,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.942499999999991,
+      "production_densification_strain": 0.0030320224453190135,
+      "geometric_chain_strain": 0.00014137795214153037,
+      "center_volume_m3": 1.988501512776471e-21
+    },
+    {
+      "time_s": 0.2791424545222008,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.944999999999991,
+      "production_densification_strain": 0.0030359246621083557,
+      "geometric_chain_strain": 0.00014142628551883085,
+      "center_volume_m3": 1.988505183634211e-21
+    },
+    {
+      "time_s": 0.2795922484942074,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.947499999999991,
+      "production_densification_strain": 0.003039826878897698,
+      "geometric_chain_strain": 0.0001414746010801604,
+      "center_volume_m3": 1.988508854532337e-21
+    },
+    {
+      "time_s": 0.2800421918322561,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9499999999999909,
+      "production_densification_strain": 0.0030437290956870405,
+      "geometric_chain_strain": 0.00014152212314122448,
+      "center_volume_m3": 1.9885125341234323e-21
+    },
+    {
+      "time_s": 0.28049228301538653,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9524999999999908,
+      "production_densification_strain": 0.0030476313124763827,
+      "geometric_chain_strain": 0.00014156962657840833,
+      "center_volume_m3": 1.988516213706931e-21
+    },
+    {
+      "time_s": 0.2809425210912033,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9549999999999907,
+      "production_densification_strain": 0.003051533529265725,
+      "geometric_chain_strain": 0.0001416171114492215,
+      "center_volume_m3": 1.9885198933429277e-21
+    },
+    {
+      "time_s": 0.28139290612943824,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9574999999999907,
+      "production_densification_strain": 0.003055435746055067,
+      "geometric_chain_strain": 0.0001416645757419399,
+      "center_volume_m3": 1.9885235730570964e-21
+    },
+    {
+      "time_s": 0.2818434381593651,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9599999999999906,
+      "production_densification_strain": 0.0030593379628444093,
+      "geometric_chain_strain": 0.00014171124501261012,
+      "center_volume_m3": 1.9885272614789635e-21
+    },
+    {
+      "time_s": 0.28229411706080854,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9624999999999906,
+      "production_densification_strain": 0.003063240179633752,
+      "geometric_chain_strain": 0.00014175789812564954,
+      "center_volume_m3": 1.9885309499135184e-21
+    },
+    {
+      "time_s": 0.28274494273582196,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9649999999999905,
+      "production_densification_strain": 0.003067142396423094,
+      "geometric_chain_strain": 0.00014180375914552013,
+      "center_volume_m3": 1.9885346470138478e-21
+    },
+    {
+      "time_s": 0.28319591497730134,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9674999999999905,
+      "production_densification_strain": 0.0030710446132124363,
+      "geometric_chain_strain": 0.00014184960648833123,
+      "center_volume_m3": 1.9885383440930953e-21
+    },
+    {
+      "time_s": 0.2836470339482421,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9699999999999904,
+      "production_densification_strain": 0.0030749468300017785,
+      "geometric_chain_strain": 0.00014189543711262687,
+      "center_volume_m3": 1.988542041195921e-21
+    },
+    {
+      "time_s": 0.2840982999239775,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9724999999999904,
+      "production_densification_strain": 0.0030788490467911207,
+      "geometric_chain_strain": 0.0001419412488219418,
+      "center_volume_m3": 1.988545738349193e-21
+    },
+    {
+      "time_s": 0.2845497129349527,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9749999999999903,
+      "production_densification_strain": 0.0030827512635804633,
+      "geometric_chain_strain": 0.00014198626693984195,
+      "center_volume_m3": 1.9885494441826998e-21
+    },
+    {
+      "time_s": 0.2850012728617677,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9774999999999903,
+      "production_densification_strain": 0.0030866534803698055,
+      "geometric_chain_strain": 0.0001420312705582294,
+      "center_volume_m3": 1.988553150001267e-21
+    },
+    {
+      "time_s": 0.2854529796069233,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9799999999999902,
+      "production_densification_strain": 0.0030905556971591477,
+      "geometric_chain_strain": 0.00014207548352385135,
+      "center_volume_m3": 1.988556864458004e-21
+    },
+    {
+      "time_s": 0.2859048332885445,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9824999999999902,
+      "production_densification_strain": 0.00309445791394849,
+      "geometric_chain_strain": 0.0001421204576962376,
+      "center_volume_m3": 1.9885605702548638e-21
+    },
+    {
+      "time_s": 0.2863568342782017,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.98499999999999,
+      "production_densification_strain": 0.0030983601307378325,
+      "geometric_chain_strain": 0.00014216463607463758,
+      "center_volume_m3": 1.9885642847589637e-21
+    },
+    {
+      "time_s": 0.28680898222489093,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.98749999999999,
+      "production_densification_strain": 0.0031022623475271747,
+      "geometric_chain_strain": 0.00014220802569964164,
+      "center_volume_m3": 1.9885680078679496e-21
+    },
+    {
+      "time_s": 0.2872612764809599,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.98999999999999,
+      "production_densification_strain": 0.003106164564316517,
+      "geometric_chain_strain": 0.00014225140457835295,
+      "center_volume_m3": 1.9885717309076333e-21
+    },
+    {
+      "time_s": 0.28771371634603743,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.99249999999999,
+      "production_densification_strain": 0.003110066781105859,
+      "geometric_chain_strain": 0.00014229476928295792,
+      "center_volume_m3": 1.9885754539271275e-21
+    },
+    {
+      "time_s": 0.28816630164926726,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.99499999999999,
+      "production_densification_strain": 0.0031139689978952013,
+      "geometric_chain_strain": 0.00014233811773600724,
+      "center_volume_m3": 1.988579176953127e-21
+    },
+    {
+      "time_s": 0.28861903241554443,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 1.9974999999999898,
+      "production_densification_strain": 0.003117871214684544,
+      "geometric_chain_strain": 0.00014238067492289286,
+      "center_volume_m3": 1.9885829086156214e-21
+    },
+    {
+      "time_s": 0.2890719085222046,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 2.0,
+      "production_densification_strain": 0.003121773431473902,
+      "geometric_chain_strain": 0.0001424232202004161,
+      "center_volume_m3": 1.9885866402204336e-21
+    },
+    {
+      "time_s": 0.2890719085222046,
+      "phase": "ONE_B_COMPLETE",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 2.0,
+      "production_densification_strain": 0.003121773431473902,
+      "geometric_chain_strain": 0.0001424232202004161,
+      "center_volume_m3": 1.9885866402204336e-21
+    },
+    {
+      "time_s": 0.2890719085222046,
+      "phase": "SOURCE_WINDOW_OPEN",
+      "event_number": 2,
+      "avalanche_id": 1,
+      "cumulative_event_quota_over_b": 2.0,
+      "production_densification_strain": 0.003121773431473902,
+      "geometric_chain_strain": 0.0001424232202004161,
+      "center_volume_m3": 1.9885866402204336e-21
+    }
+  ]
+}

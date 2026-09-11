@@ -1,0 +1,11 @@
+{
+  "status": "PAUSED_MORPHOLOGY_REVIEW_REQUIRED",
+  "descendants_completed": 1,
+  "descendants_with_complete_quota": 1,
+  "stochastic_root_result": false,
+  "avalanche_extinct": false,
+  "duration_s": 0.2890719085222046,
+  "review": "completed_descendant_review.json",
+  "pause": "runs/three_particle_production_065/forced_descendant_family/completed_descendant_review_pause/pause.json",
+  "note": "Raw atomic checkpoint status RUNNING predates the OS review pause; no additional descendant quota has been accepted."
+}

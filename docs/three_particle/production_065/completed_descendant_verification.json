@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T02:31:45.752715+00:00",
+  "production_head": "0023db8509df151622ae94fec140e714b967ef31",
+  "production_tracked_diff_sha256": "ae7ec5aa058325a6f93dbf04308f60c573637422a13f2270861b7d7dddd99a2c",
+  "production_tracked_worktree_unchanged": true,
+  "production_worker_pid": 49267,
+  "production_monitor_pid": 49324,
+  "processes": "46790    02:45:16 Ts   /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/three_particle_forced_descendants.py --root-checkpoint runs/three_particle_production_065/forced_left_minimum_increment/final.npz --resume-computational-stop\n49267 01-09:17:13 Rs+  /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/pr_large_avalanche_resume13_alpha0p70_enospc.py\n49324 01-09:16:28 Ss+  /Volumes/Data/Data/PF-sintering/.venv/bin/python scripts/monitor_current_state_transfer_curvature.py --campaign-root runs/pr_large_avalanche_current_state_transfer_event2_onset_v1 --out runs/pr_large_avalanche_current_state_transfer_artifact_monitor --watch --poll-seconds 60\n",
+  "experimental_worker_paused": true,
+  "phase_b_enabled": false,
+  "genuine_output_absent": true,
+  "tests_passed": 61,
+  "test_groups": {
+    "tests/test_three_particle*.py tests/test_pr_avalanche.py": 52,
+    "tests/test_current_state_mass_transfer.py tests/test_production_q_event_restart_precondition.py tests/test_avalanche_restart_history.py": 9
+  }
+}
