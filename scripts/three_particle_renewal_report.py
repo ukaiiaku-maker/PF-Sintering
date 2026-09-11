@@ -62,7 +62,7 @@ def main():
     for name in ['LEFT','RIGHT']:
         ax[9].plot(elapsed,[r['diagnostics'][name+'_CC_stress_Pa']/1e6 for r in records],label=name)
     ax[9].set_ylabel('Cannon–Carter diagnostic (MPa)');ax[9].legend()
-    if args.conditional:ax[9].set_title('Fits about original pinned planes',fontsize=9)
+    if args.conditional:ax[9].set_title('Fits about stored GB planes',fontsize=9)
     ax[10].plot(elapsed,[r['q'] if r['phase'] in ['ACTIVE_ONE_B','ONE_B_COMPLETE'] else np.nan for r in records]);ax[10].set_ylabel('Event progress q/b')
     ax[11].step(elapsed,[r['source_amplitude'] for r in records],where='post');ax[11].set_ylabel('Descendant source amplitude h')
     for a in list(ax[:6])+list(ax[9:]):a.set_xlabel('Elapsed recorded time (s)')

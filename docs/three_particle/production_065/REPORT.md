@@ -375,3 +375,45 @@ clock. The original controller and RNG state are unchanged, and the
 fast_manifold rejection remains recorded. The continuation uses the saved
 source crossing directly for its global clock origin. See
 descendant_fast_budget_live_overlap.json.
+
+## Half-b conditional morphology
+
+At q/b=0.5 of the first descendant, LEFT stress is 1.447 MPa. The
+center-side unmasked gradient peak outside the 3W exclusion moves from
+3.418W to 3.543W. Its gradient magnitude rises from 1.736e15 to
+1.981e15 /m2 and its prominence from 7.32e13 to 2.61e14 /m2
+(4.2% to 13.2% of the peak magnitude). Another local peak at 2.426W
+lies inside the TJ exclusion; it is recorded separately rather than
+conflated with the feature outside 3W.
+
+Applying the original growth rule to the three within-event snapshots
+q=0, 0.25 and 0.5 does not raise a flag. This remains an additional
+within-event comparison, not the required three-completed-event test.
+The increasingly distinct outside-3W peak remains a warning, and the
+descendant and Phase B remain unqualified. Immutable profiles and the
+phase-resolved analysis snapshot are in descendant_half_b_review. The
+analysis snapshot extends slightly past the exactly retained half-b field
+and labels the descendant incomplete.
+
+## Fixed-q stopping-tolerance sensitivity
+
+A discarded copy of the half-b field is relaxed at fixed quota with
+nominal, half and quarter fast-convergence tolerances. The nominal test
+stops after five blocks, changing fields by 7.48e-6. Both tighter tests
+reach the 2048-block cap without convergence. They therefore follow the
+same native trajectory to the same final field; their agreement is not
+evidence of tolerance convergence.
+
+That capped trajectory represents 0.389 ms of additional native relaxation,
+with zero added event quota and no advancement of the transport-event or
+stochastic clocks. Fields change by 2.72e-3, LEFT stress by +40.4 kPa,
+PF energy by -0.00297%, and center volume by +0.000832%. Field bounds and
+roundoff-level conservation/ownership closure remain sound. The outside-3W
+peak persists, moving from 3.543W to 3.667W; its prominence changes from
+2.61e14 to 2.52e14 /m2. See fixed_q_relaxation_audit.json/pdf and its NPZ.
+
+Convergence under tighter stopping tolerances is not demonstrated. The
+nominal stopping test is not a proof that the full PF vector field vanishes.
+These copies are not accepted states, and neither live tolerances nor
+qualification gates change. The stationary-null result remains a separate
+validation question, not a renewed production prerequisite.

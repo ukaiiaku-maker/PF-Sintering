@@ -34,8 +34,8 @@ def main():
    if row==0:
     other=np.hypot(p['z_m']-right,p['r_m']-np.interp(right,z[np.isfinite(R)],R[np.isfinite(R)]))/4e-9
     physical&=other[peaks]>=1
-   peaks=peaks[physical];near=peaks[np.abs(x[peaks]-3)<=.75]
-   details['center' if row==0 else 'outer']=dict(unmasked_local_gradient_peaks_distance_W=x[peaks].tolist(),local_gradient_peaks_within_075W_of_3W=int(len(near)),near_3W_peak_gradients_per_m2=grad[near].tolist(),near_3W_peak_prominences_per_m2=peak_prominences(grad,near)[0].tolist())
+   peaks=peaks[physical];near=peaks[np.abs(x[peaks]-3)<=.75];outside=near[x[near]>=3]
+   details['center' if row==0 else 'outer']=dict(unmasked_local_gradient_peaks_distance_W=x[peaks].tolist(),local_gradient_peaks_within_075W_of_3W=int(len(near)),near_3W_peak_gradients_per_m2=grad[near].tolist(),near_3W_peak_prominences_per_m2=peak_prominences(grad,near)[0].tolist(),outside_3W_local_peaks_distance_W=x[outside].tolist(),outside_3W_peak_gradients_per_m2=grad[outside].tolist(),outside_3W_peak_prominences_per_m2=peak_prominences(grad,outside)[0].tolist())
    for key,value in p.items():payload[f'event{number}_q{q:.6f}_{row}_{key}']=value
    for col,(ax,y) in enumerate(zip(axes[row],[p['r_m']*1e9,p['kappa_m_per_m']/1e6,p['dkappa_m_ds_per_m2']/1e14])):
     ax.plot(x,y,color=color,label=f'E{number} q={q:.3f}')

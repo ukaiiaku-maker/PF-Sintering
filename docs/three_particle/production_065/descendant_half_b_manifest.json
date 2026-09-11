@@ -1,0 +1,47 @@
+{
+  "label": "PARTIAL_DESCENDANT_HALF_B_REVIEW",
+  "descendant_completed": false,
+  "phase_b_enabled": false,
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/family_morphology.json",
+      "bytes": 24330,
+      "sha256": "2cfc1b3085f24105aa710828235fb52869eef2d6247f676bbcf9af1c0ef26a83"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/family_morphology.pdf",
+      "bytes": 41362,
+      "sha256": "738928ac08ae5ebacd00a094b62ebf78549e8ef9fc30a4bdfe4e6eb9924f3f4a"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/family_morphology.png",
+      "bytes": 269218,
+      "sha256": "e0a250bf788393ddd6778ae4617a958efc7bde5401cc4a60a6fa7c112643e633"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/family_morphology_profiles.npz",
+      "bytes": 121881,
+      "sha256": "d9c84788fc3b166db3a55847448a94541bf693d55f1b4e17d860da7cbc69a5fe"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/volume_strain_analysis.json",
+      "bytes": 1978,
+      "sha256": "721cab31d4cb2fbf118cc1dea5e0009994ff3e6e25c81e9cae797336891e572d"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/volume_strain_analysis.pdf",
+      "bytes": 36386,
+      "sha256": "bca38daa41fe3da0739ab4eab241c38d00771b8ababa53e0761bb5f45bc4cedd"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_half_b_review/volume_strain_analysis.png",
+      "bytes": 313850,
+      "sha256": "6910bf443cbd14db0c8029133bf8f0daf6b73bcc4940b61b66fb132c0d549f4c"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.500000.npz",
+      "bytes": 6162048,
+      "sha256": "4ea6c74529f3aed4b01aa9e4d6db1877f4156854f4c937803a9ec8215fb1ca94"
+    }
+  ]
+}

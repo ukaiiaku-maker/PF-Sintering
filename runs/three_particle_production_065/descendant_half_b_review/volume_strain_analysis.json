@@ -1,0 +1,62 @@
+{
+  "label": "Conditional descendants after a forced root",
+  "genuine_stochastic_result": false,
+  "recorded_duration_s": 0.08293450467036237,
+  "records": 211,
+  "completed_events": 0,
+  "events": [
+    {
+      "event_number": 2,
+      "avalanche_id": 1,
+      "completed": false,
+      "q_over_b": 0.5175,
+      "duration_s": 0.08292679195211683,
+      "center_volume_loss_m3": -5.445862013503151e-25,
+      "chain_strain_change": 2.951240805038058e-05,
+      "local_stress_before_Pa": {
+        "LEFT": 5257499.505483545,
+        "RIGHT": 17903937.258545015
+      },
+      "local_stress_after_Pa": {
+        "LEFT": 1338452.1627695095,
+        "RIGHT": 18807780.4034264
+      }
+    }
+  ],
+  "phase_totals": {
+    "reload": {
+      "intervals": 0,
+      "duration_s": 0.0,
+      "center_volume_loss_m3": 0.0,
+      "chain_strain_change": 0.0,
+      "descriptive_rate_correlation": null
+    },
+    "event": {
+      "intervals": 207,
+      "duration_s": 0.08292679195211683,
+      "center_volume_loss_m3": -5.445862013503151e-25,
+      "chain_strain_change": 2.951240805038058e-05,
+      "descriptive_rate_correlation": 0.9979738209429481
+    },
+    "source_window": {
+      "intervals": 1,
+      "duration_s": 7.71271824553943e-06,
+      "center_volume_loss_m3": -3.164383091793237e-28,
+      "chain_strain_change": -2.830454959301676e-08,
+      "descriptive_rate_correlation": null
+    },
+    "boundary": {
+      "intervals": 0,
+      "duration_s": 0.0,
+      "center_volume_loss_m3": 0.0,
+      "chain_strain_change": 0.0,
+      "descriptive_rate_correlation": null
+    }
+  },
+  "notes": [
+    "Rate correlations are descriptive; samples are time-correlated and are not independent statistical replicates.",
+    "Raw interval increments have unequal durations; phase totals and complete-event changes are reported separately.",
+    "Positive volume loss denotes shrinking; negative volume loss denotes center growth.",
+    "No aggregate diagnostic enters activation."
+  ]
+}

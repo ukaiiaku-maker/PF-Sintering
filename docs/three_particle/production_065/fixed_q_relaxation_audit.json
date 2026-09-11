@@ -1,0 +1,128 @@
+{
+  "label": "OFF_TRAJECTORY_FIXED_Q_RELAXATION_SENSITIVITY",
+  "source": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.500000.npz",
+  "source_sha256": "4ea6c74529f3aed4b01aa9e4d6db1877f4156854f4c937803a9ec8215fb1ca94",
+  "q_over_b": 0.5000000000000003,
+  "original_peak": {
+    "distance_W": [
+      3.5427476904734685
+    ],
+    "gradient_per_m2": [
+      1980911469058069.2
+    ],
+    "prominence_per_m2": [
+      261129655276624.0
+    ]
+  },
+  "rows": [
+    {
+      "tolerance_scale": 1.0,
+      "tolerances": {
+        "affinity_MPa": 0.03,
+        "sigma_local_MPa": 0.005,
+        "sigma_integral_MPa": 0.005,
+        "A1_nm": 0.001,
+        "neck_nm": 0.001,
+        "energy_relative": 1.5e-08
+      },
+      "converged": true,
+      "blocks": 5,
+      "wall_s": 0.8169117080396973,
+      "native_relaxation_time_s": 9.503528725470929e-07,
+      "field_Linf_from_input": 7.476699830200051e-06,
+      "relative_energy_change": -7.498568233010872e-08,
+      "sigma_LEFT_Pa": 1446459.3679894852,
+      "sigma_RIGHT_Pa": 18771491.99862576,
+      "relative_center_volume_change": 2.1055286847371235e-08,
+      "relative_mass_error": 2.220446049250313e-16,
+      "ownership_closure": 1.1102230246251565e-16,
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "outside_3W_peak": {
+        "distance_W": [
+          3.5427490326812645
+        ],
+        "gradient_per_m2": [
+          1981122701538735.0
+        ],
+        "prominence_per_m2": [
+          261259704538920.75
+        ]
+      }
+    },
+    {
+      "tolerance_scale": 0.5,
+      "tolerances": {
+        "affinity_MPa": 0.015,
+        "sigma_local_MPa": 0.0025,
+        "sigma_integral_MPa": 0.0025,
+        "A1_nm": 0.0005,
+        "neck_nm": 0.0005,
+        "energy_relative": 7.5e-09
+      },
+      "converged": false,
+      "blocks": 2048,
+      "wall_s": 310.6391925410135,
+      "native_relaxation_time_s": 0.00038926453659528926,
+      "field_Linf_from_input": 0.0027161546265712655,
+      "relative_energy_change": -2.9712260656067357e-05,
+      "sigma_LEFT_Pa": 1487044.8559233062,
+      "sigma_RIGHT_Pa": 18752631.92598708,
+      "relative_center_volume_change": 8.322924425874234e-06,
+      "relative_mass_error": -4.773959005888173e-15,
+      "ownership_closure": 1.1102230246251565e-16,
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "outside_3W_peak": {
+        "distance_W": [
+          3.6671319865643466
+        ],
+        "gradient_per_m2": [
+          2049224536972813.2
+        ],
+        "prominence_per_m2": [
+          251948791052127.75
+        ]
+      }
+    },
+    {
+      "tolerance_scale": 0.25,
+      "tolerances": {
+        "affinity_MPa": 0.0075,
+        "sigma_local_MPa": 0.00125,
+        "sigma_integral_MPa": 0.00125,
+        "A1_nm": 0.00025,
+        "neck_nm": 0.00025,
+        "energy_relative": 3.75e-09
+      },
+      "converged": false,
+      "blocks": 2048,
+      "wall_s": 306.4944958750275,
+      "native_relaxation_time_s": 0.00038926453659528926,
+      "field_Linf_from_input": 0.0027161546265712655,
+      "relative_energy_change": -2.9712260656067357e-05,
+      "sigma_LEFT_Pa": 1487044.8559233062,
+      "sigma_RIGHT_Pa": 18752631.92598708,
+      "relative_center_volume_change": 8.322924425874234e-06,
+      "relative_mass_error": -4.773959005888173e-15,
+      "ownership_closure": 1.1102230246251565e-16,
+      "field_min": -1.3748789310120962e-108,
+      "field_max": 1.0,
+      "outside_3W_peak": {
+        "distance_W": [
+          3.6671319865643466
+        ],
+        "gradient_per_m2": [
+          2049224536972813.2
+        ],
+        "prominence_per_m2": [
+          251948791052127.75
+        ]
+      }
+    }
+  ],
+  "live_tolerances_changed": false,
+  "additional_event_quota": 0.0,
+  "additional_stochastic_draws": 0,
+  "note": "Pseudo-time native relaxation at fixed quota; no transport-event clock or stochastic hazard is advanced. This is not an accepted continuation or a source-window trajectory."
+}
