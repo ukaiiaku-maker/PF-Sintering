@@ -1,0 +1,41 @@
+{
+  "status": "PRESERVED_SYMMETRY_GUARD_STOP",
+  "files": [
+    {
+      "path": "docs/three_particle/volume_loading_065/first_extension_symmetry_stop/loading_diagnostics.pdf",
+      "sha256": "92512f3e95d5124759a281cc3a933582e8a812a4ea23ad072afb06ee7cbf12a5"
+    },
+    {
+      "path": "docs/three_particle/volume_loading_065/first_extension_symmetry_stop/loading_diagnostics.png",
+      "sha256": "6f35957067fbf5ac7947a213478cb0fc6735e8ea1167c3b1e1000662abbd5cc0"
+    },
+    {
+      "path": "docs/three_particle/volume_loading_065/first_extension_symmetry_stop/loading_vs_volume.png",
+      "sha256": "3bb36e555d6293c076bc6d03cdd60c0ff713032627e6237190235eb10af4a737"
+    },
+    {
+      "path": "docs/three_particle/volume_loading_065/first_extension_symmetry_stop/loading_vs_volume.pdf",
+      "sha256": "5a0903515492712d83e7a1fea99b40d795eaba73261ee4c466cb3846dff8797c"
+    },
+    {
+      "path": "docs/three_particle/volume_loading_065/first_extension_symmetry_stop/analysis.json",
+      "sha256": "109beb6bfddce97a00e1ab24be5aa3321a1991d83c30d812191774372049c08b"
+    },
+    {
+      "path": "runs/three_particle_volume_loading_065/report.json",
+      "sha256": "340ba15a3051418bee377a73335be30073d6e147251de33811eb48ee510a0b28"
+    },
+    {
+      "path": "runs/three_particle_volume_loading_065/checkpoint.npz",
+      "sha256": "108a20f8424cf15bf9e81421070231d7c5f19d96833e10b5db4cdb515acbff05"
+    },
+    {
+      "path": "runs/three_particle_volume_loading_065/launch.json",
+      "sha256": "65594e38c03746e8a5c5b2643415a56be34a79939a0f3f482322974c623bbe66"
+    },
+    {
+      "path": "runs/three_particle_volume_loading_065/loss_1pct.npz",
+      "sha256": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798"
+    }
+  ]
+}

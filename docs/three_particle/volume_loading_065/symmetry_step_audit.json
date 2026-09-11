@@ -1,0 +1,58 @@
+{
+  "label": "DISCARDED_LATE_FIELD_SYMMETRY_STABILITY",
+  "source_sha256": "108a20f8424cf15bf9e81421070231d7c5f19d96833e10b5db4cdb515acbff05",
+  "input_already_exceeds_old_mirror_guard": true,
+  "input_mirror_error": 1.32359166771321e-08,
+  "total_model_time": 20.0,
+  "rows": [
+    {
+      "parts": 1,
+      "error_estimates": [
+        0.38882592679379435
+      ],
+      "mirror_errors": [
+        2.3129294077000803e-08
+      ],
+      "mirror_amplification": 1.7474644666630188,
+      "field_change": 0.0002700593625276637,
+      "energy_relative_change": -7.669886276095994e-07,
+      "wall_s": 5.615240791987162
+    },
+    {
+      "parts": 2,
+      "error_estimates": [
+        0.17988149229529832,
+        0.15133182885707086
+      ],
+      "mirror_errors": [
+        9.919548652940298e-09,
+        8.563785644949981e-09
+      ],
+      "mirror_amplification": 0.6470111480639469,
+      "field_change": 0.0002700675966601507,
+      "energy_relative_change": -7.694977454120178e-07,
+      "wall_s": 7.3366049999604
+    },
+    {
+      "parts": 4,
+      "error_estimates": [
+        0.05480847567001617,
+        0.023148267158656918,
+        0.038553424991372154,
+        0.07023806181116754
+      ],
+      "mirror_errors": [
+        3.464802112996797e-09,
+        1.2914864288410526e-09,
+        5.075851100923897e-10,
+        2.018099628923499e-10
+      ],
+      "mirror_amplification": 0.015247146670318658,
+      "field_change": 0.0002700719253551087,
+      "energy_relative_change": -7.707011346891335e-07,
+      "wall_s": 11.712063124985434
+    }
+  ],
+  "no_accepted_fields_changed": true,
+  "no_symmetry_projection": true
+}

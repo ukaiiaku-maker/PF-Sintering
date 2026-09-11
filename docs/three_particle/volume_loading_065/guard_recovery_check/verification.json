@@ -1,0 +1,13 @@
+{
+  "time_s": 49.04239582600023,
+  "center_loss_fraction": 0.011859209117943137,
+  "rejections": {
+    "nonlinear error estimator": 19,
+    "reflection guard": 1
+  },
+  "mirror_error": 2.0707613385519477e-11,
+  "field_guard_unchanged": true,
+  "no_field_projection": true,
+  "checkpoint_sha256": "f7aa36a5325905326eae1aa9f53232978e236e1c4302a750404ddb7b35aa4fe2",
+  "report_sha256": "699397dd41fdfb727e303b51ec3083d3777ebbc4f79d817ec1af8cc03aa83680"
+}
