@@ -1,0 +1,71 @@
+{
+  "reference_length_m": 1.6016537105446885e-07,
+  "production_densification_strain_change": 0.0010457940995437522,
+  "label": "Conditional descendants after a forced root",
+  "genuine_stochastic_result": false,
+  "recorded_duration_s": 0.10898684871250217,
+  "records": 272,
+  "completed_events": 0,
+  "events": [
+    {
+      "event_number": 2,
+      "avalanche_id": 1,
+      "completed": false,
+      "q_over_b": 0.6699999999999967,
+      "duration_s": 0.10897913599425663,
+      "center_volume_loss_m3": -7.396254137285577e-25,
+      "chain_strain_change": 3.511423593260954e-05,
+      "production_densification_strain_change": 0.0010457940995437522,
+      "local_stress_before_Pa": {
+        "LEFT": 5257499.505483545,
+        "RIGHT": 17903937.258545015
+      },
+      "local_stress_after_Pa": {
+        "LEFT": 468350.74822609033,
+        "RIGHT": 19129495.456115365
+      }
+    }
+  ],
+  "phase_totals": {
+    "reload": {
+      "intervals": 0,
+      "duration_s": 0.0,
+      "center_volume_loss_m3": 0.0,
+      "chain_strain_change": 0.0,
+      "descriptive_rate_correlation": null,
+      "production_densification_strain_change": 0.0
+    },
+    "event": {
+      "intervals": 268,
+      "duration_s": 0.10897913599425663,
+      "center_volume_loss_m3": -7.396254137285577e-25,
+      "chain_strain_change": 3.511423593260954e-05,
+      "descriptive_rate_correlation": 0.9988460942374293,
+      "production_densification_strain_change": 0.0010457940995437522
+    },
+    "source_window": {
+      "intervals": 1,
+      "duration_s": 7.71271824553943e-06,
+      "center_volume_loss_m3": -3.164383091793237e-28,
+      "chain_strain_change": -2.830454959301676e-08,
+      "descriptive_rate_correlation": null,
+      "production_densification_strain_change": 0.0
+    },
+    "boundary": {
+      "intervals": 0,
+      "duration_s": 0.0,
+      "center_volume_loss_m3": 0.0,
+      "chain_strain_change": 0.0,
+      "descriptive_rate_correlation": null,
+      "production_densification_strain_change": 0.0
+    }
+  },
+  "notes": [
+    "Rate correlations are descriptive; samples are time-correlated and are not independent statistical replicates.",
+    "Raw interval increments have unequal durations; phase totals and complete-event changes are reported separately.",
+    "Positive volume loss denotes shrinking; negative volume loss denotes center growth.",
+    "No aggregate diagnostic enters activation.",
+    "chain_strain is the geometric centroid measure; production_densification_strain uses the bicrystal cumulative-quota definition.",
+    "Event confinement of quota-based strain follows its definition and is not independent evidence of mechanical densification."
+  ]
+}

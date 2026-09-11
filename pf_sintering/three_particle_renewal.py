@@ -9,6 +9,24 @@ import numpy as np
 
 CONTACTS=('LEFT','RIGHT')
 
+
+def cumulative_event_quota(event_number,phase,q_over_b):
+    """Bicrystal qcum accounting across serialized starts, failures and windows."""
+    if event_number < 0 or int(event_number) != event_number:
+        raise ValueError('invalid event number')
+    q=float(q_over_b)
+    if not np.isfinite(q) or not 0 <= q <= 1+1e-12:
+        raise ValueError('invalid active event quota')
+    active={'ACTIVE_ONE_B','ONE_B_COMPLETE','ONE_B_FAILED','ACTIVE_EVENT_RESUMED'}
+    inactive={'POST_TRANSIENT_NEW_TRAJECTORY','RELOAD','ROOT_CROSSING',
+              'SOURCE_WINDOW_OPEN','SOURCE_WINDOW','FACILITATED_WINDOW',
+              'CHILD_CROSSING','AVALANCHE_EXTINCT_REPINNED','FORCED_ROOT_COMPLETE'}
+    if phase in active:
+        if event_number < 1:raise ValueError('active quota requires an event')
+        return float(event_number-1)+q
+    if phase not in inactive:raise ValueError('unknown quota accounting phase: '+phase)
+    return float(event_number)
+
 class RootClocks:
     def __init__(self,rng,multiplier=1.25):
         self.rng=rng;self.multiplier=float(multiplier)

@@ -35,3 +35,18 @@ def test_microsecond_descendant_crossing_resolves_to_picosecond_tolerance():
     exact=(np.sqrt(1+2*slope*.73/rate)-1)/slope
     assert contact=='LEFT' and 0 <= t-exact <= 1e-12
     np.testing.assert_array_equal(initial,[0.]);np.testing.assert_allclose(field,[t],rtol=0,atol=0)
+
+
+def test_counted_strain_quota_survives_windows_failure_and_resume():
+    from pf_sintering.three_particle_renewal import cumulative_event_quota
+    sequence=[(0,'POST_TRANSIENT_NEW_TRAJECTORY',0),(0,'ROOT_CROSSING',0),
+              (1,'ACTIVE_ONE_B',.5),(1,'ONE_B_COMPLETE',1),
+              (1,'SOURCE_WINDOW_OPEN',0),(1,'CHILD_CROSSING',0),
+              (2,'ACTIVE_ONE_B',.5),(2,'ONE_B_FAILED',.5),
+              (2,'ACTIVE_EVENT_RESUMED',.5),(2,'ONE_B_COMPLETE',1),
+              (2,'AVALANCHE_EXTINCT_REPINNED',0),(2,'RELOAD',0)]
+    np.testing.assert_array_equal([cumulative_event_quota(*r) for r in sequence],
+                                 [0,0,.5,1,1,1,1.5,1.5,1.5,2,2,2])
+    assert cumulative_event_quota(1,'FORCED_ROOT_COMPLETE',1)==1
+    with pytest.raises(ValueError):cumulative_event_quota(0,'ACTIVE_ONE_B',.5)
+    with pytest.raises(ValueError):cumulative_event_quota(1,'UNKNOWN',0)

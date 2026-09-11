@@ -11,7 +11,7 @@ from pf_sintering.three_particle_event import load_event_checkpoint,save_event_c
 from pf_sintering.three_particle_geometry import grain_volumes,topology_status
 from pf_sintering.three_particle_contacts import evaluate_contacts
 from pf_sintering.three_particle_diagnostics import diagnostics,curvature_watch
-from pf_sintering.three_particle_renewal import RootClocks,locate_first_root
+from pf_sintering.three_particle_renewal import RootClocks,locate_first_root,cumulative_event_quota
 from pf_sintering.pr_avalanche import AvalancheController,AvalancheState,DescendantBarrier
 from pf_sintering.exp_barrier_nucleation import CompleteExpFloorParams
 from monitor_current_state_transfer_curvature import apply_progressive_flags
@@ -76,7 +76,10 @@ def main():
         if state[0].min() < -1e-8 or state[0].max()>1+1e-8:raise RuntimeError('unchanged family field guard')
         areas={k:np.pi*v['r_n_m']**2 for k,v in cc.items()}
         record=dict(time_since_forced_root_s=t,phase=phase,event_number=event_number,avalanche_id=1,q_over_b=q,
-            metrics=row,contacts=cc,diagnostics=extra,descendant_hazard=controller.state.descendant_hazard,
+            metrics=row,contacts=cc,diagnostics=extra,
+            cumulative_event_quota_over_b=cumulative_event_quota(event_number,phase,q),
+            production_densification_strain=cumulative_event_quota(event_number,phase,q)*MANIFEST['b_event_m']/reference.initial_span,
+            geometric_chain_strain=row['chain_strain'],strain_reference_length_m=reference.initial_span,descendant_hazard=controller.state.descendant_hazard,
             descendant_threshold=controller.state.descendant_threshold,source_amplitude=controller.state.source_amplitude,
             cluster_area_weighted_local_Pa=sum(areas[k]*cc[k]['sigma_local_Pa'] for k in cc)/sum(areas.values()),
             stochastic_root_result=False)
@@ -95,7 +98,7 @@ def main():
         os.replace(temp,out/'family.npz');(out/'history.json').write_text(json.dumps(records,indent=2,default=float)+'\n')
     if not args.resume_active:
         (out/'launch.json').write_text(json.dumps(dict(label='DESCENDANT_QUALIFICATION_AFTER_FORCED_ROOT',seed=DESCENDANT_SEED,root_checkpoint=str(args.root_checkpoint),
-            root_thresholds_drawn=False,qualification=gate,descendant_crossing_tolerance_s=DESCENDANT_CROSSING_TOLERANCE_S,descendant_parameters=controller.manifest(),physical_parameters_changed=False),indent=2)+'\n')
+            root_thresholds_drawn=False,qualification=gate,densification_reference_length_m=reference.initial_span,descendant_crossing_tolerance_s=DESCENDANT_CROSSING_TOLERANCE_S,descendant_parameters=controller.manifest(),physical_parameters_changed=False),indent=2)+'\n')
         record('FORCED_ROOT_COMPLETE',1.);save()
     else:
         record('ACTIVE_EVENT_RESUMED',pending_restart['cumulative_q_m']/MANIFEST['b_event_m']);save()

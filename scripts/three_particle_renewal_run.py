@@ -15,7 +15,7 @@ from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
 from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusion
 from pf_sintering.three_particle_contacts import evaluate_contacts
 from pf_sintering.three_particle_event import update_ownership,save_event_checkpoint,ownership_pair_step
-from pf_sintering.three_particle_renewal import RootClocks,locate_first_root
+from pf_sintering.three_particle_renewal import RootClocks,locate_first_root,cumulative_event_quota
 from pf_sintering.three_particle_geometry import topology_status,grain_volumes
 from pf_sintering.three_particle_diagnostics import diagnostics,curvature_watch
 from pf_sintering.pr_avalanche import AvalancheController,DescendantBarrier
@@ -47,7 +47,8 @@ def main():
         correlation_time_s=.009,rng=clocks.rng,facilitation_decay_alpha=.70)
     records=[];event_number=0;status='RUNNING';wall=time.perf_counter();mass0=float(grain_volumes(f,g).sum())
     (out/'launch.json').write_text(json.dumps(dict(seed=PRODUCTION_SEED,source=str(source),qualification=gate,
-        first_root_thresholds=clocks.threshold.copy(),root_hazards=clocks.hazard.copy(),stochastic_result=True),indent=2)+'\n')
+        first_root_thresholds=clocks.threshold.copy(),root_hazards=clocks.hazard.copy(),stochastic_result=True,
+        densification_reference_length_m=reference.initial_span,strain_definitions=dict(production_densification_strain='sum of accepted event quota times b / initial outer-grain centroid separation',chain_strain='1 - current outer-grain centroid separation / initial separation')),indent=2)+'\n')
     def field_advance(field,seconds):
         current=field.copy();elapsed=0.;h=min(seconds,.1)
         while elapsed<seconds-1e-14:
@@ -72,7 +73,10 @@ def main():
         chain=reference.metrics(state,q)['chain_strain'];areas={k:np.pi*v['r_n_m']**2 for k,v in contacts.items()}
         # Existing contact-side stress fields are retained verbatim for center diagnostics.
         row=dict(time_s=t,phase=phase,event_number=event_number,avalanche_id=clocks.avalanche_id,
-            contact=clocks.active,q_over_b=q,chain_strain=chain,contacts=contacts,
+            contact=clocks.active,q_over_b=q,chain_strain=chain,geometric_chain_strain=chain,contacts=contacts,
+            cumulative_event_quota_over_b=cumulative_event_quota(event_number,phase,q),
+            production_densification_strain=cumulative_event_quota(event_number,phase,q)*MANIFEST['b_event_m']/reference.initial_span,
+            strain_reference_length_m=reference.initial_span,
             descendant_hazard=avalanche.state.descendant_hazard,descendant_threshold=avalanche.state.descendant_threshold,
             source_amplitude=avalanche.state.source_amplitude,source_window_deadline_s=avalanche.state.window_deadline_s,
             center_volume_m3=float(grain_volumes(state[0],g)[1]),

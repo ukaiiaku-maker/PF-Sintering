@@ -1,0 +1,71 @@
+{
+  "label": "STRAIN_ACCOUNTING_AUDIT",
+  "phase_b_enabled": false,
+  "validation": {
+    "three_particle_and_pr_avalanche_tests_passed": 52,
+    "transfer_and_restart_tests_passed": 9,
+    "production_gate_refused_before_rng": true
+  },
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/history.json",
+      "bytes": 3805870,
+      "sha256": "0de417b6e3bd3b73f58d5ac000d1e0e65366b765564502f2e85febf4c4d55a68"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/launch.json",
+      "bytes": 2311,
+      "sha256": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/provenance.json",
+      "bytes": 374,
+      "sha256": "8694206003c3289a23aaad4d994c710ee3d81340697e9235f26ec0d60bc3f181"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/strain_accounting.json",
+      "bytes": 96555,
+      "sha256": "1225af02e3da31f09e6d8c8ae99013b98fb868cc03a2e6387fdd957e8552192b"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/strain_accounting.pdf",
+      "bytes": 28941,
+      "sha256": "d7129b2f73ac770be738ac274a619debbf52befb09423eeaada1880b0e910a53"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/strain_accounting.png",
+      "bytes": 136642,
+      "sha256": "f396d4d02198182886927489a32ce1981c3680296df51b26855a6293353d1a6b"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/volume_strain_analysis.json",
+      "bytes": 2674,
+      "sha256": "3c8d82b49825db0a73a4d008cebe3aabf08d9205e1e85bd02d1d6d30c7139111"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/volume_strain_analysis.pdf",
+      "bytes": 37352,
+      "sha256": "e952a81a352b1782699e8027a7befab5e450e95e1a4479cf6345b20b420c9f0c"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_strain_accounting_review/volume_strain_analysis.png",
+      "bytes": 319329,
+      "sha256": "68de4e34badd16df0fb0e6d84f282eb94c32d2209f34d0680293108f35dd735f"
+    },
+    {
+      "path": "docs/three_particle/production_065/passive_strain_accounting.json",
+      "bytes": 31143,
+      "sha256": "72b45cf8b3b291806eeed68ef82ed9b15ce224753cbde08c77ff4a7fc9a872a6"
+    },
+    {
+      "path": "docs/three_particle/production_065/passive_strain_accounting.pdf",
+      "bytes": 21726,
+      "sha256": "39a50f098b9d7f1d69fb0bd6bca40c76ad872aba72a6a97a11ef7b351e2d80ae"
+    },
+    {
+      "path": "docs/three_particle/production_065/passive_strain_accounting.png",
+      "bytes": 123067,
+      "sha256": "d772178da95869a106f5a617a1cc721b8379c7df8db98e344d4dd2e7e4dbb8c0"
+    }
+  ]
+}

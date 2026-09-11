@@ -1,7 +1,7 @@
 # Selected 0.65 qualification — reload and one-b mechanics passed; descendants pending
 
 The selected 0.65 no-sink reload passes 30 physical seconds. The forced LEFT
-one-b mechanical test now completes in 0.121635 s, with chain strain +0.009925%,
+one-b mechanical test now completes in 0.121635 s, with geometric centroid strain +0.009925%,
 LEFT stress 17.151 -> 5.263 MPa, RIGHT stress 17.906 MPa, relative material error
 -6.07e-14, unchanged field bounds and a resolved 32.769 nm center span.
 Center volume grows 0.02942% during this event and tracked PF energy rises
@@ -417,3 +417,39 @@ nominal stopping test is not a proof that the full PF vector field vanishes.
 These copies are not accepted states, and neither live tolerances nor
 qualification gates change. The stationary-null result remains a separate
 validation question, not a renewed production prerequisite.
+
+
+## Production strain accounting and independent geometric strain
+
+The binary production measure is `qcum * b / DENSIFICATION_LENGTH_INITIAL_M`
+(`scripts/pr_avalanche_renewal_five.py`, `measure`). The three-particle extension
+uses cumulative accepted quota across serialized contacts and the fixed initial
+outer-grain centroid separation, equal to the sum of the two initial contact
+separations. Here L0 = 160.16537105446885 nm and b = 0.25 nm. The completed forced
+root therefore has quota-based production strain **+0.1560886716%**, while its
+independently measured geometric centroid strain is **+0.0099250865%**. The latter
+positive geometric change remains the mechanical qualification evidence; positive
+counted strain follows from the event quota definition itself.
+
+Existing `chain_strain` data retain their geometric meaning. New records and the
+offline report explicitly provide `production_densification_strain` alongside
+`geometric_chain_strain`. Failed/resumed active events contribute only their
+accepted partial quota; source windows and event-completion records do not count
+that quota twice. The running descendant worker predates these added output
+columns; the offline analysis reconstructs them from its retained event number,
+phase and accepted q/b without changing fields, clocks, thresholds or RNG.
+
+The passive control demonstrates why these measures must remain distinct. From
+the saved post-transient state at 0.4032669894 s to the existing 30 s endpoint
+(29.5967330106 s elapsed), center volume decreases 0.87013536%, geometric centroid
+strain is -0.05275906%, and near-axis f=0.5 extent strain is +0.05211824%.
+Quota-based production strain is exactly zero because no events occur. The
+near-axis extent is a separate diagnostic, not a replacement production measure.
+See [passive strain accounting](passive_strain_accounting.pdf) and its JSON with
+checkpoint hashes. No fitted baseline subtraction is applied.
+
+Both production quota-based and independent geometric increments are compared
+with center-volume loss. Event confinement of quota-based strain is definitional
+and cannot by itself establish that physical densification accompanies particle
+disappearance. The current conditional descendant is incomplete, and its center
+grows during accepted transit. No genuine root statistics are inferred from it.

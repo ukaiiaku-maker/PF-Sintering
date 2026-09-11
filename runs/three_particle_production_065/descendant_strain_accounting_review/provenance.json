@@ -1,0 +1,9 @@
+{
+  "label": "INCOMPLETE_CONDITIONAL_DESCENDANT_STRAIN_ACCOUNTING",
+  "source_directory": "runs/three_particle_production_065/forced_descendant_family",
+  "phase_b_enabled": false,
+  "files": {
+    "history.json": "0de417b6e3bd3b73f58d5ac000d1e0e65366b765564502f2e85febf4c4d55a68",
+    "launch.json": "3c9a96417250cc280a85d255b80589cd9b268e805144be2ff89d593e8f3ed621"
+  }
+}
