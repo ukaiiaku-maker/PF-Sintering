@@ -10,7 +10,7 @@ from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
 from pf_sintering.three_particle_diagnostics import radius_profile
 from monitor_current_state_transfer_curvature import branch_profile
 D=Path('docs/three_particle/volume_loading_065')
-paths=[Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/checkpoint.npz'),Path('runs/three_particle_volume_loading_065_guarded/checkpoint.npz'),Path('runs/three_particle_volume_loading_065_full_jacobian/checkpoint.npz'),D/'automatic_snapshots/loss_1pct/checkpoint.npz']
+paths=[Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/checkpoint.npz'),Path('runs/three_particle_volume_loading_065_guarded/checkpoint.npz'),Path('runs/three_particle_volume_loading_065_full_jacobian/checkpoint.npz'),D/'automatic_snapshots/loss_1pct/checkpoint.npz',D/'automatic_snapshots/final_numerical_guard/checkpoint.npz']
 c,o=compatible_chain(.65,119.999*1e-9);g=map_to_pf(c,o,4e-9,.5e-9);z=g['z'];left,right=g['gb'];fig,aa=plt.subplots(2,3,figsize=(13,8));data={}
 for path in paths:
  with np.load(path) as d:f=d['f'];t=float(d['t_model'])*.01557994316955921;np.testing.assert_array_equal(d['z'],z)

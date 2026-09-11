@@ -1,0 +1,12 @@
+{
+  "passed": false,
+  "status": "ABORTED_BASELINE_REFLECTION_GUARD",
+  "ceiling_model": 32.0,
+  "last_rejection": "reflection guard",
+  "abort_reason": "audit numerical floor; no promotion",
+  "source": "docs/three_particle/volume_loading_065/adaptive_full_jacobian_source.npz",
+  "no_equal_duration_comparison": true,
+  "partial_trial_fields_not_retained": true,
+  "not_an_accepted_trajectory": true,
+  "proposed_ceiling_128_not_promoted": true
+}

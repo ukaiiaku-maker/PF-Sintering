@@ -2,5 +2,6 @@
   "runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/checkpoint.npz",
   "runs/three_particle_volume_loading_065_guarded/checkpoint.npz",
   "runs/three_particle_volume_loading_065_full_jacobian/checkpoint.npz",
-  "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/checkpoint.npz"
+  "docs/three_particle/volume_loading_065/automatic_snapshots/loss_1pct/checkpoint.npz",
+  "docs/three_particle/volume_loading_065/automatic_snapshots/final_numerical_guard/checkpoint.npz"
 ]

@@ -1,5 +1,11 @@
 # Events-off loading as a function of center-volume loss
 
+**Final status: NUMERICAL_GUARD at 82.9423895733 s and 1.4137265543%
+center loss. A/B decision: INCONCLUSIVE.** Only the 1% requested milestone
+was reached. The calculation and watcher have finished. Stress was still
+increasing; this is not a stress-plateau finding. See RESULT.md for the final
+metrics and the timestep-refined native reflection-mode diagnosis.
+
 This study continues the exact saved 30 s harmonic/current-field PF state for
 Rc/Ro=0.65 and Ro=119.999 nm. The center-loss coordinate is
 x = 1 - V_center/V_center,post-cleanup, using the original 200-step-cleaned
@@ -132,7 +138,7 @@ error is 2.08450e-6 (bound 2e-5), contact stress difference 0.654981 Pa
 step passes embedded-error, energy, reflection, and mass checks. This is local
 qualification; the live trajectory still checks every trial and may reduce h.
 
-The active lineage is runs/three_particle_volume_loading_065_full_jacobian.
+That lineage was runs/three_particle_volume_loading_065_full_jacobian.
 Its launch requires the passing audit, records source/audit/solver hashes, and
 uses ceiling 32 model time with an initial trial of 20. It restarts the exact
 accepted guarded handoff, retaining the earlier accepted history and 1%
@@ -151,7 +157,7 @@ The separate conditional-descendant morphology gate remains not qualified.
 The full-Jacobian lineage was superseded coherently at 60.95841147437546 s,
 1.2786691071648537% loss, by runs/three_particle_volume_loading_065_cached.
 Its exact checkpoint/report remain preserved and hashed in handoff.json.
-The active solver optionally reuses only the LU preconditioner when the field
+The cached solver optionally reuses only the LU preconditioner when the field
 and step remain close, rebuilding it if the unchanged linear solve fails.
 Every Jacobian and native flux is still recomputed from the current field.
 A discarded h=4 comparison gives maximum field difference 6.16174e-13 and
@@ -176,8 +182,8 @@ Passing that descriptive loading screen does not qualify stochastic production.
 
 ## Long-running milestone watcher
 
-The events-off extension remains INCOMPLETE; no A/B decision or production
-initial-state selection has been made. The unchanged adaptive field tolerance
+The requested A/B distinction remains unresolved; the extension has stopped
+at its numerical guard. No production initial-state selection has been made. The unchanged adaptive field tolerance
 can require small steps during internal PF relaxation, so physical-time
 progress is uneven. Runtime is not used as the scientific stopping criterion.
 
@@ -200,7 +206,6 @@ bicrystal fitted one-sided curvature used in the activation stress. No new
 passive morphology failure is inferred from these profiles. The requested
 stress decomposition and root rates continue to use the original measurements.
 
-Until the running trajectory reaches its declared endpoint, the only retained
-requested milestone is 1%; 2, 3, 5, 7.5 and 10% have not yet been reached.
-Future automatically generated snapshots are local study outputs awaiting
-review and a subsequent experimental-branch preservation commit.
+The only retained requested milestone is 1%; 2, 3, 5, 7.5 and 10% were not
+reached. The initial and terminal watcher snapshots are preserved with this
+study payload. The final snapshot is automatic_snapshots/final_numerical_guard.

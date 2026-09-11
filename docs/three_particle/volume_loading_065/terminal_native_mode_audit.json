@@ -1,0 +1,64 @@
+{
+  "source_sha256": "713f48c2a2c6ac1f536354af00b77887e745ce006b7c43ae291659adcbfb6c26",
+  "time_s": 82.94238957332838,
+  "index": [
+    444,
+    312
+  ],
+  "z_nm": -0.24848476121655894,
+  "r_nm": 156.25,
+  "field_value": 0.00011072126293739644,
+  "mirror_field_value": 0.00011073126293727091,
+  "mirror_error": 9.999999874471316e-09,
+  "native_pointwise_mirror_growth_per_model_time": 2.3166804677395186e-10,
+  "native_rayleigh_per_model_time": 0.022997711396627252,
+  "analytic_jacobian_rayleigh_per_model_time": 0.022997633298742843,
+  "finite_difference_modes": [
+    {
+      "epsilon": 1e-08,
+      "rayleigh_per_model_time": 0.022997477068107158
+    },
+    {
+      "epsilon": 1e-09,
+      "rayleigh_per_model_time": 0.022997633467717826
+    },
+    {
+      "epsilon": 1e-10,
+      "rayleigh_per_model_time": 0.02299762860767247
+    }
+  ],
+  "symmetric_copy_native_rhs_mirror_error": 2.3357397694592427e-14,
+  "gb_density_mirror_error_Pa": 2.9802322387695312e-08,
+  "rows": [
+    {
+      "h_model": 0.001,
+      "embedded_error": 5.270589698014305e-07,
+      "mirror_error": 1.000023154543628e-08,
+      "mirror_growth_per_model_time": 2.3167096496398698e-10,
+      "f_min": -1.3748789310120962e-108,
+      "f_max": 1.0,
+      "energy_relative_change": -2.4224955375018453e-11
+    },
+    {
+      "h_model": 0.0005,
+      "embedded_error": 2.6352318105438144e-07,
+      "mirror_error": 1.0000115709221961e-08,
+      "mirror_growth_per_model_time": 2.3166950129105413e-10,
+      "f_min": -1.3748789310120962e-108,
+      "f_max": 1.0,
+      "energy_relative_change": -1.2112422176357995e-11
+    },
+    {
+      "h_model": 0.00025,
+      "embedded_error": 1.317600117900497e-07,
+      "mirror_error": 1.0000057791684008e-08,
+      "mirror_growth_per_model_time": 2.3166885076975063e-10,
+      "f_min": -1.3748789310120962e-108,
+      "f_max": 1.0,
+      "energy_relative_change": -6.056044554725304e-12
+    }
+  ],
+  "discarded_copies_only": true,
+  "no_accepted_symmetrization": true,
+  "no_physical_instability_claim": true
+}
