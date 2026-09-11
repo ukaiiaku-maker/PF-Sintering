@@ -1,0 +1,104 @@
+{
+  "label": "THREE_PARTIAL_SNAPSHOT_GROWTH_WARNING",
+  "q_over_b": [
+    0.25000000000000017,
+    0.5000000000000003,
+    0.749999999999995
+  ],
+  "completed_event_monitor_result": false,
+  "qualification_changed": false,
+  "phase_b_enabled": false,
+  "branches": {
+    "LEFT_-1": {
+      "max_abs_kappa_per_m": 18182837.659196615,
+      "p95_abs_kappa_per_m": 10635061.378566558,
+      "p99_abs_kappa_per_m": 11957360.391690273,
+      "kappa_max_index": 462,
+      "max_abs_dkappa_ds_per_m2": 1.1561698311458928e+16,
+      "dkappa_max_index": 459,
+      "max_abs_kappa_within_1W_of_mask_edge_per_m": 11692895.949773435,
+      "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 2612495431079150.0,
+      "curvature_edge_tied": false,
+      "gradient_edge_tied": false,
+      "avalanche_id": 1,
+      "artifact_flag": 0
+    },
+    "LEFT_+1": {
+      "max_abs_kappa_per_m": 6962039.985992291,
+      "p95_abs_kappa_per_m": 6930233.486010664,
+      "p99_abs_kappa_per_m": 6955678.685995965,
+      "kappa_max_index": 41,
+      "max_abs_dkappa_ds_per_m2": 2759497189057939.5,
+      "dkappa_max_index": 24,
+      "max_abs_kappa_within_1W_of_mask_edge_per_m": 4140815.6071086195,
+      "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 2759497189057939.5,
+      "curvature_edge_tied": false,
+      "gradient_edge_tied": true,
+      "avalanche_id": 1,
+      "artifact_flag": 1,
+      "artifact_reason": "three-event monotone >50% curvature/gradient growth tied within 0.75W of a transfer-mask edge"
+    },
+    "RIGHT_-1": {
+      "max_abs_kappa_per_m": 6963073.95491619,
+      "p95_abs_kappa_per_m": 6941718.390502299,
+      "p99_abs_kappa_per_m": 6958802.842033412,
+      "kappa_max_index": 24,
+      "max_abs_dkappa_ds_per_m2": 2723983758087662.0,
+      "dkappa_max_index": 41,
+      "max_abs_kappa_within_1W_of_mask_edge_per_m": 6963073.95491619,
+      "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 963939566569695.0,
+      "curvature_edge_tied": true,
+      "gradient_edge_tied": false,
+      "avalanche_id": 1,
+      "artifact_flag": 1,
+      "artifact_reason": "three-event monotone >50% curvature/gradient growth tied within 0.75W of a transfer-mask edge"
+    },
+    "RIGHT_+1": {
+      "max_abs_kappa_per_m": 18007101.89498587,
+      "p95_abs_kappa_per_m": 8391193.988734303,
+      "p99_abs_kappa_per_m": 11961778.279627118,
+      "kappa_max_index": 462,
+      "max_abs_dkappa_ds_per_m2": 1.154485494788037e+16,
+      "dkappa_max_index": 465,
+      "max_abs_kappa_within_1W_of_mask_edge_per_m": 10887688.72708573,
+      "max_abs_dkappa_ds_within_1W_of_mask_edge_per_m2": 625319384703558.0,
+      "curvature_edge_tied": false,
+      "gradient_edge_tied": false,
+      "avalanche_id": 1,
+      "artifact_flag": 0
+    }
+  },
+  "tracked_outside_peak": [
+    {
+      "q_over_b": 0.25000000000000017,
+      "peak_distance_gradient_prominence": [
+        [
+          3.4182888469784185,
+          1735644707592832.0,
+          73196194043265.0
+        ]
+      ]
+    },
+    {
+      "q_over_b": 0.5000000000000003,
+      "peak_distance_gradient_prominence": [
+        [
+          3.5427476904734685,
+          1980911469058069.2,
+          261129655276624.0
+        ]
+      ]
+    },
+    {
+      "q_over_b": 0.749999999999995,
+      "peak_distance_gradient_prominence": [
+        [
+          3.791588654391207,
+          2150579530235860.8,
+          459238074960086.0
+        ]
+      ]
+    }
+  ],
+  "interpretation": "Partial snapshots are not three completed events. The outside peak moves beyond 3.75W; absence from the narrow edge-window list is not disappearance. Both center-side analogue flags and full unmasked profiles are retained; repeated-event qualification remains unresolved."
+}

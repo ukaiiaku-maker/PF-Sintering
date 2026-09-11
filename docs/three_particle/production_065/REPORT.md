@@ -453,3 +453,25 @@ with center-volume loss. Event confinement of quota-based strain is definitional
 and cannot by itself establish that physical densification accompanies particle
 disappearance. The current conditional descendant is incomplete, and its center
 grows during accepted transit. No genuine root statistics are inferred from it.
+
+
+## Three-quarter-b descendant morphology warning
+
+At descendant q/b = 0.75, LEFT local stress is 0.0656518 MPa. The unchanged
+three-profile growth calculation, applied as an explicitly **within-event
+analogue** to q = 0.25, 0.50 and 0.75, flags both center-side branches.
+LEFT edge-zone gradient grows 1.73564 -> 1.98091 -> 2.75950e15 /m2;
+RIGHT edge-zone curvature grows 4.22674 -> 5.84372 -> 6.96307e6 /m.
+These are not three completed events and do not replace that production gate.
+They strengthen the unresolved morphology warning; no qualification is granted.
+
+The unmasked outside local gradient peak moves from 3.4183W through 3.5427W to
+3.7916W from LEFT TJ. Its amplitude is 1.73564 -> 1.98091 -> 2.15058e15 /m2 and
+prominence is 0.07320 -> 0.26113 -> 0.45924e15 /m2 (4.2%, 13.2%, 21.4% of peak).
+It has moved beyond the narrow 0.75W edge-tie window, not disappeared. At q=0.75
+the restricted gradient maximum is instead the tail of the inner 2.7983W peak.
+All unmasked peak positions, amplitudes and prominences are retained to make
+this distinction reviewable. See descendant_three_quarter_warning.json and the
+immutable descendant_three_quarter_review profiles. The accepted native event
+continues under the unchanged guards; repeated-event qualification and Phase B
+remain disabled.

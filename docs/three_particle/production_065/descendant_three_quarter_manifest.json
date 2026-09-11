@@ -1,0 +1,37 @@
+{
+  "label": "PARTIAL_DESCENDANT_THREE_QUARTER_REVIEW",
+  "descendant_completed": false,
+  "phase_b_enabled": false,
+  "files": [
+    {
+      "path": "runs/three_particle_production_065/descendant_three_quarter_review/family_morphology.json",
+      "bytes": 66816,
+      "sha256": "ab3bff8304398491d31980c14ad78d865fa0d8bd7cc16972e33aee9a99ad413c"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_three_quarter_review/family_morphology.pdf",
+      "bytes": 46716,
+      "sha256": "bf8fb47a937889b98e3c76f002c2e96432e64ed9c4d829797cfcd0468768b740"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_three_quarter_review/family_morphology.png",
+      "bytes": 299271,
+      "sha256": "05a09be6420516a76dee4ed95d4c33cbfd3e1d08ea9426351497fde8eee171d2"
+    },
+    {
+      "path": "runs/three_particle_production_065/descendant_three_quarter_review/family_morphology_profiles.npz",
+      "bytes": 162548,
+      "sha256": "d9f87c5eb66a3cfa5b6d7fb6e9614e816ccbdb33eab6dbb3a5f44063494cfc35"
+    },
+    {
+      "path": "runs/three_particle_production_065/forced_descendant_family/event_2_q0.750000.npz",
+      "bytes": 6162113,
+      "sha256": "214a2e3e10015ee47a6d2894c857506757a9018c59590d15ebc926d8a8fd11eb"
+    },
+    {
+      "path": "docs/three_particle/production_065/descendant_three_quarter_warning.json",
+      "bytes": 3690,
+      "sha256": "3128b06fde10072a5e5bc81eb825340735da4d70ffeb47b5edbaf12aac4c8e6f"
+    }
+  ]
+}
