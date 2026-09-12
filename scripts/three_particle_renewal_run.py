@@ -1,166 +1,487 @@
-"""Gated current-field stochastic renewal for the selected 0.65 geometry.
+"""Restartable full-field stochastic renewal for the selected 0.65 geometry.
 
-Seed is fixed before any production draw; mechanical qualification never uses
-these thresholds. This driver cannot bypass the recorded qualification gates.
+The production seed is fixed before the first draw. Source selection and all
+mechanical/refinement work are deterministic and cannot inspect these draws.
+LEFT and RIGHT clocks are independent; symmetry is never enforced after the
+one-time full-domain handoff.
 """
+from dataclasses import asdict
 from pathlib import Path
-import sys,json,time,os,argparse,hashlib
-sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
+import argparse
+import hashlib
+import json
+import os
+import sys
+import time
+
+sys.path[:0] = [str(Path(__file__).resolve().parents[1]),
+                str(Path(__file__).resolve().parent)]
+
 import numpy as np
-from three_particle_forced_event import ContactEvent,MANIFEST
-from three_particle_implicit_run import advance
-from three_particle_source_window import advance_source_window,DESCENDANT_CROSSING_TOLERANCE_S
+
 from three_particle_buffered_event_probe import BufferedContactEvent
-from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
-from pf_sintering.three_particle_bounded_mobility import HarmonicSurfaceDiffusion
-from pf_sintering.three_particle_contacts import evaluate_contacts
-from pf_sintering.three_particle_event import update_ownership,save_event_checkpoint,ownership_pair_step
-from pf_sintering.three_particle_renewal import RootClocks,locate_first_root,cumulative_event_quota
-from pf_sintering.three_particle_geometry import topology_status,grain_volumes
-from pf_sintering.three_particle_diagnostics import diagnostics,curvature_watch
-from pf_sintering.pr_avalanche import AvalancheController,DescendantBarrier
+from three_particle_forced_event import ContactEvent, MANIFEST
+from three_particle_implicit_run import advance
+from three_particle_source_window import (
+    DESCENDANT_CROSSING_TOLERANCE_S, advance_source_window)
 from pf_sintering.exp_barrier_nucleation import CompleteExpFloorParams
-D=Path('docs/three_particle/production_065')
-PRODUCTION_SEED=20260910
+from pf_sintering.pr_avalanche import (
+    AvalancheController, AvalancheState, DescendantBarrier)
+from pf_sintering.three_particle_cmc import compatible_chain, map_to_pf
+from pf_sintering.three_particle_contacts import evaluate_contacts
+from pf_sintering.three_particle_diagnostics import diagnostics, curvature_watch
+from pf_sintering.three_particle_event import (
+    load_event_checkpoint, save_event_checkpoint, update_ownership)
+from pf_sintering.three_particle_full_jacobian import FullJacobianSurfaceDiffusion
+from pf_sintering.three_particle_geometry import grain_volumes, topology_status
+from pf_sintering.three_particle_renewal import (
+    RootClocks, cumulative_event_quota, locate_first_root)
 
 
-def require_qualification():
-    gate=json.loads((D/'qualification.json').read_text())
-    if not all(gate.get(k) is True for k in ['reload_qualified','one_b_qualified','descendant_qualified','root_quadrature_qualified','phase_b_enabled']):
-        raise RuntimeError('Phase B DISABLED: numerical, one-b and descendant qualification required')
-    return gate
+D = Path("docs/three_particle/production_065")
+STATUS_PATH = Path("CAMPAIGN_STATUS.md")
+PRODUCTION_SEED = 20260910
+DEFAULT_SOURCE = Path(
+    "runs/three_particle_production_065/production_initial_2pct.npz")
+
+
+def sha256(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def atomic_text(path, value):
+    temporary = path.with_suffix(".writing" + path.suffix)
+    temporary.write_text(value)
+    os.replace(temporary, path)
+
+
+def require_campaign(source):
+    old = json.loads((D/"qualification.json").read_text())
+    authorization = json.loads((D/"campaign_authorization.json").read_text())
+    overlap = json.loads((D/"buffered_event_probe.json").read_text())
+    window = json.loads((D/"source_window_overlap.json").read_text())
+    initial = json.loads((D/"production_initial_2pct.json").read_text())
+    if not all(old.get(key) is True for key in
+               ("reload_qualified", "one_b_qualified",
+                "root_quadrature_qualified")):
+        raise RuntimeError("campaign requires qualified reload, one-b, and root quadrature")
+    if not authorization.get("phase_b_enabled_for_campaign"):
+        raise RuntimeError("end-to-end campaign is not authorized")
+    if authorization.get("morphology_decision") != "NON_BLOCKING_MONITORED_STRUCTURE":
+        raise RuntimeError("campaign morphology decision is missing")
+    if not overlap.get("native_overlap_pass") or not window.get("passed"):
+        raise RuntimeError("accelerated event/source-window overlap is not qualified")
+    if sha256(source) != initial["output_sha256"]:
+        raise RuntimeError("production source differs from the pre-draw selection")
+    return dict(
+        authorization=authorization, numerical=old,
+        event_overlap=overlap, source_window_overlap=window,
+        production_initial=initial)
+
+
+def build_controller(clocks):
+    p = MANIFEST["root_barrier_slice"]
+    barrier = DescendantBarrier(CompleteExpFloorParams(
+        p["G0_eV"], p["Gfloor_eV"], p["a"], p["sigmahat_Pa"], p["n"]), 1.5)
+    return AvalancheController(
+        barrier=barrier, temperature_K=MANIFEST["temperature_K"],
+        attempt_frequency_per_s=(
+            MANIFEST["clock_scale"]/MANIFEST["seconds_per_model_time"]),
+        b_m=MANIFEST["b_event_m"], correlation_time_s=.009,
+        rng=clocks.rng, facilitation_decay_alpha=.70)
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,default=Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/post_transient.npz'));ap.add_argument('--out-name',default='stochastic_seed20260910');args=ap.parse_args()
-    gate=require_qualification()
-    event_class=BufferedContactEvent if gate.get('event_engine')=='buffered_native' else ContactEvent
-    out=Path('runs/three_particle_production_065')/args.out_name;out.mkdir(exist_ok=False)
-    c,o=compatible_chain(.65,119.999e-9);g=map_to_pf(c,o,4e-9,.5e-9)
-    source=args.source
-    with np.load(source) as data:
-        f=data['f'].copy();g['ownership']=data['ownership'].copy();t=float(data['t_model'])*MANIFEST['seconds_per_model_time']
-        state=tuple(x.copy() for x in data['fields']) if 'fields' in data else (f,*(g['ownership']*f[None]))
-        released=bool(data['symmetry_enforcement_enabled']==False) if 'symmetry_enforcement_enabled' in data else False
-    if released and (np.max(abs(state[0]-state[0][::-1]))!=0 or np.max(abs(state[1]-state[3][::-1]))!=0):raise ValueError('released source must begin from exact reconstructed symmetry')
-    start_t=t;reference=ContactEvent(g);reference.metrics(state,0.)
-    op=reference.op;it=HarmonicSurfaceDiffusion(op);rule=json.loads(Path('docs/three_particle/cmc/angle_calibration.json').read_text())['rule']
-    clocks=RootClocks(np.random.default_rng(PRODUCTION_SEED));p=MANIFEST['root_barrier_slice']
-    barrier=DescendantBarrier(CompleteExpFloorParams(p['G0_eV'],p['Gfloor_eV'],p['a'],p['sigmahat_Pa'],p['n']),1.5)
-    avalanche=AvalancheController(barrier=barrier,temperature_K=MANIFEST['temperature_K'],
-        attempt_frequency_per_s=MANIFEST['clock_scale']/MANIFEST['seconds_per_model_time'],b_m=MANIFEST['b_event_m'],
-        correlation_time_s=.009,rng=clocks.rng,facilitation_decay_alpha=.70)
-    records=[];event_number=0;status='RUNNING';wall=time.perf_counter();mass0=float(grain_volumes(f,g).sum())
-    (out/'launch.json').write_text(json.dumps(dict(seed=PRODUCTION_SEED,source=str(source),source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),qualification=gate,
-        first_root_thresholds=clocks.threshold.copy(),root_hazards=clocks.hazard.copy(),stochastic_result=True,
-        symmetry_enforcement_enabled=False,reflection_guard_enabled=False,no_symmetry_projection=True,contact_selected_only_by_localized_root_crossing=True,
-        densification_reference_length_m=reference.initial_span,strain_definitions=dict(production_densification_strain='sum of accepted event quota times b / initial outer-grain centroid separation',chain_strain='1 - current outer-grain centroid separation / initial separation')),indent=2)+'\n')
-    def field_advance(field,seconds):
-        current=field.copy();elapsed=0.;h=min(seconds,.1)
-        while elapsed<seconds-1e-14:
-            h=min(h,seconds-elapsed)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--out-name", default="stochastic_seed20260910")
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--minimum-avalanches", type=int, default=2)
+    parser.add_argument("--maximum-production-seconds", type=float, default=3600.)
+    parser.add_argument("--validate-only", action="store_true")
+    args = parser.parse_args()
+    if args.minimum_avalanches < 2:
+        raise ValueError("production requires at least two complete avalanches")
+    gate = require_campaign(args.source)
+    if args.validate_only:
+        print("CAMPAIGN_READY_NO_THRESHOLDS_DRAWN", sha256(args.source))
+        return
+
+    old = gate["numerical"]
+    event_class = (BufferedContactEvent if old.get("event_engine") ==
+                   "buffered_native" else ContactEvent)
+    out = Path("runs/three_particle_production_065")/args.out_name
+    c, offsets = compatible_chain(.65, 119.999*1e-9)
+    g = map_to_pf(c, offsets, 4e-9, .5e-9)
+    rule = json.loads(Path(
+        "docs/three_particle/cmc/angle_calibration.json").read_text())["rule"]
+
+    if args.resume:
+        launch = json.loads((out/"launch.json").read_text())
+        with np.load(out/"trajectory.npz") as data:
+            state = tuple(value.copy() for value in data["fields"])
+            g["ownership"] = data["ownership"].copy()
+            g["gb"] = data["gb"].copy()
+            t = float(data["time_s"])
+            metadata = json.loads(str(data["metadata"]))
+        records = json.loads((out/"history.json").read_text())
+        clocks = RootClocks.restore(metadata["root"])
+        avalanche = build_controller(clocks)
+        avalanche.state = AvalancheState(**metadata["avalanche"])
+        avalanche.crossings = metadata.get("avalanche_crossings", [])
+        event_number = int(metadata["event_number"])
+        completed_avalanches = int(metadata["completed_avalanches"])
+        phase = metadata["phase"]
+        event_start_t = metadata.get("event_start_t")
+        status = "RUNNING"
+        start_t = float(launch["start_time_s"])
+        mass0 = float(launch["material_volume_m3"])
+        reference_span = float(launch["densification_reference_length_m"])
+        if int(launch["seed"]) != PRODUCTION_SEED:
+            raise RuntimeError("production seed changed on restart")
+    else:
+        if out.exists():
+            raise RuntimeError("refusing to overwrite production output; use --resume")
+        out.mkdir(parents=True)
+        with np.load(args.source) as data:
+            state = tuple(value.copy() for value in data["fields"])
+            g["ownership"] = data["ownership"].copy()
+            g["gb"] = data["gb"].copy()
+            t = float(data["t_model"])*MANIFEST["seconds_per_model_time"]
+            if bool(data["symmetry_enforcement_enabled"]):
+                raise ValueError("production requires a symmetry-released source")
+        start_t = t
+        clocks = RootClocks(np.random.default_rng(PRODUCTION_SEED))
+        avalanche = build_controller(clocks)
+        records = []
+        event_number = 0
+        completed_avalanches = 0
+        phase = "POST_TRANSIENT_NEW_TRAJECTORY"
+        event_start_t = None
+        status = "RUNNING"
+        mass0 = float(grain_volumes(state[0], g).sum())
+        reference_probe = ContactEvent(g)
+        reference_span = reference_probe.metrics(state, 0.)["chain_span_m"]
+        launch = dict(
+            label="GENUINE_STOCHASTIC_THREE_PARTICLE_RENEWAL",
+            seed=PRODUCTION_SEED, source=str(args.source),
+            source_sha256=sha256(args.source), start_time_s=start_t,
+            source_selected_before_random_draw=True,
+            first_root_thresholds=clocks.threshold.copy(),
+            first_root_hazards=clocks.hazard.copy(), stochastic_result=True,
+            minimum_completed_avalanches=args.minimum_avalanches,
+            maximum_production_seconds=args.maximum_production_seconds,
+            symmetry_enforcement_enabled=False, reflection_guard_enabled=False,
+            no_symmetry_projection=True,
+            contact_selected_only_by_localized_root_crossing=True,
+            passive_solver="full_native_flux_jacobian",
+            passive_preconditioner_reuse=True,
+            material_volume_m3=mass0,
+            densification_reference_length_m=reference_span,
+            strain_definitions=dict(
+                production_densification_strain=(
+                    "sum of accepted event quota times b / initial outer-grain centroid separation"),
+                geometric_chain_strain=(
+                    "1 - current outer-grain centroid separation / initial separation")),
+            campaign_gate=gate)
+        atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+
+    reference = ContactEvent(g)
+    reference.initial_span = reference_span
+    reference.bind(state)
+    op = reference.op
+    passive = FullJacobianSurfaceDiffusion(op, reuse_preconditioner=True)
+    wall = time.perf_counter()
+
+    def field_advance(field, seconds):
+        current = field.copy()
+        elapsed = 0.
+        h = min(seconds, .1)
+        while elapsed < seconds-1e-14:
+            h = min(h, seconds-elapsed)
             try:
-                trial,error=advance(current,h/MANIFEST['seconds_per_model_time'],it,rule)
-                if error>1:raise RuntimeError('embedded field error')
-            except (FloatingPointError,RuntimeError):
-                h*=.2
-                if h<1e-10:raise RuntimeError('reload numerical timestep floor')
+                trial, error = advance(
+                    current, h/MANIFEST["seconds_per_model_time"], passive, rule)
+                if error > 1:
+                    raise RuntimeError("embedded field error")
+            except (FloatingPointError, RuntimeError):
+                h *= .2
+                if h < 1e-10:
+                    raise RuntimeError("reload numerical timestep floor")
                 continue
-            current=trial;elapsed+=h;h*=min(2.,max(.5,.8/max(error,1e-12)**.5))
+            current = trial
+            elapsed += h
+            h *= min(2., max(.5, .8/max(error, 1e-12)**.5))
         return current
+
     def rates(field):
-        return {k:v['root_rate_per_s'] for k,v in evaluate_contacts(field,op,MANIFEST).items()}
-    def record(phase,q=0.):
+        return {key: value["root_rate_per_s"] for key, value in
+                evaluate_contacts(field, op, MANIFEST).items()}
+
+    def record(new_phase, q=0.):
+        nonlocal phase
+        phase = new_phase
         reference.bind(state)
-        if abs(float(grain_volumes(state[0],g).sum())/mass0-1)>1e-11:raise RuntimeError('trajectory mass guard')
-        if state[0].min() < -1e-8 or state[0].max()>1+1e-8:raise RuntimeError('unchanged field guard')
-        if np.max(abs(sum(state[1:])-state[0]))>5e-15:raise RuntimeError('ownership closure guard')
-        contacts=evaluate_contacts(state[0],op,MANIFEST);scalar,_=diagnostics(state[0],op,gb_positions=[contacts[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
-        chain=reference.metrics(state,q)['chain_strain'];areas={k:np.pi*v['r_n_m']**2 for k,v in contacts.items()}
-        # Existing contact-side stress fields are retained verbatim for center diagnostics.
-        row=dict(time_s=t,phase=phase,event_number=event_number,avalanche_id=clocks.avalanche_id,
-            contact=clocks.active,q_over_b=q,chain_strain=chain,geometric_chain_strain=chain,contacts=contacts,mirror_error_diagnostic=float(np.max(abs(state[0]-state[0][::-1]))),
-            cumulative_event_quota_over_b=cumulative_event_quota(event_number,phase,q),
-            production_densification_strain=cumulative_event_quota(event_number,phase,q)*MANIFEST['b_event_m']/reference.initial_span,
+        volumes = grain_volumes(state[0], g)
+        if abs(float(volumes.sum())/mass0-1) > 1e-11:
+            raise RuntimeError("trajectory mass guard")
+        if state[0].min() < -1e-8 or state[0].max() > 1+1e-8:
+            raise RuntimeError("unchanged field guard")
+        if np.max(np.abs(sum(state[1:])-state[0])) > 5e-15:
+            raise RuntimeError("ownership closure guard")
+        contacts = evaluate_contacts(state[0], op, MANIFEST)
+        scalar, _ = diagnostics(
+            state[0], op, gb_positions=[contacts[key]["z_TJ_m"]
+                                        for key in ("LEFT", "RIGHT")])
+        chain = reference.metrics(state, q)["chain_strain"]
+        areas = {key: np.pi*value["r_n_m"]**2
+                 for key, value in contacts.items()}
+        area_sum = sum(areas.values())
+        row = dict(
+            time_s=t, phase=phase, event_number=event_number,
+            completed_avalanches=completed_avalanches,
+            avalanche_id=clocks.avalanche_id, contact=clocks.active,
+            q_over_b=q, chain_strain=chain, geometric_chain_strain=chain,
+            contacts=contacts,
+            mirror_error_diagnostic=float(np.max(np.abs(state[0]-state[0][::-1]))),
+            cumulative_event_quota_over_b=cumulative_event_quota(
+                event_number, phase, q),
+            production_densification_strain=(
+                cumulative_event_quota(event_number, phase, q)
+                * MANIFEST["b_event_m"]/reference.initial_span),
             strain_reference_length_m=reference.initial_span,
-            descendant_hazard=avalanche.state.descendant_hazard,descendant_threshold=avalanche.state.descendant_threshold,
-            source_amplitude=avalanche.state.source_amplitude,source_window_deadline_s=avalanche.state.window_deadline_s,
-            center_volume_m3=float(grain_volumes(state[0],g)[1]),
-            center_particle_mean_local_Pa=.5*(contacts['LEFT']['sigma_local_positive_Pa']+contacts['RIGHT']['sigma_local_negative_Pa']),
-            cluster_area_weighted_local_Pa=sum(areas[k]*contacts[k]['sigma_local_Pa'] for k in areas)/sum(areas.values()),
-            hazards=clocks.hazard.copy(),thresholds=clocks.threshold.copy(),
-            H_over_Hstar={k:clocks.hazard[k]/clocks.threshold[k] for k in clocks.hazard},diagnostics=scalar)
-        if phase in ['POST_TRANSIENT_NEW_TRAJECTORY','ONE_B_COMPLETE','ONE_B_FAILED']:
-            row['curvature_watch']=curvature_watch(state[0],op,two_contact_center=True,gb_positions=[contacts[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
+            descendant_hazard=avalanche.state.descendant_hazard,
+            descendant_threshold=avalanche.state.descendant_threshold,
+            descendant_H_over_Hstar=(
+                avalanche.state.descendant_hazard/
+                avalanche.state.descendant_threshold
+                if np.isfinite(avalanche.state.descendant_threshold) else None),
+            source_amplitude=avalanche.state.source_amplitude,
+            source_window_deadline_s=avalanche.state.window_deadline_s,
+            center_volume_m3=float(volumes[1]),
+            center_particle_mean_local_Pa=.5*(
+                contacts["LEFT"]["sigma_local_positive_Pa"]+
+                contacts["RIGHT"]["sigma_local_negative_Pa"]),
+            cluster_area_weighted_local_Pa=sum(
+                areas[key]*contacts[key]["sigma_local_Pa"] for key in areas)/area_sum,
+            cluster_area_weighted_integral_Pa=sum(
+                areas[key]*contacts[key]["sigma_integral_continuous_Pa"]
+                for key in areas)/area_sum,
+            hazards=clocks.hazard.copy(), thresholds=clocks.threshold.copy(),
+            H_over_Hstar={key: clocks.hazard[key]/clocks.threshold[key]
+                          for key in clocks.hazard}, diagnostics=scalar)
+        if phase in ("POST_TRANSIENT_NEW_TRAJECTORY", "ONE_B_COMPLETE"):
+            row["curvature_watch"] = curvature_watch(
+                state[0], op, two_contact_center=True,
+                gb_positions=[contacts[key]["z_TJ_m"]
+                              for key in ("LEFT", "RIGHT")])
         records.append(row)
-        if phase=='ONE_B_COMPLETE':
-            from monitor_current_state_transfer_curvature import apply_progressive_flags
-            completed=[r for r in records if r['phase']=='ONE_B_COMPLETE' and r['avalanche_id']==clocks.avalanche_id]
-            for branch in row['curvature_watch']:
-                history=[dict(avalanche_id=r['avalanche_id'],artifact_flag=0,**r['curvature_watch'][branch]) for r in completed]
-                apply_progressive_flags(history)
-                if history[-1]['artifact_flag']:raise RuntimeError('progressive curvature artifact: '+branch)
-            if reference.metrics(state,q)['topology_stop']:raise RuntimeError('post-event topology terminal')
+
+    def campaign_status():
+        row = records[-1]
+        left = row["contacts"]["LEFT"]
+        right = row["contacts"]["RIGHT"]
+        return f"""# Three-particle production campaign status
+
+Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
+
+- Current phase: `{phase}`
+- Status: `{status}`
+- Physical time: `{t:.12g} s`
+- Time since production source: `{t-start_t:.12g} s`
+- Center volume: `{row['center_volume_m3']:.12g} m^3`
+- LEFT/RIGHT local stress: `{left['sigma_local_Pa']/1e6:.9g} / {right['sigma_local_Pa']/1e6:.9g} MPa`
+- LEFT/RIGHT hazard ratios: `{row['H_over_Hstar']['LEFT']:.12g} / {row['H_over_Hstar']['RIGHT']:.12g}`
+- Active contact: `{clocks.active}`
+- Active event: `{event_number if clocks.active else 'none'}`
+- Completed avalanches: `{completed_avalanches}`
+- Cumulative production strain: `{row['production_densification_strain']:.12g}`
+- Geometric strain: `{row['geometric_chain_strain']:.12g}`
+- Latest checkpoint: `{out/'trajectory.npz'}`
+- Mirror error diagnostic: `{row['mirror_error_diagnostic']:.12g}`
+- Numerical health: bounds, mass, ownership closure, topology, and nonlinear guards active
+- Symmetry enforcement: disabled; reflection diagnostic only
+- No clipping; no fitted correction
+"""
+
     def save():
-        temp=out/'trajectory.writing.npz'
-        np.savez_compressed(temp,fields=np.array(state),ownership=g['ownership'],gb=g['gb'],time_s=t,
-            metadata=json.dumps(dict(status=status,root=clocks.snapshot(),avalanche=vars(avalanche.state),event_number=event_number)))
-        os.replace(temp,out/'trajectory.npz')
-        (out/'history.json').write_text(json.dumps(records,indent=2,default=float)+'\n')
-    record('POST_TRANSIENT_NEW_TRAJECTORY');save()
+        metadata = dict(
+            status=status, phase=phase, root=clocks.snapshot(),
+            avalanche=asdict(avalanche.state),
+            avalanche_crossings=avalanche.crossings,
+            event_number=event_number,
+            completed_avalanches=completed_avalanches,
+            event_start_t=event_start_t)
+        temporary = out/"trajectory.writing.npz"
+        np.savez_compressed(
+            temporary, fields=np.array(state), ownership=g["ownership"],
+            gb=g["gb"], time_s=t, metadata=json.dumps(metadata))
+        os.replace(temporary, out/"trajectory.npz")
+        atomic_text(out/"history.json",
+                    json.dumps(records, indent=2, default=float)+"\n")
+        atomic_text(STATUS_PATH, campaign_status())
+
+    if not args.resume:
+        record(phase)
+        save()
+
     try:
-        while t<start_t+20:
-            update_ownership(op,g['ownership']);step=min(gate['root_macro_step_s'],start_t+20-t)
-            fn,elapsed,increment,contact=locate_first_root(state[0],step,field_advance,rates,clocks,MANIFEST['passive_crossing_tolerance_model']*MANIFEST['seconds_per_model_time'])
-            t+=elapsed;state=(fn,*(g['ownership']*fn[None]));clocks.commit(increment,contact)
-            record('ROOT_CROSSING' if contact else 'RELOAD');save()
-            if topology_status(fn,g)['stop']:status='PHYSICAL_TOPOLOGY_TERMINAL';break
-            if contact is None:continue
-            avalanche.start(avalanche_id=clocks.avalanche_id,root_cycle=clocks.avalanche_id,start_time_s=t)
-            while avalanche.state.avalanche_active:
-                event_number+=1;avalanche.begin_transit();pair=(0,1) if contact=='LEFT' else (1,2);event=event_class(g,pair,max_fast_blocks=gate.get('event_max_fast_blocks',60))
-                event_start_t=t
-                zero=event.run(state,maximum_accepted_states=0)
-                save_event_checkpoint(out/f'event_{event_number}_q0.npz',state,zero[5]['event_restart'],contact=contact,label='GENUINE_STOCHASTIC_EVENT')
-                def progress(packet,fields,restart):
-                    nonlocal state,t
-                    state=fields;t=event_start_t+restart['event_time_model']*MANIFEST['seconds_per_model_time']
-                    record('ACTIVE_ONE_B',packet['q_end_over_b']);save()
-                    save_event_checkpoint(out/f'event_{event_number}.npz',fields,restart,contact=contact,label='GENUINE_STOCHASTIC_EVENT')
-                dq=gate['event_max_increment_over_b']
-                result=event.run(state,callback=progress,maximum_step_over_b=dq,initial_step_over_b=dq);state=result[:4];info=result[5];t=event_start_t+info['event_time_model']*MANIFEST['seconds_per_model_time']
-                reference.bind(state);record('ONE_B_COMPLETE' if result[4] else 'ONE_B_FAILED',info['event_progress_over_b']);save()
-                if not result[4]:raise RuntimeError(info['stop_reason'])
+        while (completed_avalanches < args.minimum_avalanches and
+               t < start_t+args.maximum_production_seconds):
+            if clocks.active is None:
+                update_ownership(op, g["ownership"])
+                step = min(old["root_macro_step_s"],
+                           start_t+args.maximum_production_seconds-t)
+                fn, elapsed, increment, contact = locate_first_root(
+                    state[0], step, field_advance, rates, clocks,
+                    MANIFEST["passive_crossing_tolerance_model"]
+                    * MANIFEST["seconds_per_model_time"])
+                t += elapsed
+                state = (fn, *(g["ownership"]*fn[None]))
+                clocks.commit(increment, contact)
+                record("ROOT_CROSSING" if contact else "RELOAD")
+                save()
+                if topology_status(fn, g)["stop"]:
+                    status = "PHYSICAL_TOPOLOGY_TERMINAL"
+                    break
+                if contact is None:
+                    continue
+
+            contact = clocks.active
+            pair = (0, 1) if contact == "LEFT" else (1, 2)
+            if not avalanche.state.avalanche_active:
+                avalanche.start(
+                    avalanche_id=clocks.avalanche_id,
+                    root_cycle=clocks.avalanche_id, start_time_s=t)
+
+            if phase in ("ROOT_CROSSING", "CHILD_CROSSING"):
+                event_number += 1
+                avalanche.begin_transit()
+                event = event_class(
+                    g, pair, max_fast_blocks=old.get("event_max_fast_blocks", 512))
+                event_start_t = t
+                zero = event.run(state, maximum_accepted_states=0)
+                checkpoint = out/f"event_{event_number}.npz"
+                save_event_checkpoint(
+                    checkpoint, state, zero[5]["event_restart"],
+                    contact=contact, label="GENUINE_STOCHASTIC_EVENT")
+                record("ACTIVE_ONE_B", 0.)
+                save()
+                pending_restart = zero[5]["event_restart"]
+            elif phase == "ACTIVE_ONE_B":
+                checkpoint = out/f"event_{event_number}.npz"
+                state, pending_restart, saved_contact, label = load_event_checkpoint(
+                    checkpoint)
+                if saved_contact != contact or label != "GENUINE_STOCHASTIC_EVENT":
+                    raise RuntimeError("active-event restart identity mismatch")
+                t = event_start_t + (
+                    pending_restart["event_time_model"]
+                    * MANIFEST["seconds_per_model_time"])
+                event = event_class(
+                    g, pair, max_fast_blocks=old.get("event_max_fast_blocks", 512))
+            else:
+                pending_restart = None
+
+            if phase == "ACTIVE_ONE_B":
+                checkpoint = out/f"event_{event_number}.npz"
+
+                def progress(packet, fields, restart):
+                    nonlocal state, t
+                    save_event_checkpoint(
+                        checkpoint, fields, restart, contact=contact,
+                        label="GENUINE_STOCHASTIC_EVENT")
+                    state = fields
+                    t = event_start_t + (restart["event_time_model"]
+                                         * MANIFEST["seconds_per_model_time"])
+                    record("ACTIVE_ONE_B", packet["q_end_over_b"])
+                    save()
+
+                dq = old["event_max_increment_over_b"]
+                result = event.run(
+                    state, restart=pending_restart, callback=progress,
+                    maximum_step_over_b=dq, initial_step_over_b=dq)
+                state = result[:4]
+                info = result[5]
+                t = event_start_t + (info["event_time_model"]
+                                     * MANIFEST["seconds_per_model_time"])
+                save_event_checkpoint(
+                    out/f"event_{event_number}_final.npz", state,
+                    info["event_restart"], contact=contact,
+                    label="GENUINE_STOCHASTIC_EVENT")
+                if not result[4]:
+                    raise RuntimeError(info["stop_reason"])
+                reference.bind(state)
+                record("ONE_B_COMPLETE", info["event_progress_over_b"])
+                if reference.metrics(state, info["event_progress_over_b"])["topology_stop"]:
+                    raise RuntimeError("post-event topology terminal")
                 avalanche.complete_transit(t)
-                record('SOURCE_WINDOW_OPEN');save()
-                # The source lives after a complete transit. Evolve current PF
-                # through its 9 ms window, localizing any child in the full field.
-                window_end=avalanche.state.window_deadline_s
-                while t<window_end-1e-14:
-                    step=min(MANIFEST['passive_hazard_quadrature_dt_model']*MANIFEST['seconds_per_model_time'],window_end-t)
+                event_start_t = None
+                record("SOURCE_WINDOW_OPEN")
+                save()
+
+            if phase in ("SOURCE_WINDOW_OPEN", "FACILITATED_WINDOW"):
+                window_end = avalanche.state.window_deadline_s
+                while t < window_end-1e-14:
+                    step = min(
+                        MANIFEST["passive_hazard_quadrature_dt_model"]
+                        * MANIFEST["seconds_per_model_time"], window_end-t)
+
                     def child_rates(fields):
                         reference.bind(fields)
-                        cc=evaluate_contacts(fields[0],op,MANIFEST)[contact]
-                        value=avalanche.rate(cc['sigma_local_Pa'],cc['r_n_m'])
-                        return {'LEFT':value,'RIGHT':0.}
-                    # A temporary clock performs field bisection without drawing RNG.
-                    probe=RootClocks.__new__(RootClocks);probe.active=None;probe.hazard={'LEFT':avalanche.state.descendant_hazard,'RIGHT':0.};probe.threshold={'LEFT':avalanche.state.descendant_threshold,'RIGHT':float('inf')}
-                    def window_advance(fields,seconds):
-                        return advance_source_window(fields,seconds,g,pair,rule,reuse_small_step_preconditioner=True)
-                    evolved,elapsed,increment,child=locate_first_root(state,step,window_advance,child_rates,probe,DESCENDANT_CROSSING_TOLERANCE_S)
-                    t+=elapsed;state=tuple(evolved);reference.bind(state)
-                    if child:avalanche.commit_crossing(crossing_time_s=t)
+                        cc = evaluate_contacts(fields[0], op, MANIFEST)[contact]
+                        value = avalanche.rate(cc["sigma_local_Pa"], cc["r_n_m"])
+                        return {"LEFT": value, "RIGHT": 0.}
+
+                    probe = RootClocks.__new__(RootClocks)
+                    probe.active = None
+                    probe.hazard = {
+                        "LEFT": avalanche.state.descendant_hazard, "RIGHT": 0.}
+                    probe.threshold = {
+                        "LEFT": avalanche.state.descendant_threshold,
+                        "RIGHT": float("inf")}
+
+                    def window_advance(fields, seconds):
+                        return advance_source_window(
+                            fields, seconds, g, pair, rule,
+                            reuse_small_step_preconditioner=True)
+
+                    evolved, elapsed, increment, child = locate_first_root(
+                        state, step, window_advance, child_rates, probe,
+                        DESCENDANT_CROSSING_TOLERANCE_S)
+                    t += elapsed
+                    state = tuple(evolved)
+                    reference.bind(state)
+                    if child:
+                        avalanche.commit_crossing(crossing_time_s=t)
                     else:
-                        avalanche.state.descendant_hazard+=increment['LEFT'];avalanche.state.descendant_total_hazard+=increment['LEFT']
-                    record('CHILD_CROSSING' if child else 'FACILITATED_WINDOW');save()
-                    if child:break
-                if not avalanche.state.window_triggered:avalanche.expire_window(window_end)
-                if avalanche.state.S_completed>25:raise RuntimeError('descendant safety cap; avalanche not declared extinct')
-            # Freeze the newly evolved ownership; update tracker reference planes.
-            cc=evaluate_contacts(state[0],op,MANIFEST);g['gb']=np.array([cc[k]['z_TJ_m'] for k in ['LEFT','RIGHT']])
-            clocks.extinct();record('AVALANCHE_EXTINCT_REPINNED');save()
-        if status=='RUNNING':status='TWENTY_SECONDS_COMPLETE'
-    except (RuntimeError,ValueError,FloatingPointError) as error:
-        status='STOPPED: '+str(error)
-    save();print(status,t,'wall',time.perf_counter()-wall,flush=True)
-if __name__=='__main__':main()
+                        avalanche.state.descendant_hazard += increment["LEFT"]
+                        avalanche.state.descendant_total_hazard += increment["LEFT"]
+                    record("CHILD_CROSSING" if child else "FACILITATED_WINDOW")
+                    save()
+                    if child:
+                        break
+                if phase == "CHILD_CROSSING":
+                    continue
+                avalanche.expire_window(window_end)
+                contacts = evaluate_contacts(state[0], op, MANIFEST)
+                g["gb"] = np.array([contacts[key]["z_TJ_m"]
+                                     for key in ("LEFT", "RIGHT")])
+                clocks.extinct()
+                completed_avalanches += 1
+                record("AVALANCHE_EXTINCT_REPINNED")
+                save()
+
+        if status == "RUNNING":
+            status = ("TARGET_RENEWAL_CYCLES_COMPLETE" if
+                      completed_avalanches >= args.minimum_avalanches else
+                      "MAXIMUM_PRODUCTION_TIME_REACHED")
+    except (RuntimeError, ValueError, FloatingPointError) as error:
+        status = "STOPPED: " + str(error)
+    save()
+    print(status, t, "avalanches", completed_avalanches,
+          "wall", time.perf_counter()-wall, flush=True)
+
+
+if __name__ == "__main__":
+    main()
+

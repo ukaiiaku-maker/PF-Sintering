@@ -1,0 +1,24 @@
+{
+  "status": "RUNNING",
+  "snapshot_time_s": 307.64357896308735,
+  "center_loss_fraction": 0.020026111406911573,
+  "source_run": "runs/three_particle_volume_loading_065_symmetry_released",
+  "events_enabled": false,
+  "phase_b_enabled": false,
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "field_min": -1.3748789310120962e-108,
+  "field_max": 1.0,
+  "maximum_mass_error": 4.3298697960381105e-15,
+  "maximum_mirror_error": 0.00031368548532168504,
+  "energy_monotone": true,
+  "files": {
+    "loss_1pct.npz": "f95dabf2cd0af3539d183f1d6e1d61569097f5d29e1c7b15af6c8c7a2fb23798",
+    "checkpoint.npz": "be5de57d48eb5b9e057e27033c7538a81ad2f75da9281410afb335847e8e0018",
+    "report.json": "c48c33cc94d0628f726824ccd271ab079a4769f725dcb95f63dcb329f763768c",
+    "loss_2pct.npz": "9360b587f169d71ab5ff2859df0e2b824c30e3bfe70c4d6e6eb5adb8a166694a",
+    "launch.json": "c8dfa2bbb2d6504652b24f4103d6afe4dfc2bcdf9e20b257309a316981a4ade9"
+  },
+  "reflection_guard_enabled": false,
+  "reflection_is_diagnostic_only": true
+}

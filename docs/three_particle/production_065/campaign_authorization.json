@@ -1,0 +1,34 @@
+{
+  "label": "END_TO_END_THREE_PARTICLE_CAMPAIGN_AUTHORIZATION",
+  "date": "2026-09-11",
+  "source_selection_precedes_random_draw": true,
+  "source": "runs/three_particle_volume_loading_065_symmetry_released/loss_2pct.npz",
+  "source_sha256": "9360b587f169d71ab5ff2859df0e2b824c30e3bfe70c4d6e6eb5adb8a166694a",
+  "production_seed": 20260910,
+  "production_thresholds_drawn": false,
+  "old_qualification_record_preserved": true,
+  "morphology_decision": "NON_BLOCKING_MONITORED_STRUCTURE",
+  "morphology_evidence": {
+    "unmasked_peak_distance_W_by_q_over_b": {
+      "0.25": 3.4182888469784185,
+      "0.50": 3.5427476904734685,
+      "0.75": null,
+      "1.00": null,
+      "post_source_window": 3.7921
+    },
+    "native_timestep_max_field_linf_to_finest": 2.7899753618498835e-9,
+    "native_timestep_max_local_stress_difference_Pa": 1.4249820103868842,
+    "native_timestep_max_relative_clock_difference": 1.1299405189291178e-8,
+    "bounded_and_conserved": true,
+    "mask_edge_pinned": false,
+    "activation_corruption_demonstrated": false
+  },
+  "monitoring_required": true,
+  "phase_b_enabled_for_campaign": true,
+  "minimum_completed_avalanches": 2,
+  "symmetry_enforcement_enabled": false,
+  "reflection_guard_enabled": false,
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "physics_parameters_unchanged": true
+}

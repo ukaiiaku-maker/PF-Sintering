@@ -1,0 +1,36 @@
+{
+  "label": "SELECTED_FULL_DOMAIN_PRODUCTION_INITIAL_MICROSTRUCTURE",
+  "source": "runs/three_particle_volume_loading_065_symmetry_released/loss_2pct.npz",
+  "source_sha256": "9360b587f169d71ab5ff2859df0e2b824c30e3bfe70c4d6e6eb5adb8a166694a",
+  "output": "runs/three_particle_production_065/production_initial_2pct.npz",
+  "output_sha256": "4791a5ea82767a3111be7f110d9d768cecfadab135608d90626c5c7723a2759a",
+  "selected_before_random_draw": true,
+  "stochastic_thresholds_drawn": false,
+  "physical_time_s": 305.76900020092603,
+  "fields": [
+    "f",
+    "eta_left",
+    "eta_center",
+    "eta_right"
+  ],
+  "reconstruction": "eta_i = saved ownership_i * unchanged saved f",
+  "symmetry_enforcement_enabled": false,
+  "reflection_guard_enabled": false,
+  "no_reflection_averaging": true,
+  "no_symmetry_projection": true,
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "health": {
+    "f_min": -1.3748789310120962e-108,
+    "f_max": 1.0,
+    "material_volume_m3": 1.6490415312287704e-20,
+    "ownership_closure": 2.220446049250313e-16,
+    "mirror_error_diagnostic": 4.528288709467156e-05,
+    "topology": {
+      "stop": false,
+      "reasons": [],
+      "center_span_m": 3.279998848058578e-08,
+      "center_min_radius_m": 1.3768351809741435e-07
+    }
+  }
+}
