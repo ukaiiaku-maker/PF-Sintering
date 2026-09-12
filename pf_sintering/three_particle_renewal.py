@@ -17,7 +17,8 @@ def cumulative_event_quota(event_number,phase,q_over_b):
     q=float(q_over_b)
     if not np.isfinite(q) or not 0 <= q <= 1+1e-12:
         raise ValueError('invalid active event quota')
-    active={'ACTIVE_ONE_B','ONE_B_COMPLETE','ONE_B_FAILED','ACTIVE_EVENT_RESUMED'}
+    active={'ACTIVE_ONE_B','ONE_B_COMPLETE','ONE_B_FAILED','ACTIVE_EVENT_RESUMED',
+            'EVENT_TRANSPORT_PAUSED','EVENT_TRANSPORT_RECOVERY'}
     inactive={'POST_TRANSIENT_NEW_TRAJECTORY','RELOAD','ROOT_CROSSING',
               'SOURCE_WINDOW_OPEN','SOURCE_WINDOW','FACILITATED_WINDOW',
               'CHILD_CROSSING','AVALANCHE_EXTINCT_REPINNED','FORCED_ROOT_COMPLETE'}

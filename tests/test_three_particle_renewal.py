@@ -42,11 +42,12 @@ def test_counted_strain_quota_survives_windows_failure_and_resume():
     sequence=[(0,'POST_TRANSIENT_NEW_TRAJECTORY',0),(0,'ROOT_CROSSING',0),
               (1,'ACTIVE_ONE_B',.5),(1,'ONE_B_COMPLETE',1),
               (1,'SOURCE_WINDOW_OPEN',0),(1,'CHILD_CROSSING',0),
-              (2,'ACTIVE_ONE_B',.5),(2,'ONE_B_FAILED',.5),
+              (2,'ACTIVE_ONE_B',.5),(2,'EVENT_TRANSPORT_PAUSED',.875),
+              (2,'EVENT_TRANSPORT_RECOVERY',.875),(2,'ONE_B_FAILED',.5),
               (2,'ACTIVE_EVENT_RESUMED',.5),(2,'ONE_B_COMPLETE',1),
               (2,'AVALANCHE_EXTINCT_REPINNED',0),(2,'RELOAD',0)]
     np.testing.assert_array_equal([cumulative_event_quota(*r) for r in sequence],
-                                 [0,0,.5,1,1,1,1.5,1.5,1.5,2,2,2])
+                                 [0,0,.5,1,1,1,1.5,1.875,1.875,1.5,1.5,2,2,2])
     assert cumulative_event_quota(1,'FORCED_ROOT_COMPLETE',1)==1
     with pytest.raises(ValueError):cumulative_event_quota(0,'ACTIVE_ONE_B',.5)
     with pytest.raises(ValueError):cumulative_event_quota(1,'UNKNOWN',0)

@@ -1,0 +1,20 @@
+{
+  "label": "OFF_TRAJECTORY_EVENT4_TRANSPORT_PAUSE_OVERLAP",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_4_final.npz",
+  "q_before": 0.8774999999999924,
+  "recovery_model_time": 0.025,
+  "recovery_s": 0.00038949857923898024,
+  "affinity_after_recovery_Pa": 336221.78457838297,
+  "completed": true,
+  "stop_reason": null,
+  "q_after": 0.88,
+  "material_relative_error": 0.0,
+  "f_min": -1.3748789310120962e-108,
+  "f_max": 1.0,
+  "ownership_closure": 2.220446049250313e-16,
+  "topology_stop": false,
+  "physics_changed": false,
+  "stochastic_state_modified": false,
+  "wall_s": 11.530938250012696,
+  "passed": true
+}

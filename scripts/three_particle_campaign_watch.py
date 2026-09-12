@@ -26,7 +26,8 @@ def main():
             row = history[-1]
             phase = row["phase"]
             q_bin = (int(float(row["q_over_b"])*10+1e-10)
-                     if phase == "ACTIVE_ONE_B" else None)
+                     if phase in ("ACTIVE_ONE_B", "EVENT_TRANSPORT_PAUSED",
+                                  "EVENT_TRANSPORT_RECOVERY") else None)
             reload_bin = (int(float(row["time_s"])-float(history[0]["time_s"]))
                           if phase == "RELOAD" else None)
             keep = (not rows or phase != last_phase or

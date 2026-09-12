@@ -56,11 +56,31 @@ def atomic_text(path, value):
     os.replace(temporary, path)
 
 
+def event_progress_over_b(restart):
+    return float(restart["cumulative_q_m"])/MANIFEST["b_event_m"]
+
+
+def event_physical_time_s(event_start_t, event_pause_time_s, restart):
+    return (float(event_start_t) + float(event_pause_time_s) +
+            float(restart["event_time_model"])*MANIFEST["seconds_per_model_time"])
+
+
+def incomplete_event_phase(completed, info):
+    if completed:
+        return None
+    reason = info.get("stop_reason")
+    if reason == "nonpositive_transport_affinity":
+        return "EVENT_TRANSPORT_PAUSED"
+    raise RuntimeError(reason or "event stopped without a reason")
+
+
 def require_campaign(source):
     old = json.loads((D/"qualification.json").read_text())
     authorization = json.loads((D/"campaign_authorization.json").read_text())
     overlap = json.loads((D/"buffered_event_probe.json").read_text())
     window = json.loads((D/"source_window_overlap.json").read_text())
+    pause_overlap = json.loads(
+        (D/"event4_transport_pause_overlap.json").read_text())
     initial = json.loads((D/"production_initial_2pct.json").read_text())
     if not all(old.get(key) is True for key in
                ("reload_qualified", "one_b_qualified",
@@ -72,11 +92,14 @@ def require_campaign(source):
         raise RuntimeError("campaign morphology decision is missing")
     if not overlap.get("native_overlap_pass") or not window.get("passed"):
         raise RuntimeError("accelerated event/source-window overlap is not qualified")
+    if not pause_overlap.get("passed"):
+        raise RuntimeError("nucleated transport-pause continuation is not qualified")
     if sha256(source) != initial["output_sha256"]:
         raise RuntimeError("production source differs from the pre-draw selection")
     return dict(
         authorization=authorization, numerical=old,
         event_overlap=overlap, source_window_overlap=window,
+        event_transport_pause_overlap=pause_overlap,
         production_initial=initial)
 
 
@@ -140,6 +163,7 @@ def main():
         completed_avalanches = int(metadata["completed_avalanches"])
         phase = metadata["phase"]
         event_start_t = metadata.get("event_start_t")
+        event_pause_time_s = float(metadata.get("event_pause_time_s", 0.))
         status = "RUNNING"
         start_t = float(launch["start_time_s"])
         mass0 = float(launch["material_volume_m3"])
@@ -165,6 +189,21 @@ def main():
                 stochastic_state_modified=False))
             launch["numba_threads"] = required_threads
             atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        if "event_transport_pause_semantics" not in launch:
+            pause_semantics = dict(
+                source_persists=True, root_clocks_frozen=True,
+                descendant_clocks_frozen=True,
+                recovery_solver="qualified_sink_off_source_alive_current_field",
+                recovery_block_model_time=(
+                    MANIFEST["passive_hazard_quadrature_dt_model"]),
+                retry_condition="exact_event_integrator_accepts_next_increment",
+                no_fitted_affinity_threshold=True,
+                evidence="event4_transport_pause_overlap.json")
+            launch.setdefault("numerical_amendments", []).append(dict(
+                event_transport_pause_semantics=pause_semantics,
+                physics_changed=False, stochastic_state_modified=False))
+            launch["event_transport_pause_semantics"] = pause_semantics
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
     else:
         if out.exists():
             raise RuntimeError("refusing to overwrite production output; use --resume")
@@ -184,6 +223,7 @@ def main():
         completed_avalanches = 0
         phase = "POST_TRANSIENT_NEW_TRAJECTORY"
         event_start_t = None
+        event_pause_time_s = 0.
         status = "RUNNING"
         mass0 = float(grain_volumes(state[0], g).sum())
         reference_probe = ContactEvent(g)
@@ -206,6 +246,15 @@ def main():
             accepted_event_increment_over_b=gate["authorization"].get(
                 "event_max_increment_over_b", old["event_max_increment_over_b"]),
             event_checkpoint_cadence_over_b=.01,
+            event_transport_pause_semantics=dict(
+                source_persists=True, root_clocks_frozen=True,
+                descendant_clocks_frozen=True,
+                recovery_solver="qualified_sink_off_source_alive_current_field",
+                recovery_block_model_time=(
+                    MANIFEST["passive_hazard_quadrature_dt_model"]),
+                retry_condition="exact_event_integrator_accepts_next_increment",
+                no_fitted_affinity_threshold=True,
+                evidence="event4_transport_pause_overlap.json"),
             material_volume_m3=mass0,
             densification_reference_length_m=reference_span,
             strain_definitions=dict(
@@ -342,6 +391,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
             event_number=event_number,
             completed_avalanches=completed_avalanches,
             event_start_t=event_start_t)
+        metadata["event_pause_time_s"] = event_pause_time_s
         temporary = out/"trajectory.writing.npz"
         np.savez_compressed(
             temporary, fields=np.array(state), ownership=g["ownership"],
@@ -390,6 +440,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 event = event_class(
                     g, pair, max_fast_blocks=old.get("event_max_fast_blocks", 512))
                 event_start_t = t
+                event_pause_time_s = 0.
                 zero = event.run(state, maximum_accepted_states=0)
                 checkpoint = out/f"event_{event_number}.npz"
                 save_event_checkpoint(
@@ -398,21 +449,38 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 record("ACTIVE_ONE_B", 0.)
                 save()
                 pending_restart = zero[5]["event_restart"]
-            elif phase == "ACTIVE_ONE_B":
+            elif phase in ("ACTIVE_ONE_B", "EVENT_TRANSPORT_PAUSED",
+                           "EVENT_TRANSPORT_RECOVERY"):
                 checkpoint = out/f"event_{event_number}.npz"
                 state, pending_restart, saved_contact, label = load_event_checkpoint(
                     checkpoint)
                 if saved_contact != contact or label != "GENUINE_STOCHASTIC_EVENT":
                     raise RuntimeError("active-event restart identity mismatch")
-                t = event_start_t + (
-                    pending_restart["event_time_model"]
-                    * MANIFEST["seconds_per_model_time"])
+                t = event_physical_time_s(
+                    event_start_t, event_pause_time_s, pending_restart)
                 event = event_class(
                     g, pair, max_fast_blocks=old.get("event_max_fast_blocks", 512))
+                if phase == "EVENT_TRANSPORT_PAUSED":
+                    recovery_seconds = (
+                        MANIFEST["passive_hazard_quadrature_dt_model"]
+                        * MANIFEST["seconds_per_model_time"])
+                    state = advance_source_window(
+                        state, recovery_seconds, g, pair, rule,
+                        reuse_small_step_preconditioner=True)
+                    event_pause_time_s += recovery_seconds
+                    t = event_physical_time_s(
+                        event_start_t, event_pause_time_s, pending_restart)
+                    save_event_checkpoint(
+                        checkpoint, state, pending_restart, contact=contact,
+                        label="GENUINE_STOCHASTIC_EVENT")
+                    record("EVENT_TRANSPORT_RECOVERY",
+                           event_progress_over_b(pending_restart))
+                    save()
+                    continue
             else:
                 pending_restart = None
 
-            if phase == "ACTIVE_ONE_B":
+            if phase in ("ACTIVE_ONE_B", "EVENT_TRANSPORT_RECOVERY"):
                 checkpoint = out/f"event_{event_number}.npz"
 
                 def progress(packet, fields, restart):
@@ -433,8 +501,8 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                         checkpoint, fields, restart, contact=contact,
                         label="GENUINE_STOCHASTIC_EVENT")
                     state = fields
-                    t = event_start_t + (restart["event_time_model"]
-                                         * MANIFEST["seconds_per_model_time"])
+                    t = event_physical_time_s(
+                        event_start_t, event_pause_time_s, restart)
                     record("ACTIVE_ONE_B", q_now)
                     save()
 
@@ -445,20 +513,28 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     maximum_step_over_b=dq, initial_step_over_b=dq)
                 state = result[:4]
                 info = result[5]
-                t = event_start_t + (info["event_time_model"]
-                                     * MANIFEST["seconds_per_model_time"])
+                t = event_physical_time_s(
+                    event_start_t, event_pause_time_s, info["event_restart"])
                 save_event_checkpoint(
                     out/f"event_{event_number}_final.npz", state,
                     info["event_restart"], contact=contact,
                     label="GENUINE_STOCHASTIC_EVENT")
-                if not result[4]:
-                    raise RuntimeError(info["stop_reason"])
+                interrupted_phase = incomplete_event_phase(result[4], info)
+                if interrupted_phase is not None:
+                    save_event_checkpoint(
+                        checkpoint, state, info["event_restart"],
+                        contact=contact, label="GENUINE_STOCHASTIC_EVENT")
+                    record(interrupted_phase,
+                           event_progress_over_b(info["event_restart"]))
+                    save()
+                    continue
                 reference.bind(state)
                 record("ONE_B_COMPLETE", info["event_progress_over_b"])
                 if reference.metrics(state, info["event_progress_over_b"])["topology_stop"]:
                     raise RuntimeError("post-event topology terminal")
                 avalanche.complete_transit(t)
                 event_start_t = None
+                event_pause_time_s = 0.
                 record("SOURCE_WINDOW_OPEN")
                 save()
 
