@@ -47,14 +47,23 @@ class BufferedContactEvent(ContactEvent):
 
 
 class LargerDtBufferedContactEvent(ContactEvent):
-    """Refinement-qualified 2x native dt with the same physical check cadence."""
+    """Refinement-qualified 2x native dt with rotating five-step buffers."""
     def __init__(self,g,pair=(0,1),max_fast_blocks=60):
         super().__init__(g,pair,max_fast_blocks);self.dt*=2
     def relax(self,state,q):
         current=tuple(x.copy() for x in state);previous=self.fast_metrics(current,q);f=current[0];consecutive=0;g=self.g;op=self.op
+        shape=f.shape
+        if not hasattr(self,'_native_workspace'):
+            self._native_workspace=(np.empty_like(f),g['ownership'].copy(),np.empty_like(op.gb_density),
+                np.empty_like(f),np.zeros((shape[0],shape[1]+1)),np.zeros_like(f))
+        fn,pn,gbn,mu,jr,jz=self._native_workspace
         for block in range(1,self.max_fast_blocks+1):
-            f,phi,density=native_block(f,g['ownership'],op.gb_density,*self.pair,self.dt,1.0937500000000001e-25,
-                op.Wc,op.k_eta,op.W_f,op.k_f,g['dr'],g['dz'],g['r_c'],g['r_f'],op.W,op.physics.M_s,steps=5)
+            prior_f,prior_phi,prior_density=f,g['ownership'],op.gb_density
+            f,phi,density=native_block_reuse(f,g['ownership'],op.gb_density,*self.pair,self.dt,1.0937500000000001e-25,
+                op.Wc,op.k_eta,op.W_f,op.k_f,g['dr'],g['dz'],g['r_c'],g['r_f'],op.W,op.physics.M_s,
+                fn,pn,gbn,mu,jr,jz,steps=5)
+            fn,pn,gbn=prior_f,prior_phi,prior_density
+            self._native_workspace=(fn,pn,gbn,mu,jr,jz)
             g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics(current,q)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0

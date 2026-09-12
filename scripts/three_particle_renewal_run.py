@@ -87,6 +87,8 @@ def require_campaign(source):
     window = json.loads((D/"source_window_overlap.json").read_text())
     pause_overlap = json.loads(
         (D/"event4_transport_pause_overlap.json").read_text())
+    odd_buffer_overlap = json.loads(
+        (D/"odd_buffer_reuse_2x_overlap.json").read_text())
     initial = json.loads((D/"production_initial_2pct.json").read_text())
     if not all(old.get(key) is True for key in
                ("reload_qualified", "one_b_qualified",
@@ -100,12 +102,15 @@ def require_campaign(source):
         raise RuntimeError("accelerated event/source-window overlap is not qualified")
     if not pause_overlap.get("passed"):
         raise RuntimeError("nucleated transport-pause continuation is not qualified")
+    if not odd_buffer_overlap.get("passed"):
+        raise RuntimeError("2x odd-step reusable buffers are not qualified")
     if sha256(source) != initial["output_sha256"]:
         raise RuntimeError("production source differs from the pre-draw selection")
     return dict(
         authorization=authorization, numerical=old,
         event_overlap=overlap, source_window_overlap=window,
         event_transport_pause_overlap=pause_overlap,
+        odd_buffer_reuse_2x_overlap=odd_buffer_overlap,
         production_initial=initial)
 
 
@@ -210,6 +215,16 @@ def main():
                 physics_changed=False, stochastic_state_modified=False))
             launch["event_transport_pause_semantics"] = pause_semantics
             atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        if not launch.get("odd_step_event_buffer_reuse"):
+            launch.setdefault("numerical_amendments", []).append(dict(
+                odd_step_event_buffer_reuse=True,
+                evidence="odd_buffer_reuse_2x_overlap.json",
+                fields_Linf=0.0, local_stress_difference_Pa=0.0,
+                event_time_model_difference=0.0,
+                physics_and_acceptance_tolerances_unchanged=True,
+                stochastic_state_modified=False))
+            launch["odd_step_event_buffer_reuse"] = True
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
     else:
         if out.exists():
             raise RuntimeError("refusing to overwrite production output; use --resume")
@@ -254,6 +269,7 @@ def main():
             event_checkpoint_cadence_over_b=.01,
             late_event_checkpoint_cadence_over_b=.0025,
             late_event_checkpoint_start_over_b=.98,
+            odd_step_event_buffer_reuse=True,
             event_transport_pause_semantics=dict(
                 source_persists=True, root_clocks_frozen=True,
                 descendant_clocks_frozen=True,

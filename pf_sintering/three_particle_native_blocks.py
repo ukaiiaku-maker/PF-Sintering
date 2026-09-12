@@ -71,13 +71,11 @@ def native_block_reuse(f,phi,gb_density,a,b,dt,M_eta,Wc,k_eta,Wf,kf,
                        dr,dz,rc,rf,W,Ms,fn,pn,gbn,mu,jr,jz,steps=10):
     """Same native block with caller-owned scratch arrays.
 
-    Production uses the established even ten-step block, so the accepted
-    arrays return in the caller-owned state buffers exactly as in
-    :func:`native_block`. Scratch initialization reproduces the allocating
-    implementation at every diagnostic-block boundary.
+    Scratch initialization reproduces the allocating implementation at every
+    diagnostic-block boundary.  For an odd step count, the returned state is
+    held in the supplied scratch arrays; callers that retain those arrays must
+    rotate the prior input arrays into the next scratch set.
     """
-    if steps % 2:
-        raise ValueError('reusable native block requires an even step count')
     pn[:]=phi
     jr[:]=0.
     jz[:]=0.
