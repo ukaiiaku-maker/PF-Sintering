@@ -74,6 +74,12 @@ def incomplete_event_phase(completed, info):
     raise RuntimeError(reason or "event stopped without a reason")
 
 
+def event_checkpoint_due(q_now, last_saved_q):
+    cadence = .0025 if q_now >= .98-1e-12 else .01
+    return bool(q_now >= 1-1e-12 or
+                q_now-last_saved_q >= cadence-1e-12)
+
+
 def require_campaign(source):
     old = json.loads((D/"qualification.json").read_text())
     authorization = json.loads((D/"campaign_authorization.json").read_text())
@@ -246,6 +252,8 @@ def main():
             accepted_event_increment_over_b=gate["authorization"].get(
                 "event_max_increment_over_b", old["event_max_increment_over_b"]),
             event_checkpoint_cadence_over_b=.01,
+            late_event_checkpoint_cadence_over_b=.0025,
+            late_event_checkpoint_start_over_b=.98,
             event_transport_pause_semantics=dict(
                 source_persists=True, root_clocks_frozen=True,
                 descendant_clocks_frozen=True,
@@ -495,7 +503,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     # increment. Persist only each 0.01b (and the final state),
                     # so an interruption replays at most four deterministic
                     # accepted increments from the last exact checkpoint.
-                    if q_now < 1-1e-12 and q_now-last_saved_q < .01-1e-12:
+                    if not event_checkpoint_due(q_now, last_saved_q):
                         return
                     save_event_checkpoint(
                         checkpoint, fields, restart, contact=contact,
