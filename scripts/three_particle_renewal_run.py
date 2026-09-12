@@ -4,7 +4,7 @@ Seed is fixed before any production draw; mechanical qualification never uses
 these thresholds. This driver cannot bypass the recorded qualification gates.
 """
 from pathlib import Path
-import sys,json,time,os
+import sys,json,time,os,argparse,hashlib
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
 import numpy as np
 from three_particle_forced_event import ContactEvent,MANIFEST
@@ -32,13 +32,18 @@ def require_qualification():
 
 
 def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,default=Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/post_transient.npz'));ap.add_argument('--out-name',default='stochastic_seed20260910');args=ap.parse_args()
     gate=require_qualification()
     event_class=BufferedContactEvent if gate.get('event_engine')=='buffered_native' else ContactEvent
-    out=Path('runs/three_particle_production_065/stochastic_seed20260910');out.mkdir(exist_ok=False)
+    out=Path('runs/three_particle_production_065')/args.out_name;out.mkdir(exist_ok=False)
     c,o=compatible_chain(.65,119.999e-9);g=map_to_pf(c,o,4e-9,.5e-9)
-    source=Path('runs/three_particle_production_screen/harmonic_continuation_0.65_119.999/post_transient.npz')
-    with np.load(source) as data:f=data['f'].copy();g['ownership']=data['ownership'].copy();t=float(data['t_model'])*MANIFEST['seconds_per_model_time']
-    start_t=t;state=(f,*(g['ownership']*f[None]));reference=ContactEvent(g);reference.metrics(state,0.)
+    source=args.source
+    with np.load(source) as data:
+        f=data['f'].copy();g['ownership']=data['ownership'].copy();t=float(data['t_model'])*MANIFEST['seconds_per_model_time']
+        state=tuple(x.copy() for x in data['fields']) if 'fields' in data else (f,*(g['ownership']*f[None]))
+        released=bool(data['symmetry_enforcement_enabled']==False) if 'symmetry_enforcement_enabled' in data else False
+    if released and (np.max(abs(state[0]-state[0][::-1]))!=0 or np.max(abs(state[1]-state[3][::-1]))!=0):raise ValueError('released source must begin from exact reconstructed symmetry')
+    start_t=t;reference=ContactEvent(g);reference.metrics(state,0.)
     op=reference.op;it=HarmonicSurfaceDiffusion(op);rule=json.loads(Path('docs/three_particle/cmc/angle_calibration.json').read_text())['rule']
     clocks=RootClocks(np.random.default_rng(PRODUCTION_SEED));p=MANIFEST['root_barrier_slice']
     barrier=DescendantBarrier(CompleteExpFloorParams(p['G0_eV'],p['Gfloor_eV'],p['a'],p['sigmahat_Pa'],p['n']),1.5)
@@ -46,8 +51,9 @@ def main():
         attempt_frequency_per_s=MANIFEST['clock_scale']/MANIFEST['seconds_per_model_time'],b_m=MANIFEST['b_event_m'],
         correlation_time_s=.009,rng=clocks.rng,facilitation_decay_alpha=.70)
     records=[];event_number=0;status='RUNNING';wall=time.perf_counter();mass0=float(grain_volumes(f,g).sum())
-    (out/'launch.json').write_text(json.dumps(dict(seed=PRODUCTION_SEED,source=str(source),qualification=gate,
+    (out/'launch.json').write_text(json.dumps(dict(seed=PRODUCTION_SEED,source=str(source),source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),qualification=gate,
         first_root_thresholds=clocks.threshold.copy(),root_hazards=clocks.hazard.copy(),stochastic_result=True,
+        symmetry_enforcement_enabled=False,reflection_guard_enabled=False,no_symmetry_projection=True,contact_selected_only_by_localized_root_crossing=True,
         densification_reference_length_m=reference.initial_span,strain_definitions=dict(production_densification_strain='sum of accepted event quota times b / initial outer-grain centroid separation',chain_strain='1 - current outer-grain centroid separation / initial separation')),indent=2)+'\n')
     def field_advance(field,seconds):
         current=field.copy();elapsed=0.;h=min(seconds,.1)
@@ -73,7 +79,7 @@ def main():
         chain=reference.metrics(state,q)['chain_strain'];areas={k:np.pi*v['r_n_m']**2 for k,v in contacts.items()}
         # Existing contact-side stress fields are retained verbatim for center diagnostics.
         row=dict(time_s=t,phase=phase,event_number=event_number,avalanche_id=clocks.avalanche_id,
-            contact=clocks.active,q_over_b=q,chain_strain=chain,geometric_chain_strain=chain,contacts=contacts,
+            contact=clocks.active,q_over_b=q,chain_strain=chain,geometric_chain_strain=chain,contacts=contacts,mirror_error_diagnostic=float(np.max(abs(state[0]-state[0][::-1]))),
             cumulative_event_quota_over_b=cumulative_event_quota(event_number,phase,q),
             production_densification_strain=cumulative_event_quota(event_number,phase,q)*MANIFEST['b_event_m']/reference.initial_span,
             strain_reference_length_m=reference.initial_span,

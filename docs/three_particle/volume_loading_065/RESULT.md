@@ -1,5 +1,10 @@
 # Volume-controlled loading extension: numerical stop
 
+This document closes the reflection-guarded lineage. It remains immutable
+failure provenance. A later user-approved handoff reconstructs an exact
+symmetric full-domain state from this checkpoint and continues with reflection
+as a diagnostic only; see `SYMMETRY_RELEASE.md`.
+
 The requested A/B distinction is **inconclusive**. The actual events-off PF
 trajectory reached **1.4137265543% center loss** at
 **82.9423895733 s**, then reached the unchanged reflection guard despite

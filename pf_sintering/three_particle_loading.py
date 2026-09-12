@@ -26,9 +26,9 @@ def plateau(rows,settings=PLATEAU):
     return dict(reached=all(v['passes'] for v in results.values()),window_start_loss_fraction=float(grid[0]),window_end_loss_fraction=end,contacts=results)
 
 
-def trial_invariant_reason(field,total_volume,initial_total):
-    """The existing absolute guards, checked before committing a trial."""
+def trial_invariant_reason(field,total_volume,initial_total,*,enforce_reflection=True):
+    """Absolute acceptance guards, with reflection optional after handoff."""
     if not np.isfinite(field).all() or field.min() < -1e-8 or field.max()>1+1e-8:return 'field guard'
     if abs(total_volume/initial_total-1)>1e-11:return 'material guard'
-    if np.max(abs(field-field[::-1]))>1e-8:return 'reflection guard'
+    if enforce_reflection and np.max(abs(field-field[::-1]))>1e-8:return 'reflection guard'
     return None

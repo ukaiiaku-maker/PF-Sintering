@@ -28,6 +28,17 @@ def test_inactive_eta_unchanged_and_pair_reflection():
     for a,b in [(0,0),(1,3),(2,2),(3,1)]:np.testing.assert_allclose(out[a],mirrored[b][::-1],atol=1e-16)
 
 
+def test_selected_contact_transfer_is_not_mirror_projected():
+    f=np.full((8,6),.6);r=np.arange(6)+.5
+    receiver=np.zeros_like(f);donor=np.zeros_like(f)
+    receiver[1:3,2:4]=1.;donor[3:4,2:4]=1.
+    state=(f,.25*f,.5*f,.25*f)
+    out,_=pair_transfer(state,receiver,donor,pair=(0,1),transfer_volume_m3=.03,r_c=r,dr=1.,dz=1.)
+    assert np.max(abs(out[0]-out[0][::-1]))>0
+    assert np.max(abs(out[1]-out[3][::-1]))>0
+    np.testing.assert_allclose(sum(out[1:]),out[0],rtol=0,atol=1e-16)
+
+
 def test_event_zero_and_midpoint_restart_exactly_once():
     from pf_sintering.production_mass_transfer_event import current_state_mass_transfer_event
     from pf_sintering.model_time_transport import ModelTimeGBTransport

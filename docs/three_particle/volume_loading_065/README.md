@@ -1,10 +1,11 @@
 # Events-off loading as a function of center-volume loss
 
-**Final status: NUMERICAL_GUARD at 82.9423895733 s and 1.4137265543%
-center loss. A/B decision: INCONCLUSIVE.** Only the 1% requested milestone
-was reached. The calculation and watcher have finished. Stress was still
-increasing; this is not a stress-plateau finding. See RESULT.md for the final
-metrics and the timestep-refined native reflection-mode diagnosis.
+The reflection-guarded lineage stopped at 82.9423895733 s and 1.4137265543%
+center loss. Its A/B decision remains inconclusive and is preserved in
+RESULT.md. The user-approved successor reconstructs one exactly symmetric
+ordinary full-domain state and then disables reflection enforcement completely.
+See SYMMETRY_RELEASE.md. The released events-off lineage is running; it still
+has not reached the requested 2% milestone.
 
 This study continues the exact saved 30 s harmonic/current-field PF state for
 Rc/Ro=0.65 and Ro=119.999 nm. The center-loss coordinate is

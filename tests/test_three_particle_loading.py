@@ -1,5 +1,5 @@
 import numpy as np
-from pf_sintering.three_particle_loading import decompose,plateau
+from pf_sintering.three_particle_loading import decompose,plateau,trial_invariant_reason
 
 def test_decomposition_keeps_one_sided_cancellation_and_mean():
     c=dict(gamma_J_per_m2=1.,r_n_m=1e-7,sigma_local_Pa=15e6)
@@ -14,10 +14,15 @@ def test_plateau_requires_both_contacts_and_whole_volume_window():
 
 
 def test_trial_guard_rejects_asymmetry_without_projecting_fields():
-    from pf_sintering.three_particle_loading import trial_invariant_reason
     f=np.full((4,3),.5);f[0,1]+=2e-8;before=f.copy()
     assert trial_invariant_reason(f,1.,1.)=='reflection guard'
     np.testing.assert_array_equal(f,before)
     f[0,1]=.5+5e-9
     assert trial_invariant_reason(f,1.,1.) is None
     assert trial_invariant_reason(f,1.+2e-11,1.)=='material guard'
+
+
+def test_trial_guard_can_leave_reflection_as_diagnostic_only():
+    f=np.zeros((4,3));f[0,0]=1e-7;original=f.copy()
+    assert trial_invariant_reason(f,1.,1.,enforce_reflection=False) is None
+    np.testing.assert_array_equal(f,original)
