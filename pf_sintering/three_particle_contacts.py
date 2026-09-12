@@ -66,17 +66,23 @@ def root_law(stress, radius, manifest):
         barrier_reduction_from_zero_eV=p['G0_eV']-fit)
 
 
-def evaluate_contacts(f,op,manifest):
-    g=op.g;setup={**g,'W':op.W,'gamma_s':op.physics.gamma_s};phi=g['ownership']
-    mu=op.potential(f).copy();points=[]
+def locate_contact_points(f,op):
+    """Locate both TJs once for full or contact-selective metrology."""
+    g=op.g;phi=g['ownership'];points=[]
     for i,b in enumerate(g['gb']):
-        # Restrict tracker to the two adjacent grains; avoid zero-zero third ownership.
         mask=(g['z']<0) if i==0 else (g['z']>0)
         tracker=ContinuousFieldTJTracker(g['z'][mask],g['r_c'],b,6*max(g['dr'],g['dz']))
         p=tracker.locate(f[mask],(f*phi[i])[mask],(f*phi[i+1])[mask])
         points.append((p['z_TJ_m'],p['r_TJ_m']))
+    return points
+
+
+def evaluate_contacts(f,op,manifest,names=None,points=None):
+    g=op.g;setup={**g,'W':op.W,'gamma_s':op.physics.gamma_s};phi=g['ownership']
+    mu=op.potential(f).copy();points=locate_contact_points(f,op) if points is None else points
     output={}
     for i,name in enumerate(['LEFT','RIGHT']):
+        if names is not None and name not in names:continue
         zt,rt=points[i];lower=-np.inf if i==0 else points[0][0];upper=points[1][0] if i==0 else np.inf
         if i==0:
             stress,_=contact_stresses(f,f*phi[i],f*phi[i+1],setup,zt,rt,lower,upper,points)

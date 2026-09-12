@@ -1,0 +1,16 @@
+{
+  "label": "LIVE_DISCARDED_COPY_NATIVE_PARALLEL_KERNEL_OVERLAP",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_2.npz",
+  "source_sha256": "737179019611fef09bd0c899c81e0c5097504597cb75edb2fef20efb1d68c8b6",
+  "total_transfer_over_b": 0.01,
+  "event_increment_over_b": 0.005,
+  "one_thread_wall_s": 94.47114495804999,
+  "four_thread_wall_s": 83.38623137504328,
+  "speedup": 1.1329345792490668,
+  "field_linf_difference": 0.0,
+  "local_stress_difference_Pa": 0.0,
+  "passed": true,
+  "production_state_modified": false,
+  "independent_cell_loops_only": true,
+  "stencils_order_tolerances_and_physics_unchanged": true
+}

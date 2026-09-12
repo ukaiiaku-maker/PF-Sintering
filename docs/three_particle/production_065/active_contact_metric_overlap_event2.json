@@ -1,0 +1,21 @@
+{
+  "label": "LIVE_DISCARDED_COPY_ACTIVE_CONTACT_METRIC_OVERLAP",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_2.npz",
+  "source_sha256": "b45d2bf56d8eb09d111d446f1810486ec2156978ad20a067b16c5ac4dfbcaff1",
+  "total_transfer_over_b": 0.005,
+  "full_diagnostic_wall_s": 43.71360741602257,
+  "active_contact_gate_wall_s": 37.41657416697126,
+  "speedup": 1.168295291304619,
+  "field_linf_difference": 0.0,
+  "LEFT_stress_difference_Pa": 0.0,
+  "RIGHT_stress_difference_Pa": 0.0,
+  "affinity_difference_Pa": 0.0,
+  "energy_difference_J": 0.0,
+  "A1_difference_m": 0.0,
+  "neck_difference_m": 0.0,
+  "topology_checked_each_block": true,
+  "full_metrics_computed_at_acceptance": true,
+  "passed": true,
+  "production_state_modified": false,
+  "convergence_cadence_tolerances_and_physics_unchanged": true
+}

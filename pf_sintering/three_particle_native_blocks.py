@@ -4,15 +4,15 @@ Private relaxation buffers eliminate allocations between native steps. Caller
 owns the supplied f/phi arrays; this routine may reuse them as output buffers.
 """
 import numpy as np
-from numba import njit
+from numba import njit,prange
 from .three_particle_phase_a import chemical_potential
 from .axisym_numba_kernel import flux_kernel,div_and_update_kernel
 from .three_particle_bounded_mobility import _rescale_faces
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def _pair_phi_kernel_into(phi,f,a,b,dt,M_eta,Wc,k_eta,dr,dz,rc,rf,out):
     nz,nr=f.shape
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             v=min(1.,max(0.,f[j,i]));d=phi[a,j,i]-phi[b,j,i]
             jm=0.;jp=0.;zm=0.;zp=0.
@@ -28,10 +28,10 @@ def _pair_phi_kernel_into(phi,f,a,b,dt,M_eta,Wc,k_eta,dr,dz,rc,rf,out):
     return out
 
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def _gb_density_into(phi,Wc,k_eta,dr,dz,rc,rf,out):
     nz,nr=phi.shape[1:]
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             value=Wc*((phi[0,j,i]*phi[1,j,i]+phi[0,j,i]*phi[2,j,i])+phi[1,j,i]*phi[2,j,i])
             for k in range(3):
@@ -64,3 +64,31 @@ def native_block(f,phi,gb_density,a,b,dt,M_eta,Wc,k_eta,Wf,kf,dr,dz,rc,rf,W,Ms,s
         _gb_density_into(pn,Wc,k_eta,dr,dz,rc,rf,gb)
         f,fn=fn,f;phi,pn=pn,phi
     return f,phi,gb
+
+
+@njit(cache=True)
+def native_block_reuse(f,phi,gb_density,a,b,dt,M_eta,Wc,k_eta,Wf,kf,
+                       dr,dz,rc,rf,W,Ms,fn,pn,gbn,mu,jr,jz,steps=10):
+    """Same native block with caller-owned scratch arrays.
+
+    Production uses the established even ten-step block, so the accepted
+    arrays return in the caller-owned state buffers exactly as in
+    :func:`native_block`. Scratch initialization reproduces the allocating
+    implementation at every diagnostic-block boundary.
+    """
+    if steps % 2:
+        raise ValueError('reusable native block requires an even step count')
+    pn[:]=phi
+    jr[:]=0.
+    jz[:]=0.
+    for _ in range(steps):
+        chemical_potential(f,gb_density,Wf,kf,dr,dz,rc,rf,mu)
+        flux_kernel(f,mu,dr,dz,W,Ms,1e-6/W,jr,jz)
+        _rescale_faces(f,jr,jz)
+        div_and_update_kernel(f,jr,jz,rc,rf,dr,dz,dt,fn)
+        if not np.isfinite(fn).all() or fn.min() < -1e-8 or fn.max()>1+1e-8:
+            raise RuntimeError('fast field bounds')
+        _pair_phi_kernel_into(phi,fn,a,b,dt,M_eta,Wc,k_eta,dr,dz,rc,rf,pn)
+        _gb_density_into(pn,Wc,k_eta,dr,dz,rc,rf,gbn)
+        f,fn=fn,f;phi,pn=pn,phi;gb_density,gbn=gbn,gb_density
+    return f,phi,gb_density

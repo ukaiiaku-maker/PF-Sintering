@@ -7,7 +7,7 @@ Ownership is fixed in Phase A. There is no receiver/deposition operator.
 """
 from dataclasses import dataclass
 import numpy as np
-from numba import njit
+from numba import njit,prange
 from .axisym import axisym_laplacian,axisym_volume,axisym_free_energy
 from .axisym_numba_kernel import flux_kernel,div_and_update_kernel
 from .corrected_interfacial_energy import _axisym_gate_derivative_of_weighted_gradient
@@ -22,10 +22,10 @@ class FrozenPhysics:
     temperature_K: float = 1830.15
     atomic_volume_m3: float = 1e-29
 
-@njit(cache=True)
+@njit(cache=True,parallel=True)
 def chemical_potential(f,gb_density,Wf,kf,dr,dz,rc,rf,out):
     nz,nr=f.shape
-    for j in range(nz):
+    for j in prange(nz):
         for i in range(nr):
             v=f[j,i]
             gm=0. if i==0 else (v-f[j,i-1])/dr

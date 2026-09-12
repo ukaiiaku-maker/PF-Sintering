@@ -18,8 +18,9 @@ sys.path[:0] = [str(Path(__file__).resolve().parents[1]),
                 str(Path(__file__).resolve().parent)]
 
 import numpy as np
+from numba import get_num_threads
 
-from three_particle_buffered_event_probe import BufferedContactEvent
+from three_particle_buffered_event_probe import BufferedContactEvent,LargerDtBufferedContactEvent
 from three_particle_forced_event import ContactEvent, MANIFEST
 from three_particle_implicit_run import advance
 from three_particle_source_window import (
@@ -106,9 +107,15 @@ def main():
     if args.validate_only:
         print("CAMPAIGN_READY_NO_THRESHOLDS_DRAWN", sha256(args.source))
         return
+    required_threads = int(gate["authorization"].get("numba_threads", 1))
+    if get_num_threads() != required_threads:
+        raise RuntimeError(
+            f"campaign requires NUMBA_NUM_THREADS={required_threads}; got {get_num_threads()}")
 
     old = gate["numerical"]
-    event_class = (BufferedContactEvent if old.get("event_engine") ==
+    event_class = (LargerDtBufferedContactEvent
+                   if gate["authorization"].get("native_dt_factor") == 2
+                   else BufferedContactEvent if old.get("event_engine") ==
                    "buffered_native" else ContactEvent)
     out = Path("runs/three_particle_production_065")/args.out_name
     c, offsets = compatible_chain(.65, 119.999*1e-9)
@@ -139,6 +146,25 @@ def main():
         reference_span = float(launch["densification_reference_length_m"])
         if int(launch["seed"]) != PRODUCTION_SEED:
             raise RuntimeError("production seed changed on restart")
+        promoted_increment = gate["authorization"].get(
+            "event_max_increment_over_b", old["event_max_increment_over_b"])
+        if launch.get("accepted_event_increment_over_b") != promoted_increment:
+            launch.setdefault("numerical_amendments", []).append(dict(
+                event_max_increment_over_b=promoted_increment,
+                evidence=gate["authorization"].get("event_increment_overlap"),
+                physics_and_acceptance_tolerances_unchanged=True,
+                stochastic_state_modified=False))
+            launch["accepted_event_increment_over_b"] = promoted_increment
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        if launch.get("numba_threads", 1) != required_threads:
+            launch.setdefault("numerical_amendments", []).append(dict(
+                numba_threads=required_threads,
+                evidence=gate["authorization"].get("native_parallel_overlap"),
+                field_linf_difference=0.0, local_stress_difference_Pa=0.0,
+                physics_and_acceptance_tolerances_unchanged=True,
+                stochastic_state_modified=False))
+            launch["numba_threads"] = required_threads
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
     else:
         if out.exists():
             raise RuntimeError("refusing to overwrite production output; use --resume")
@@ -176,6 +202,10 @@ def main():
             contact_selected_only_by_localized_root_crossing=True,
             passive_solver="full_native_flux_jacobian",
             passive_preconditioner_reuse=True,
+            numba_threads=required_threads,
+            accepted_event_increment_over_b=gate["authorization"].get(
+                "event_max_increment_over_b", old["event_max_increment_over_b"]),
+            event_checkpoint_cadence_over_b=.01,
             material_volume_m3=mass0,
             densification_reference_length_m=reference_span,
             strain_definitions=dict(
@@ -387,16 +417,29 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
 
                 def progress(packet, fields, restart):
                     nonlocal state, t
+                    q_now = float(packet["q_end_over_b"])
+                    last_saved_q = (float(records[-1]["q_over_b"])
+                                    if (records and records[-1]["phase"] ==
+                                        "ACTIVE_ONE_B" and
+                                        records[-1]["event_number"] == event_number)
+                                    else -float("inf"))
+                    # The native event still accepts every qualified 0.0025b
+                    # increment. Persist only each 0.01b (and the final state),
+                    # so an interruption replays at most four deterministic
+                    # accepted increments from the last exact checkpoint.
+                    if q_now < 1-1e-12 and q_now-last_saved_q < .01-1e-12:
+                        return
                     save_event_checkpoint(
                         checkpoint, fields, restart, contact=contact,
                         label="GENUINE_STOCHASTIC_EVENT")
                     state = fields
                     t = event_start_t + (restart["event_time_model"]
                                          * MANIFEST["seconds_per_model_time"])
-                    record("ACTIVE_ONE_B", packet["q_end_over_b"])
+                    record("ACTIVE_ONE_B", q_now)
                     save()
 
-                dq = old["event_max_increment_over_b"]
+                dq = gate["authorization"].get(
+                    "event_max_increment_over_b", old["event_max_increment_over_b"])
                 result = event.run(
                     state, restart=pending_restart, callback=progress,
                     maximum_step_over_b=dq, initial_step_over_b=dq)
@@ -484,4 +527,3 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
 
 if __name__ == "__main__":
     main()
-

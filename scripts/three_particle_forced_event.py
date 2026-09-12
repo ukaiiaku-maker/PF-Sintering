@@ -8,7 +8,7 @@ from pf_sintering.three_particle_cmc import compatible_chain,map_to_pf
 from pf_sintering.three_particle_phase_a import PhaseAOperator
 from pf_sintering.three_particle_event import pair_transfer,ownership_pair_step,update_ownership,save_event_checkpoint,normalized_pair_ownership,load_event_checkpoint
 from pf_sintering.three_particle_bounded_mobility import bounded_mobility_update
-from pf_sintering.three_particle_contacts import evaluate_contacts
+from pf_sintering.three_particle_contacts import evaluate_contacts,locate_contact_points
 from pf_sintering.three_particle_geometry import grain_volumes,topology_status
 from pf_sintering.three_particle_diagnostics import radius_profile,curvature_watch
 from pf_sintering.production_mass_transfer_event import current_state_mass_transfer_event
@@ -57,6 +57,18 @@ class ContactEvent:
         result['sigma_integral_Pa']=c['sigma_integral_continuous_Pa']
         return result
     def evaluator(self,*state):return self.metrics(state,0.)
+    def fast_metrics(self,state,q):
+        """Exact active-contact subset used by the unchanged fast-state gate."""
+        self.bind(state);f=state[0];points=locate_contact_points(f,self.op)
+        c=evaluate_contacts(f,self.op,MANIFEST,names=(self.name,),points=points)[self.name]
+        r=radius_profile(f,self.g);z0=self.g['z'][np.flatnonzero(np.isfinite(r))[0]];z1=self.g['z'][np.flatnonzero(np.isfinite(r))[-1]]
+        if self.name=='LEFT':z1=points[1][0]
+        else:z0=points[0][0]
+        geometric=profile_metrics(r,{**self.g,'W':self.op.W},dict(z_raw_min_m=-z0,lam=z1-z0,z1=c['z_TJ_m']))
+        topology=topology_status(f,{**self.g,'gb':np.array([p[0] for p in points])})
+        return dict(transport_affinity_Pa=c['transport_affinity_Pa'],sigma_local_Pa=c['sigma_local_Pa'],
+            sigma_integral_Pa=c['sigma_integral_continuous_Pa'],A1_magnitude_m=geometric['A1_magnitude_m'],
+            r_neck_smooth_m=geometric['r_neck_smooth_m'],G_phasefield_J=self.op.energy(f),topology_stop=topology['stop'])
     def relax(self,state,q):
         current=tuple(x.copy() for x in state);previous=self.metrics(current,q);consecutive=0
         for block in range(1,self.max_fast_blocks+1):
