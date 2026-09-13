@@ -1,0 +1,28 @@
+{
+  "label": "EXACT_FINAL_TRANSFER_THREAD_SELECTION",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_4.npz",
+  "source_sha256": "98e0d13c1ab3632764450dc8fa74541ebc034cb90006c20f8b448cc9df547df4",
+  "source_event_progress_over_b": 0.9974999999999905,
+  "candidate_event_progress_over_b": 1.0,
+  "grid_shape": [
+    890,
+    361
+  ],
+  "one_thread_one_block_wall_s": 0.30077112501021475,
+  "one_thread_block_native_steps": 5,
+  "four_thread_authoritative_interrupted_before_block_32": true,
+  "four_thread_cpu_seconds_at_interruption": 1853.55,
+  "four_thread_wall_seconds_at_interruption": 1627.0,
+  "four_thread_cpu_seconds_per_block_lower_bound": 57.9234375,
+  "four_thread_wall_seconds_per_block_lower_bound": 50.84375,
+  "one_thread_speedup_lower_bound_from_wall": 169.044651471358,
+  "thread_parity_evidence": "event_thread_parity.json",
+  "thread_parity_bitwise_identical": true,
+  "native_parallel_overlap_evidence": "native_parallel_overlap_event2.json",
+  "native_parallel_overlap_field_linf_difference": 0.0,
+  "native_parallel_overlap_local_stress_difference_Pa": 0.0,
+  "selected_numba_threads": 1,
+  "physics_acceptance_tolerances_field_guard_and_stochastic_state_unchanged": true,
+  "authoritative_checkpoint_modified_by_benchmark": false,
+  "passed": true
+}

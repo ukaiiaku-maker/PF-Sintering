@@ -1,0 +1,15 @@
+{
+  "label": "FINAL_EVENT_INCREMENT_ROUNDOFF_RECOVERY_FIX",
+  "source_event_progress_over_b": 0.9974999999999905,
+  "snapped_trial_progress_over_b": 1.0,
+  "computed_trial_increment_over_b": 0.0025000000000094946,
+  "minimum_step_over_b": 0.0025,
+  "legacy_minimum_comparison_allowance": 1e-15,
+  "existing_quota_roundoff_allowance": 7.105427357601002e-13,
+  "failure_mode": "identical rejected snapped final candidate retried indefinitely instead of returning to qualified affinity recovery",
+  "observed_duplicate_final_relaxations_at_least": 50,
+  "fix": "reuse existing quota_roundoff in minimum-step rejection comparison",
+  "regression_test": "tests/test_three_particle_event.py::test_event_zero_and_midpoint_restart_exactly_once",
+  "physics_acceptance_tolerances_field_guard_and_stochastic_state_unchanged": true,
+  "passed": true
+}

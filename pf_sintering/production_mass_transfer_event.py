@@ -56,7 +56,9 @@ def current_state_mass_transfer_event(
         maximum_step_over_b: float = 0.02, step_limits=None,
         mask_parameters: TransferMaskParameters = TransferMaskParameters(),
         maximum_accepted_states: int = 400,
-        transfer_fn=bounded_conservative_transfer, **_ignored_packet_options):
+        transfer_fn=bounded_conservative_transfer,
+        reuse_state_metrics_geometry: bool = False,
+        **_ignored_packet_options):
     """Advance accumulated transferred material to a requested event quota.
 
     Every trial begins from the current committed fields.  Its masks are
@@ -95,8 +97,9 @@ def current_state_mass_transfer_event(
         raise ValueError("event quota precedes committed restart q")
 
     previous = state_metrics_fn(current, q)
-    previous["contact_area_m2"] = float(
-        state_evaluator(*current)["contact_area_m2"])
+    if not reuse_state_metrics_geometry:
+        previous["contact_area_m2"] = float(
+            state_evaluator(*current)["contact_area_m2"])
     previous["sigma_integral_continuous_MPa"] = float(
         previous["sigma_integral_continuous_Pa"])*1.0e-6
     step = min(maximum_step_over_b, max(initial_step_over_b,
@@ -163,7 +166,12 @@ def current_state_mass_transfer_event(
         dq_over_b = q_trial-q
         dq_m = dq_over_b*transport.b_m
         try:
-            record0 = state_evaluator(*current)
+            if (reuse_state_metrics_geometry and
+                    all(key in previous for key in
+                        ("contact_area_m2", "z_TJ_m", "r_TJ_m"))):
+                record0 = previous
+            else:
+                record0 = state_evaluator(*current)
             affinity0 = float(previous["transport_affinity_Pa"])
             rate0 = _rate(previous, transport)
             if affinity0 <= 0.0 or rate0 <= 0.0:
@@ -181,8 +189,9 @@ def current_state_mass_transfer_event(
             candidate, row, fast = fast_relax_fn(candidate, q_trial)
             if not bool(fast["converged"]):
                 raise RuntimeError("fast_manifold")
-            record1 = state_evaluator(*candidate)
-            row["contact_area_m2"] = float(record1["contact_area_m2"])
+            if not reuse_state_metrics_geometry:
+                row["contact_area_m2"] = float(
+                    state_evaluator(*candidate)["contact_area_m2"])
             row["sigma_integral_continuous_MPa"] = float(
                 row["sigma_integral_continuous_Pa"])*1.0e-6
             rate1 = _rate(row, transport)
@@ -199,7 +208,7 @@ def current_state_mass_transfer_event(
             for reason in reasons:
                 rejection_counts[reason] = int(rejection_counts.get(reason, 0))+1
             clean = 0
-            if q_trial-q <= minimum_step_over_b+1.0e-15:
+            if q_trial-q <= minimum_step_over_b+quota_roundoff:
                 restart = restart_record()
                 return *current, False, dict(
                     completed=False, event_progress_over_b=q,

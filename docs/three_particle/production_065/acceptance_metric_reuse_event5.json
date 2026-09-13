@@ -1,0 +1,29 @@
+{
+  "label": "LIVE_EVENT5_ACCEPTANCE_METRIC_REUSE_OVERLAP",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_5.npz",
+  "source_sha256": "66031b3faa26f252128639671696f73343f91e24faf17b32f1182a6a5398388b",
+  "q_over_b": 0.10000000000000002,
+  "contact": "LEFT",
+  "differences": {
+    "transport_affinity_Pa": 0.0,
+    "transport_affinity_MPa": 0.0,
+    "sigma_local_Pa": 0.0,
+    "sigma_local_MPa": 0.0,
+    "sigma_integral_Pa": 0.0,
+    "sigma_integral_continuous_Pa": 0.0,
+    "sigma_integral_continuous_MPa": 0.0,
+    "A1_nm": 0.0,
+    "r_neck_nm": 0.0,
+    "r_TJ_m": 0.0,
+    "r_TJ_nm": 0.0,
+    "z_TJ_m": 0.0,
+    "contact_area_m2": 0.0,
+    "G_phasefield_J": 0.0,
+    "topology_stop": true
+  },
+  "all_acceptance_metrics_exact": true,
+  "convergence_metrics_retain_live_opposite_contact_definition": true,
+  "full_field_modified": false,
+  "physics_acceptance_tolerances_and_stochastic_state_unchanged": true,
+  "passed": true
+}

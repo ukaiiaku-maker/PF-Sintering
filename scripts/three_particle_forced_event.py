@@ -69,10 +69,24 @@ class ContactEvent:
         if self.name=='LEFT':z1=points[1][0]
         else:z0=points[0][0]
         geometric=profile_metrics(r,{**self.g,'W':self.op.W},dict(z_raw_min_m=-z0,lam=z1-z0,z1=c['z_TJ_m']))
+        acceptance_z0=self.g['z'][np.flatnonzero(np.isfinite(r))[0]]
+        acceptance_z1=self.g['z'][np.flatnonzero(np.isfinite(r))[-1]]
+        if self.name=='LEFT':acceptance_z1=self.g['gb'][1]
+        else:acceptance_z0=self.g['gb'][0]
+        acceptance_geometric=profile_metrics(r,{**self.g,'W':self.op.W},
+            dict(z_raw_min_m=-acceptance_z0,lam=acceptance_z1-acceptance_z0,z1=c['z_TJ_m']))
         topology=topology_status(f,{**self.g,'gb':np.array([p[0] for p in points])})
-        return dict(transport_affinity_Pa=c['transport_affinity_Pa'],sigma_local_Pa=c['sigma_local_Pa'],
-            sigma_integral_Pa=c['sigma_integral_continuous_Pa'],A1_magnitude_m=geometric['A1_magnitude_m'],
-            r_neck_smooth_m=geometric['r_neck_smooth_m'],G_phasefield_J=self.op.energy(f),topology_stop=topology['stop'])
+        return dict(transport_affinity_Pa=c['transport_affinity_Pa'],
+            transport_affinity_MPa=c['transport_affinity_Pa']/1e6,
+            sigma_local_Pa=c['sigma_local_Pa'],sigma_local_MPa=c['sigma_local_Pa']/1e6,
+            sigma_integral_Pa=c['sigma_integral_continuous_Pa'],
+            sigma_integral_continuous_Pa=c['sigma_integral_continuous_Pa'],
+            sigma_integral_continuous_MPa=c['sigma_integral_continuous_Pa']/1e6,
+            A1_magnitude_m=geometric['A1_magnitude_m'],A1_nm=acceptance_geometric['A1_magnitude_m']*1e9,
+            r_neck_smooth_m=geometric['r_neck_smooth_m'],r_neck_nm=acceptance_geometric['r_neck_smooth_m']*1e9,
+            r_TJ_m=c['r_n_m'],r_TJ_nm=c['r_n_m']*1e9,z_TJ_m=c['z_TJ_m'],
+            contact_area_m2=np.pi*c['r_n_m']**2,G_phasefield_J=self.op.energy(f),
+            topology_stop=topology['stop'])
     def relax(self,state,q):
         current=tuple(x.copy() for x in state);previous=self.metrics(current,q);consecutive=0
         for block in range(1,self.max_fast_blocks+1):
@@ -95,7 +109,8 @@ class ContactEvent:
         transport=ModelTimeGBTransport(first['r_n_m']/2,1.380649e-23,m['temperature_K'],1e-29,m['b_event_m'],m['D_GB_m2_per_model_time'],0.)
         return current_state_mass_transfer_event(state,{**self.g,'W':self.op.W},{},self.evaluator,transport,target,
             fast_relax_fn=self.relax,state_metrics_fn=self.metrics,event_restart=restart,
-            transfer_fn=partial(pair_transfer,pair=self.pair),accepted_progress_callback=callback,**options)
+            transfer_fn=partial(pair_transfer,pair=self.pair),accepted_progress_callback=callback,
+            reuse_state_metrics_geometry=True,**options)
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--source',type=Path,required=True);ap.add_argument('--out-name',default='forced_left');ap.add_argument('--resume-event',type=Path);ap.add_argument('--max-fast-blocks',type=int,default=60);ap.add_argument('--max-increment-over-b',type=float,default=.02);args=ap.parse_args()

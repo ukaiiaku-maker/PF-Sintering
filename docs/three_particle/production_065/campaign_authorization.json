@@ -16,9 +16,9 @@
       "1.00": null,
       "post_source_window": 3.7921
     },
-    "native_timestep_max_field_linf_to_finest": 2.7899753618498835e-9,
+    "native_timestep_max_field_linf_to_finest": 2.7899753618498835e-09,
     "native_timestep_max_local_stress_difference_Pa": 1.4249820103868842,
-    "native_timestep_max_relative_clock_difference": 1.1299405189291178e-8,
+    "native_timestep_max_relative_clock_difference": 1.1299405189291178e-08,
     "bounded_and_conserved": true,
     "mask_edge_pinned": false,
     "activation_corruption_demonstrated": false
@@ -30,8 +30,8 @@
   "native_workspace_reuse": true,
   "native_workspace_overlap": "native_workspace_overlap_q08125.json",
   "native_workspace_overlap_passed": true,
-  "numba_threads": 4,
-  "native_parallel_overlap": "native_parallel_overlap_event2.json",
+  "numba_threads": 1,
+  "native_parallel_overlap": "final_transfer_thread_selection.json",
   "native_parallel_overlap_passed": true,
   "active_contact_fast_metric_gate": true,
   "active_contact_metric_overlap": "active_contact_metric_overlap_event2.json",
@@ -45,5 +45,10 @@
   "reflection_guard_enabled": false,
   "no_clipping": true,
   "no_fitted_correction": true,
-  "physics_parameters_unchanged": true
+  "physics_parameters_unchanged": true,
+  "final_increment_roundoff_recovery": "final_increment_roundoff_recovery.json",
+  "final_increment_roundoff_recovery_passed": true,
+  "acceptance_metric_reuse": true,
+  "acceptance_metric_reuse_overlap": "acceptance_metric_reuse_event5.json",
+  "acceptance_metric_reuse_overlap_passed": true
 }

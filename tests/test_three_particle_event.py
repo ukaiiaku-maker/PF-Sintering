@@ -75,6 +75,30 @@ def test_event_zero_and_midpoint_restart_exactly_once():
     assert fine[5]['event_restart']['accepted_steps_total']==400
     np.testing.assert_allclose(sum(p['dq_m'] for p in fine[5]['packets']),transport.b_m,rtol=1e-13)
 
+    # A snapped final trial can exceed the nominal minimum step by accumulated
+    # q roundoff.  A rejection must return to the recovery controller once,
+    # rather than retrying the identical candidate forever.
+    final_restart=dict(fine[5]['event_restart'])
+    final_restart.update(cumulative_q_m=.9974999999999905*transport.b_m,
+                         accepted_steps_total=399,next_step_over_b=.0025)
+    relax_calls=[]
+    def final_metrics(fields,q):
+        row=metrics(fields,q)
+        row['transport_affinity_Pa']=-1. if q>=1. else 1.
+        row['transport_affinity_MPa']=row['transport_affinity_Pa']/1e6
+        return row
+    def reject_final(fields,q):
+        relax_calls.append(q)
+        return fields,final_metrics(fields,q),dict(converged=True)
+    rejected=current_state_mass_transfer_event(
+        fine[:4],setup,{},evaluator,transport,1.,fast_relax_fn=reject_final,
+        state_metrics_fn=final_metrics,transfer_fn=partial(pair_transfer,pair=(0,1)),
+        event_restart=final_restart,initial_step_over_b=.0025,
+        minimum_step_over_b=.0025,maximum_step_over_b=.0025)
+    assert not rejected[4]
+    assert rejected[5]['stop_reason']=='nonpositive_transport_affinity'
+    assert relax_calls==[1.]
+
     # Interrupt an adaptive path after a rejection and before its growth cycle.
     original_metrics=metrics
     def metrics(fields,q):

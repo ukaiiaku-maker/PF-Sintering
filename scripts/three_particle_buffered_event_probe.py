@@ -1,6 +1,6 @@
 """Exact native stencils with private reusable arrays between diagnostic blocks."""
 from pathlib import Path
-import sys,json,time
+import os,sys,json,time
 sys.path[:0]=[str(Path(__file__).resolve().parents[1]),str(Path(__file__).resolve().parent)]
 import numpy as np
 from three_particle_forced_event import ContactEvent,TOL,MANIFEST
@@ -39,9 +39,7 @@ class BufferedContactEvent(ContactEvent):
             g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics_bound(f,q)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0
-            if consecutive>=3:
-                complete=self.metrics(current,q)
-                return current,complete,dict(converged=True,iterations=block*10,blocks=block)
+            if consecutive>=3:return current,row,dict(converged=True,iterations=block*10,blocks=block)
             previous=row
         return current,row,dict(converged=False,iterations=block*10,blocks=block)
 
@@ -52,6 +50,7 @@ class LargerDtBufferedContactEvent(ContactEvent):
         super().__init__(g,pair,max_fast_blocks);self.dt*=2
     def relax(self,state,q):
         current=tuple(x.copy() for x in state);previous=self.fast_metrics(current,q);f=current[0];consecutive=0;g=self.g;op=self.op
+        progress_every=int(os.environ.get('THREE_PARTICLE_BLOCK_PROGRESS_EVERY','0'))
         shape=f.shape
         if not hasattr(self,'_native_workspace'):
             self._native_workspace=(np.empty_like(f),g['ownership'].copy(),np.empty_like(op.gb_density),
@@ -65,9 +64,12 @@ class LargerDtBufferedContactEvent(ContactEvent):
             fn,pn,gbn=prior_f,prior_phi,prior_density
             self._native_workspace=(fn,pn,gbn,mu,jr,jz)
             g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics_bound(f,q)
+            if progress_every>0 and block%progress_every==0:
+                print('NATIVE_BLOCK_PROGRESS',self.name,'q/b',q,'block',block,
+                      'of',self.max_fast_blocks,'consecutive',consecutive,flush=True)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0
-            if consecutive>=3:return current,self.metrics(current,q),dict(converged=True,iterations=block*5,blocks=block)
+            if consecutive>=3:return current,row,dict(converged=True,iterations=block*5,blocks=block)
             previous=row
         return current,self.metrics(current,q),dict(converged=False,iterations=block*5,blocks=block)
 
