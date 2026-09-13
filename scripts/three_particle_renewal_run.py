@@ -80,6 +80,12 @@ def event_checkpoint_due(q_now, last_saved_q):
                 q_now-last_saved_q >= cadence-1e-12)
 
 
+def accepted_reload_step_hint(proposed_h, accepted_h, error):
+    """Retain the incoming hint when only the interval remainder clipped it."""
+    grown = accepted_h*min(2., max(1., .8/max(error, 1e-12)**.5))
+    return max(proposed_h, grown) if accepted_h < proposed_h else grown
+
+
 def require_campaign(source):
     old = json.loads((D/"qualification.json").read_text())
     authorization = json.loads((D/"campaign_authorization.json").read_text())
@@ -91,6 +97,8 @@ def require_campaign(source):
         (D/"odd_buffer_reuse_2x_overlap.json").read_text())
     bound_metrics_overlap = json.loads(
         (D/"bound_fast_metrics_overlap.json").read_text())
+    reload_no_collapse_overlap = json.loads(
+        (D/"post_avalanche_reload_no_collapse_overlap.json").read_text())
     initial = json.loads((D/"production_initial_2pct.json").read_text())
     if not all(old.get(key) is True for key in
                ("reload_qualified", "one_b_qualified",
@@ -108,6 +116,8 @@ def require_campaign(source):
         raise RuntimeError("2x odd-step reusable buffers are not qualified")
     if not bound_metrics_overlap.get("passed"):
         raise RuntimeError("already-bound fast metrics are not qualified")
+    if not reload_no_collapse_overlap.get("passed"):
+        raise RuntimeError("reload step-hint no-collapse policy is not qualified")
     if sha256(source) != initial["output_sha256"]:
         raise RuntimeError("production source differs from the pre-draw selection")
     return dict(
@@ -116,6 +126,7 @@ def require_campaign(source):
         event_transport_pause_overlap=pause_overlap,
         odd_buffer_reuse_2x_overlap=odd_buffer_overlap,
         bound_fast_metrics_overlap=bound_metrics_overlap,
+        reload_no_collapse_overlap=reload_no_collapse_overlap,
         production_initial=initial)
 
 
@@ -239,6 +250,19 @@ def main():
                 stochastic_state_modified=False))
             launch["already_bound_fast_metrics"] = True
             atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        if not launch.get("reload_step_hint_no_collapse"):
+            launch.setdefault("numerical_amendments", []).append(dict(
+                reload_step_hint_no_collapse=True,
+                evidence="post_avalanche_reload_no_collapse_overlap.json",
+                field_Linf=gate["reload_no_collapse_overlap"][
+                    "field_Linf_to_reference"],
+                hazard_increment_relative_difference_max=gate[
+                    "reload_no_collapse_overlap"][
+                        "hazard_increment_relative_difference_max"],
+                field_guard_and_error_tolerance_unchanged=True,
+                physics_and_stochastic_state_modified=False))
+            launch["reload_step_hint_no_collapse"] = True
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
     else:
         if out.exists():
             raise RuntimeError("refusing to overwrite production output; use --resume")
@@ -285,6 +309,7 @@ def main():
             late_event_checkpoint_start_over_b=.98,
             odd_step_event_buffer_reuse=True,
             already_bound_fast_metrics=True,
+            reload_step_hint_no_collapse=True,
             event_transport_pause_semantics=dict(
                 source_persists=True, root_clocks_frozen=True,
                 descendant_clocks_frozen=True,
@@ -320,6 +345,7 @@ def main():
         reload_progress = bool(int(os.environ.get(
             "THREE_PARTICLE_RELOAD_PROGRESS", "0")))
         while elapsed < seconds-1e-14:
+            proposed_h = h
             h = min(h, seconds-elapsed)
             try:
                 trial, error = advance(
@@ -339,7 +365,7 @@ def main():
             if reload_progress:
                 print("RELOAD_SUBSTEP_ACCEPT", "elapsed/target", elapsed,
                       seconds, "h", h, "error", error, flush=True)
-            h *= min(2., max(.5, .8/max(error, 1e-12)**.5))
+            h = accepted_reload_step_hint(proposed_h, h, error)
         reload_h_hint = h
         return current
 

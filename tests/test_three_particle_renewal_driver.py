@@ -2,8 +2,14 @@ import pytest
 
 from scripts.three_particle_forced_event import MANIFEST
 from scripts.three_particle_renewal_run import (
-    event_checkpoint_due, event_physical_time_s, event_progress_over_b,
-    incomplete_event_phase)
+    accepted_reload_step_hint, event_checkpoint_due, event_physical_time_s,
+    event_progress_over_b, incomplete_event_phase)
+
+
+def test_reload_step_hint_is_not_collapsed_by_short_final_remainder():
+    assert accepted_reload_step_hint(.01, .001, .01) == .01
+    assert accepted_reload_step_hint(.001, .001, .25) == .0016
+    assert accepted_reload_step_hint(.003, .003, .688) == .003
 
 
 def test_partial_event_pause_preserves_quota_and_adds_frozen_clock_time():

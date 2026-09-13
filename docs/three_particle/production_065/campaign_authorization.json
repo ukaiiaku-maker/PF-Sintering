@@ -53,5 +53,8 @@
   "acceptance_metric_reuse_overlap_passed": true,
   "post_avalanche_reload_persistent_step_hint": true,
   "post_avalanche_reload_step_hint_evidence": "post_avalanche_reload_step_hint.json",
-  "post_avalanche_reload_step_hint_passed": true
+  "post_avalanche_reload_step_hint_passed": true,
+  "post_avalanche_reload_no_collapse": true,
+  "post_avalanche_reload_no_collapse_evidence": "post_avalanche_reload_no_collapse_overlap.json",
+  "post_avalanche_reload_no_collapse_passed": true
 }

@@ -1,0 +1,19 @@
+{
+  "label": "POST_AVALANCHE_RELOAD_NO_COLLAPSE_OVERLAP",
+  "source_sha256": "b2b4066d9bfa66c259a9fa68638776e1bde067d91389041ab87fbef9a9bbba83",
+  "duration_s": 1.0,
+  "reference_time_s": 559.7991750011029,
+  "source_time_s": 558.7991750011026,
+  "accepted_steps": 148,
+  "rejected_steps": 23,
+  "max_accepted_embedded_error": 0.9824176091743907,
+  "wall_s": 854.138676750008,
+  "field_Linf_to_reference": 1.1182338994109031e-05,
+  "hazard_increment_relative_difference_max": 8.148555558521775e-07,
+  "declared_field_Linf_tolerance": 2e-05,
+  "declared_hazard_relative_tolerance": 0.0001,
+  "acceptance_error_limit_unchanged": 1.0,
+  "field_guard_unchanged": true,
+  "physics_and_stochastic_state_unchanged": true,
+  "passed": true
+}
