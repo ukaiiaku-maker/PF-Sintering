@@ -59,7 +59,11 @@ class ContactEvent:
     def evaluator(self,*state):return self.metrics(state,0.)
     def fast_metrics(self,state,q):
         """Exact active-contact subset used by the unchanged fast-state gate."""
-        self.bind(state);f=state[0];points=locate_contact_points(f,self.op)
+        self.bind(state)
+        return self.fast_metrics_bound(state[0], q)
+    def fast_metrics_bound(self,f,q):
+        """Read fast metrics after the caller has bound exact native buffers."""
+        points=locate_contact_points(f,self.op)
         c=evaluate_contacts(f,self.op,MANIFEST,names=(self.name,),points=points)[self.name]
         r=radius_profile(f,self.g);z0=self.g['z'][np.flatnonzero(np.isfinite(r))[0]];z1=self.g['z'][np.flatnonzero(np.isfinite(r))[-1]]
         if self.name=='LEFT':z1=points[1][0]

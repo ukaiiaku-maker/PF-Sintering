@@ -1,0 +1,26 @@
+{
+  "label": "OFF_TRAJECTORY_ALREADY_BOUND_FAST_METRICS_OVERLAP",
+  "source": "runs/three_particle_production_065/stochastic_seed20260910/event_4.npz",
+  "source_q_over_b": 0.9974999999999905,
+  "native_blocks": 1,
+  "native_block_plus_bound_metrics_wall_s": 0.4065952500095591,
+  "already_bound_metrics_wall_s": 0.03181233408395201,
+  "redundant_rebind_metrics_wall_s": 0.05693062499631196,
+  "fields_Linf": 0.0,
+  "ownership_Linf_after_rebind": 0.0,
+  "gb_density_Linf_after_rebind": 0.0,
+  "metric_differences": {
+    "A1_magnitude_m": 0.0,
+    "G_phasefield_J": 0.0,
+    "r_neck_smooth_m": 0.0,
+    "sigma_integral_Pa": 0.0,
+    "sigma_local_Pa": 0.0,
+    "topology_stop": 0.0,
+    "transport_affinity_Pa": 0.0
+  },
+  "metrics_max_absolute_difference": 0.0,
+  "physics_changed": false,
+  "convergence_tolerances_changed": false,
+  "stochastic_state_modified": false,
+  "passed": true
+}

@@ -15,7 +15,7 @@ class AllocatingBufferedContactEvent(ContactEvent):
         for block in range(1,self.max_fast_blocks+1):
             f,phi,density=native_block(f,g['ownership'],op.gb_density,*self.pair,self.dt,1.0937500000000001e-25,
                 op.Wc,op.k_eta,op.W_f,op.k_f,g['dr'],g['dz'],g['r_c'],g['r_f'],op.W,op.physics.M_s)
-            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.metrics(current,q)
+            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics_bound(f,q)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0
             if consecutive>=3:return current,row,dict(converged=True,iterations=block*10,blocks=block)
@@ -36,7 +36,7 @@ class BufferedContactEvent(ContactEvent):
             f,phi,density=native_block_reuse(f,g['ownership'],op.gb_density,*self.pair,self.dt,1.0937500000000001e-25,
                 op.Wc,op.k_eta,op.W_f,op.k_f,g['dr'],g['dz'],g['r_c'],g['r_f'],op.W,op.physics.M_s,
                 fn,pn,gbn,mu,jr,jz)
-            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics(current,q)
+            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics_bound(f,q)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0
             if consecutive>=3:
@@ -64,7 +64,7 @@ class LargerDtBufferedContactEvent(ContactEvent):
                 fn,pn,gbn,mu,jr,jz,steps=5)
             fn,pn,gbn=prior_f,prior_phi,prior_density
             self._native_workspace=(fn,pn,gbn,mu,jr,jz)
-            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics(current,q)
+            g['ownership']=phi;op.gb_density=density;current=(f,*(phi*f[None]));row=self.fast_metrics_bound(f,q)
             if row['topology_stop']:raise RuntimeError('three-grain topology guard')
             inc=fast_manifold_increment(previous,row);consecutive=consecutive+1 if block>=3 and fast_manifold_converged(inc,TOL) else 0
             if consecutive>=3:return current,self.metrics(current,q),dict(converged=True,iterations=block*5,blocks=block)
