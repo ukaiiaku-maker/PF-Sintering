@@ -384,6 +384,8 @@ def main():
         row = records[-1]
         left = row["contacts"]["LEFT"]
         right = row["contacts"]["RIGHT"]
+        center_loss = 1.0 - (
+            float(row["center_volume_m3"])/float(records[0]["center_volume_m3"]))
         return f"""# Three-particle production campaign status
 
 Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
@@ -393,6 +395,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
 - Physical time: `{t:.12g} s`
 - Time since production source: `{t-start_t:.12g} s`
 - Center volume: `{row['center_volume_m3']:.12g} m^3`
+- Center-volume loss from production source: `{center_loss:.12g}`
 - LEFT/RIGHT local stress: `{left['sigma_local_Pa']/1e6:.9g} / {right['sigma_local_Pa']/1e6:.9g} MPa`
 - LEFT/RIGHT hazard ratios: `{row['H_over_Hstar']['LEFT']:.12g} / {row['H_over_Hstar']['RIGHT']:.12g}`
 - Active contact: `{clocks.active}`
