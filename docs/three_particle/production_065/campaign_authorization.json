@@ -50,5 +50,8 @@
   "final_increment_roundoff_recovery_passed": true,
   "acceptance_metric_reuse": true,
   "acceptance_metric_reuse_overlap": "acceptance_metric_reuse_event5.json",
-  "acceptance_metric_reuse_overlap_passed": true
+  "acceptance_metric_reuse_overlap_passed": true,
+  "post_avalanche_reload_persistent_step_hint": true,
+  "post_avalanche_reload_step_hint_evidence": "post_avalanche_reload_step_hint.json",
+  "post_avalanche_reload_step_hint_passed": true
 }

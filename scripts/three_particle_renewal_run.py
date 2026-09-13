@@ -310,26 +310,37 @@ def main():
     op = reference.op
     passive = FullJacobianSurfaceDiffusion(op, reuse_preconditioner=True)
     wall = time.perf_counter()
+    reload_h_hint = .1
 
     def field_advance(field, seconds):
+        nonlocal reload_h_hint
         current = field.copy()
         elapsed = 0.
-        h = min(seconds, .1)
+        h = min(seconds, reload_h_hint)
+        reload_progress = bool(int(os.environ.get(
+            "THREE_PARTICLE_RELOAD_PROGRESS", "0")))
         while elapsed < seconds-1e-14:
             h = min(h, seconds-elapsed)
             try:
                 trial, error = advance(
                     current, h/MANIFEST["seconds_per_model_time"], passive, rule)
                 if error > 1:
-                    raise RuntimeError("embedded field error")
-            except (FloatingPointError, RuntimeError):
+                    raise RuntimeError(f"embedded field error {error:.9g}")
+            except (FloatingPointError, RuntimeError) as exc:
+                if reload_progress:
+                    print("RELOAD_SUBSTEP_REJECT", "elapsed/target", elapsed,
+                          seconds, "h", h, "reason", str(exc), flush=True)
                 h *= .2
                 if h < 1e-10:
                     raise RuntimeError("reload numerical timestep floor")
                 continue
             current = trial
             elapsed += h
+            if reload_progress:
+                print("RELOAD_SUBSTEP_ACCEPT", "elapsed/target", elapsed,
+                      seconds, "h", h, "error", error, flush=True)
             h *= min(2., max(.5, .8/max(error, 1e-12)**.5))
+        reload_h_hint = h
         return current
 
     def rates(field):

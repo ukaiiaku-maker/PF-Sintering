@@ -1,0 +1,20 @@
+{
+  "label": "POST_AVALANCHE_RELOAD_PERSISTENT_STEP_HINT",
+  "authoritative_checkpoint_time_s": 558.9991750011027,
+  "pre_change_each_macro_initial_h_s": 0.1,
+  "observed_repeated_rejections_s": [
+    0.1,
+    0.020000000000000004
+  ],
+  "first_persisted_macro_suggested_next_h_s": 0.008642635192420332,
+  "next_macro_first_attempt_h_s": 0.008642635192420332,
+  "next_macro_first_attempt_error": 0.5378412341217054,
+  "next_macro_first_attempt_accepted": true,
+  "rejected_trials_modify_field_or_clocks": false,
+  "embedded_error_acceptance_threshold_unchanged": 1.0,
+  "field_guard_unchanged": true,
+  "physics_and_stochastic_state_unchanged": true,
+  "aggressive_error_scaled_reduction_candidate_rejected": true,
+  "focused_tests_passed": 10,
+  "passed": true
+}
