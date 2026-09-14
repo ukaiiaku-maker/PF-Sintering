@@ -113,7 +113,8 @@ def _branch_integrals(branch):
         delta_phi_f_rad=float(value["turning_angle"]))
 
 
-def _continuous_endpoint_turning(branch, slope_dr_dz_at_tj):
+def _continuous_endpoint_turning(
+        branch, slope_dr_dz_at_tj, slope_dr_dz_at_far_endpoint=None):
     """Turning using the fitted TJ tangent and the resolved far tangent.
 
     ``_branch`` inserts the continuously located field TJ ahead of the first
@@ -131,9 +132,14 @@ def _continuous_endpoint_turning(branch, slope_dr_dz_at_tj):
         start_angle = math.atan2(slope, 1.0)
     else:
         start_angle = math.atan2(-slope, -1.0)
-    dz = float(z[-1] - z[-2])
-    dr = float(r[-1] - r[-2])
-    end_angle = math.atan2(dr, dz)
+    if slope_dr_dz_at_far_endpoint is None:
+        dz = float(z[-1] - z[-2])
+        dr = float(r[-1] - r[-2])
+        end_angle = math.atan2(dr, dz)
+    elif side > 0:
+        end_angle = math.atan2(float(slope_dr_dz_at_far_endpoint), 1.0)
+    else:
+        end_angle = math.atan2(-float(slope_dr_dz_at_far_endpoint), -1.0)
     delta = math.atan2(
         math.sin(end_angle-start_angle), math.cos(end_angle-start_angle))
     return float(delta)

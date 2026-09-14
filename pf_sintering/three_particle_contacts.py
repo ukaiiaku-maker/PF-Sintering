@@ -31,19 +31,23 @@ def contact_stresses(f, eta_negative, eta_positive, setup, z_tj, r_tj,
         branch=_branch(radius,z,eta_negative,eta_positive,r,z_tj,r_tj,sign,
                        f if sign<0 or not np.isfinite(upper) else None)
         endpoint=lower if sign<0 else upper
+        far_endpoint_slope = None
         if np.isfinite(endpoint):
             matches=[p for p in other_contacts if abs(p[0]-endpoint)<1e-15]
             if len(matches)!=1:raise ValueError('missing adjacent field TJ endpoint')
             branch['z_m']=np.r_[branch['z_m'],endpoint]
             branch['r_m']=np.r_[branch['r_m'],matches[0][1]]
             branch['grain_label']=np.r_[branch['grain_label'],0]
+            far_endpoint_slope = _local_fit(
+                branch, endpoint, 3*setup['W'])['slope_dr_dz']
         fit=_local_fit(branch,z_tj,3*setup['W'])
         integral=_branch_integrals(branch)
         geometry.update({f'theta_{side}_rad':fit['theta_side_equiv_rad'],
             f'kappa1_{side}_per_m':fit['kappa_m_per_m'],
             f'L_f_{side}_m':integral['L_f_m'],
             f'delta_phi_f_{side}_rad':integral['delta_phi_f_rad'],
-            f'delta_phi_f_continuous_{side}_rad':_continuous_endpoint_turning(branch,fit['slope_dr_dz'])})
+            f'delta_phi_f_continuous_{side}_rad':_continuous_endpoint_turning(
+                branch, fit['slope_dr_dz'], far_endpoint_slope)})
         branches[side]=branch
     result=_side_first_stresses(geometry,_particle_silhouette(branches['positive']))
     # MW/N are particle-shape diagnostics outside this requested two-stress audit.

@@ -1,0 +1,46 @@
+{
+  "label": "THREE_PARTICLE_STOCHASTIC_RENEWAL_CAMPAIGN",
+  "run": "runs/three_particle_production_065/stochastic_seed20260910",
+  "records": 5511,
+  "completed_avalanches": 2,
+  "avalanches": [
+    {
+      "avalanche_id": 1,
+      "root_contact": "LEFT",
+      "pre_root_center_loss_fraction": 3.442785678320348e-06,
+      "pre_root_local_stress_MPa": 18.507104399993352,
+      "root_waiting_time_s": 0.2174774169921534,
+      "avalanche_size": 5,
+      "avalanche_duration_s": 252.6126973831844,
+      "local_stress_drop_MPa": 17.429392843610316,
+      "opposite_contact_stress_change_MPa": 6.935688041641541,
+      "production_strain_increment": 0.007770268485528908,
+      "geometric_strain_increment": -3.206670127209321e-05,
+      "center_volume_change_during_avalanche_m3": 8.034843497565535e-24,
+      "center_volume_change_during_following_reload_m3": -1.430124588172116e-23
+    },
+    {
+      "avalanche_id": 2,
+      "root_contact": "LEFT",
+      "pre_root_center_loss_fraction": 0.003218075206755544,
+      "pre_root_local_stress_MPa": 18.6498096626673,
+      "root_waiting_time_s": 19.822467041020104,
+      "avalanche_size": 8,
+      "avalanche_duration_s": 6400.904893581068,
+      "local_stress_drop_MPa": 18.776391927742868,
+      "opposite_contact_stress_change_MPa": 6.419124254577845,
+      "production_strain_increment": 0.012432429576846253,
+      "geometric_strain_increment": -0.00017198366278292632,
+      "center_volume_change_during_avalanche_m3": 1.0987927003272228e-23,
+      "center_volume_change_during_following_reload_m3": null
+    }
+  ],
+  "movie": "docs/three_particle/production_065/campaign_seed20260910/morphology_cycle.gif",
+  "center_volume_change_by_phase_m3": {
+    "passive_reload": -1.4307957031724236e-23,
+    "active_event_transit": 1.8344126782490316e-23,
+    "facilitated_source_window": 6.786437183474471e-25
+  },
+  "symmetry_enforcement_enabled": false,
+  "physics_parameters_unchanged": true
+}

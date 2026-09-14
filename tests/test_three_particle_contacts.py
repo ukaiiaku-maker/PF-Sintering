@@ -59,6 +59,22 @@ def test_other_contact_terminates_center_branch_and_excludes_third_grain():
     for key in first:np.testing.assert_allclose(first[key],second[key],rtol=0,atol=0)
 
 
+def test_other_contact_integral_stress_is_continuous_across_a_grid_row():
+    z=np.linspace(-80e-9,120e-9,401);r=np.linspace(.25e-9,100.25e-9,201);W=4e-9
+    radius=55e-9+.1*np.abs(z)-.0005*z*z/1e-9
+    f=.5*(1+np.tanh((radius[:,None]-r[None,:])/W));eta=f*.5
+    setup=dict(z=z,r_c=r,dr=.5e-9,dz=z[1]-z[0],W=W,gamma_s=1.)
+    row=40e-9
+    values=[]
+    for upper in [row-1e-15,row+1e-15]:
+        endpoint=float(np.interp(upper,z,radius))
+        result,_=contact_stresses(
+            f,eta,eta,setup,0.,55e-9,upper=upper,
+            other_contacts=[(upper,endpoint)])
+        values.append(result['sigma_integral_continuous_Pa'])
+    assert abs(values[1]-values[0]) < 1e3
+
+
 def test_mirror_contacts_use_same_particle_positive_bicrystal_frame():
     from types import SimpleNamespace
     from pf_sintering.three_particle_contacts import evaluate_contacts

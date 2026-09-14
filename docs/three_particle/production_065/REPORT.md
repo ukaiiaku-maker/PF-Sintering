@@ -1,4 +1,21 @@
-# Selected 0.65 — reload and event mechanics pass; descendant morphology not qualified
+# Selected 0.65 — two stochastic renewal cycles complete
+
+The symmetry-free full-domain campaign with seed `20260910` reached
+`TARGET_RENEWAL_CYCLES_COMPLETE` at 6979.326535623 s. It completed 13 one-b
+events in two avalanches, with sizes 5 and 8. All stochastic selections were
+LEFT in this realization; RIGHT evolved independently and reflection error was
+used only as a diagnostic. Phase B was enabled for this isolated campaign after
+the conditional qualification history below. No symmetry projection, clipping,
+fitted physics correction, field-limit relaxation, barrier change, or stochastic
+state edit was applied.
+
+The current result is documented under
+[`campaign_seed20260910`](campaign_seed20260910/MANUSCRIPT_INTERPRETATION.md).
+The sections below preserve the qualification record that preceded the campaign;
+their contemporaneous `DISABLED` and `NOT QUALIFIED` labels describe those
+earlier checkpoints rather than the final campaign status.
+
+## Preserved qualification history
 
 The selected 0.65 no-sink reload passes 30 physical seconds. The forced LEFT
 one-b mechanical test now completes in 0.121635 s, with geometric centroid strain +0.009925%,

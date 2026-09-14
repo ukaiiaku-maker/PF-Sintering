@@ -1,0 +1,56 @@
+{
+  "label": "FAR_CONTACT_TANGENT_CONTINUITY_AUDIT",
+  "source_checkpoint": "runs/three_particle_production_065/stochastic_seed20260910/frames/frame_00227.npz",
+  "source_frame": 227,
+  "contact": "LEFT",
+  "checkpoint_label": "GENUINE_STOCHASTIC_EVENT",
+  "q_start_over_b": 0.5624999999999991,
+  "trial_step_over_b": 0.0025,
+  "prior_worker_stop_reason": "current-state transfer failed at minimum step",
+  "prior_worker_stop_detail": [
+    "sigma_integral_continuous_MPa"
+  ],
+  "legacy_last_chord_change_MPa": 1.0962394099565482,
+  "fitted_far_tangent_change_MPa": 0.047448098666071886,
+  "local_stress_change_MPa": 0.0033440803869115186,
+  "transport_affinity_change_MPa": -0.10120763644707202,
+  "root_rate_relative_change": 3.650559454770885e-05,
+  "completed": true,
+  "stop_reason": null,
+  "accepted_changes": {
+    "transport_affinity_MPa": 0.10120763644707204,
+    "sigma_local_MPa": 0.0033440803869115854,
+    "sigma_integral_continuous_MPa": 0.04744809866607014,
+    "r_neck_nm": 0.00038523177948945886,
+    "r_TJ_nm": 0.005083607124021228,
+    "A1_nm": 8.803723017791754e-05,
+    "z_TJ_nm": 0.0
+  },
+  "acceptance_limits": {
+    "transport_affinity_MPa": 0.5,
+    "sigma_local_MPa": 0.1,
+    "sigma_integral_continuous_MPa": 0.1,
+    "r_neck_nm": 0.05,
+    "r_TJ_nm": 0.05,
+    "A1_nm": 0.01,
+    "z_TJ_nm": 0.05
+  },
+  "accepted_limits_hold": true,
+  "field_min": -1.3748789310120962e-108,
+  "field_max": 1.0,
+  "ownership_closure_linf": 2.220446049250313e-16,
+  "total_volume_relative_error": -2.220446049250313e-16,
+  "topology": {
+    "stop": false,
+    "reasons": [],
+    "center_span_m": 3.265921794688721e-08,
+    "center_min_radius_m": 1.3637585587425694e-07
+  },
+  "bicrystal_endpoint_definition_unchanged": true,
+  "local_stress_and_root_law_definitions_unchanged": true,
+  "no_clipping": true,
+  "no_fitted_physics_correction": true,
+  "physics_parameters_unchanged": true,
+  "stochastic_state_modified": false,
+  "passed": true
+}

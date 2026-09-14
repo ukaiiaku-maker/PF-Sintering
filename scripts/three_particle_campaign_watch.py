@@ -33,12 +33,12 @@ def main():
             keep = (not rows or phase != last_phase or
                     (q_bin is not None and q_bin != last_q_bin) or
                     (reload_bin is not None and reload_bin != last_reload_bin))
+            with np.load(args.run/"trajectory.npz") as data:
+                metadata = json.loads(str(data["metadata"]))
             if keep:
                 number = len(rows)
                 target = frames/f"frame_{number:05d}.npz"
                 shutil.copyfile(args.run/"trajectory.npz", target)
-                with np.load(target) as data:
-                    metadata = json.loads(str(data["metadata"]))
                 item = dict(
                     frame=number, path=str(target), time_s=row["time_s"],
                     phase=phase, event_number=row["event_number"],

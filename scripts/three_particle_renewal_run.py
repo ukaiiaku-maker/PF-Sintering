@@ -10,6 +10,7 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import math
 import os
 import sys
 import time
@@ -84,6 +85,11 @@ def accepted_reload_step_hint(proposed_h, accepted_h, error):
     """Retain the incoming hint when only the interval remainder clipped it."""
     grown = accepted_h*min(2., max(1., .8/max(error, 1e-12)**.5))
     return max(proposed_h, grown) if accepted_h < proposed_h else grown
+
+
+def event_accepted_state_cap(minimum_step_over_b):
+    """Allow a full one-b event when every accepted step uses its floor."""
+    return max(400, int(math.ceil(1.0/float(minimum_step_over_b))))
 
 
 def require_campaign(source):
@@ -263,6 +269,36 @@ def main():
                 physics_and_stochastic_state_modified=False))
             launch["reload_step_hint_no_collapse"] = True
             atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        manifest_minimum = MANIFEST["event_minimum_increment_fraction_b"]
+        if launch.get("event_minimum_increment_over_b") != manifest_minimum:
+            launch.setdefault("numerical_amendments", []).append(dict(
+                event_minimum_increment_over_b=manifest_minimum,
+                evidence="bicrystal_launch_manifest.json",
+                trigger="event adapter retained its older default floor",
+                acceptance_limits_unchanged=True,
+                physics_and_stochastic_state_modified=False))
+            launch["event_minimum_increment_over_b"] = manifest_minimum
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        if not launch.get("continuous_far_contact_tangent"):
+            launch.setdefault("numerical_amendments", []).append(dict(
+                continuous_far_contact_tangent=True,
+                evidence="event9_far_endpoint_tangent_continuity.json",
+                trigger="far-contact last chord crossed a z-grid row",
+                acceptance_limits_unchanged=True,
+                local_stress_and_root_law_definitions_unchanged=True,
+                physics_and_stochastic_state_modified=False))
+            launch["continuous_far_contact_tangent"] = True
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
+        accepted_state_cap = event_accepted_state_cap(manifest_minimum)
+        if launch.get("event_accepted_state_cap") != accepted_state_cap:
+            launch.setdefault("numerical_amendments", []).append(dict(
+                event_accepted_state_cap=accepted_state_cap,
+                derivation="ceil(1b / event minimum increment)",
+                trigger="event 9 reached the historical 400-state cap",
+                acceptance_limits_unchanged=True,
+                physics_and_stochastic_state_modified=False))
+            launch["event_accepted_state_cap"] = accepted_state_cap
+            atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
     else:
         if out.exists():
             raise RuntimeError("refusing to overwrite production output; use --resume")
@@ -304,6 +340,10 @@ def main():
             numba_threads=required_threads,
             accepted_event_increment_over_b=gate["authorization"].get(
                 "event_max_increment_over_b", old["event_max_increment_over_b"]),
+            event_minimum_increment_over_b=(
+                MANIFEST["event_minimum_increment_fraction_b"]),
+            event_accepted_state_cap=event_accepted_state_cap(
+                MANIFEST["event_minimum_increment_fraction_b"]),
             event_checkpoint_cadence_over_b=.01,
             late_event_checkpoint_cadence_over_b=.0025,
             late_event_checkpoint_start_over_b=.98,
@@ -589,7 +629,8 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     "event_max_increment_over_b", old["event_max_increment_over_b"])
                 result = event.run(
                     state, restart=pending_restart, callback=progress,
-                    maximum_step_over_b=dq, initial_step_over_b=dq)
+                    maximum_step_over_b=dq, initial_step_over_b=dq,
+                    maximum_accepted_states=launch["event_accepted_state_cap"])
                 state = result[:4]
                 info = result[5]
                 t = event_physical_time_s(

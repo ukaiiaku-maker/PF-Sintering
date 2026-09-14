@@ -107,6 +107,11 @@ class ContactEvent:
         first=self.metrics(state if restart is None else restart['base_fields'],0.);m=MANIFEST
         self.bind(state)
         transport=ModelTimeGBTransport(first['r_n_m']/2,1.380649e-23,m['temperature_K'],1e-29,m['b_event_m'],m['D_GB_m2_per_model_time'],0.)
+        # The bicrystal launch manifest already qualifies a 0.00125b minimum
+        # event increment.  Keep explicit audit overrides, but use that
+        # production floor instead of the integrator's older 0.0025b default.
+        options.setdefault(
+            'minimum_step_over_b', m['event_minimum_increment_fraction_b'])
         return current_state_mass_transfer_event(state,{**self.g,'W':self.op.W},{},self.evaluator,transport,target,
             fast_relax_fn=self.relax,state_metrics_fn=self.metrics,event_restart=restart,
             transfer_fn=partial(pair_transfer,pair=self.pair),accepted_progress_callback=callback,

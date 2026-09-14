@@ -39,6 +39,34 @@ def test_selected_contact_transfer_is_not_mirror_projected():
     np.testing.assert_allclose(sum(out[1:]),out[0],rtol=0,atol=1e-16)
 
 
+def test_contact_event_uses_manifest_minimum_increment(monkeypatch):
+    from types import SimpleNamespace
+    from scripts import three_particle_forced_event as module
+
+    captured=[]
+    def event_integrator(*args, **kwargs):
+        captured.append(kwargs['minimum_step_over_b'])
+        return args[0]
+
+    monkeypatch.setattr(module, 'current_state_mass_transfer_event',
+                        event_integrator)
+    event=module.ContactEvent.__new__(module.ContactEvent)
+    event.g={'W': 4e-9}
+    event.op=SimpleNamespace(W=4e-9)
+    event.pair=(0,1)
+    event.metrics=lambda state,q: {'r_n_m': 20e-9}
+    event.bind=lambda state: None
+    event.evaluator=lambda *state: None
+    event.relax=lambda state,q: None
+    state=tuple(np.zeros((2,2)) for _ in range(4))
+
+    event.run(state)
+    event.run(state, minimum_step_over_b=.000625)
+
+    assert captured == [
+        module.MANIFEST['event_minimum_increment_fraction_b'], .000625]
+
+
 def test_event_zero_and_midpoint_restart_exactly_once():
     from pf_sintering.production_mass_transfer_event import current_state_mass_transfer_event
     from pf_sintering.model_time_transport import ModelTimeGBTransport

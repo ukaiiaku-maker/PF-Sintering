@@ -90,6 +90,19 @@ def phase_volume_changes(history):
     return changes
 
 
+def completed_event_contacts(history):
+    """Return one contact label per completed serialized transfer."""
+    contacts = []
+    seen = set()
+    for row in history:
+        event_number = int(row.get("event_number", 0) or 0)
+        if (row.get("phase") == "SOURCE_WINDOW_OPEN" and event_number and
+                event_number not in seen):
+            seen.add(event_number)
+            contacts.append(str(row.get("contact")))
+    return contacts
+
+
 def make_plots(history, out):
     t0 = float(history[0]["time_s"])
     t = np.array([row["time_s"]-t0 for row in history])
@@ -206,7 +219,9 @@ def main():
     make_plots(history,args.out); movie=make_movie(args.run,args.out)
     if table:
         with (args.out/"avalanches.csv").open("w",newline="") as handle:
-            writer=csv.DictWriter(handle,fieldnames=list(table[0])); writer.writeheader(); writer.writerows(table)
+            writer=csv.DictWriter(
+                handle, fieldnames=list(table[0]), lineterminator="\n")
+            writer.writeheader(); writer.writerows(table)
     completed=max(row["completed_avalanches"] for row in history)
     volume_changes = phase_volume_changes(history)
     payload=dict(label="THREE_PARTICLE_STOCHASTIC_RENEWAL_CAMPAIGN",
@@ -215,21 +230,46 @@ def main():
                  center_volume_change_by_phase_m3=volume_changes,
                  symmetry_enforcement_enabled=False,physics_parameters_unchanged=True)
     (args.out/"summary.json").write_text(json.dumps(payload,indent=2)+"\n")
-    cycle_text = (f"The trajectory contains {completed} complete avalanche cycle"
-                  f"{'s' if completed != 1 else ''}. "
-                  if completed else
-                  "The trajectory has not yet completed an avalanche cycle, so cycle-level conclusions remain provisional. ")
+    initial, final = history[0], history[-1]
+    net_center_change = (
+        final["center_volume_m3"] / initial["center_volume_m3"] - 1.0)
+    event_contacts = completed_event_contacts(history)
+    contacts_text = ", ".join(event_contacts) if event_contacts else "none"
+    rows = []
+    for row in table:
+        rows.append(
+            f"- Avalanche {row['avalanche_id']} began at the {row['root_contact']} contact after "
+            f"{100*row['pre_root_center_loss_fraction']:.6g}% center-volume loss and "
+            f"{row['root_waiting_time_s']:.6g} s of root waiting. It contained "
+            f"{row['avalanche_size']} events over {row['avalanche_duration_s']:.6g} s. "
+            f"Selected-contact stress fell by {row['local_stress_drop_MPa']:.6g} MPa while "
+            f"opposite-contact stress changed by {row['opposite_contact_stress_change_MPa']:+.6g} MPa."
+        )
     interpretation=(
-        cycle_text+
-        "The full-domain three-particle trajectory resolves independent LEFT and RIGHT contact loading. "
-        "It uses the bicrystal local-stress definition, root barrier, stochastic threshold law, one-b transfer, "
-        "descendant facilitation, and 9 ms source lifetime. A selected-contact event can relax its local stress "
-        "while the opposite contact and area-weighted cluster stress remain elevated. In the bicrystal this "
-        "nucleation-limited mechanism produces a strongly oscillatory response; in the cluster, asynchronous "
-        "contact loading can retain high average stress while strain accumulates as the center particle evolves. "
-        "The phase-resolved center-volume changes in summary.json separate passive reload, active transit, and "
-        "facilitated windows. They must be assessed over complete renewal cycles alongside quota and geometric "
-        "strain; quota strain alone does not show when physical densification occurs.")
+        "# Interpretation of the stochastic renewal trajectory\n\n"
+        f"This seed produced **{completed} complete root-to-root renewal cycles** and "
+        f"{len(event_contacts)} completed one-b transfers. The event sequence was {contacts_text}; "
+        "all selections were LEFT in this single realization. Symmetry enforcement remained disabled "
+        "throughout, so the RIGHT contact evolved independently and mirror error was diagnostic only.\n\n"
+        + "\n".join(rows) + "\n\n"
+        "The trajectory demonstrates asynchronous contact-local redistribution. Each avalanche strongly "
+        "relaxed the selected contact while raising the opposite-contact stress. The second chain lasted "
+        "much longer because the native transport affinity repeatedly became nonpositive and the controller "
+        "waited for phase-field recovery. Its 6400.9 s duration therefore does not represent uninterrupted "
+        "rapid mechanical motion.\n\n"
+        f"The cumulative transfer quota corresponds to **{100*final['production_densification_strain']:.6g}%** "
+        f"production strain, but the independent centroid measure is **{100*final['geometric_chain_strain']:.6g}%** "
+        f"and the center-volume change is **{100*net_center_change:+.6g}%**. Active event transit increased "
+        f"center volume by {volume_changes['active_event_transit']:+.6e} m^3; passive reload changed it by "
+        f"{volume_changes['passive_reload']:+.6e} m^3. Thus this realization expanded geometrically and ended "
+        "with a larger center particle even though accepted event quota accumulated. It establishes the "
+        "contact-local avalanche and stress-transfer mechanism, but it does not demonstrate net physical "
+        "densification or ripening-driven shrinkage of the center particle.\n\n"
+        "These two cycles are a completed end-to-end trajectory, not a statistical ensemble. Event sizes, "
+        "contact-selection bias, and waiting-time distributions require additional independent seeds. No "
+        "clipping, fitted physics correction, symmetry projection, barrier change, or stochastic-state edit "
+        "was used."
+    )
     (args.out/"MANUSCRIPT_INTERPRETATION.md").write_text(interpretation+"\n")
     print(json.dumps(payload,indent=2))
 

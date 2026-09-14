@@ -1,6 +1,7 @@
 import pytest
 
-from scripts.three_particle_campaign_report import phase_volume_changes
+from scripts.three_particle_campaign_report import (
+    completed_event_contacts, phase_volume_changes)
 
 
 def test_center_volume_changes_are_separated_by_physical_phase():
@@ -22,3 +23,15 @@ def test_center_volume_changes_are_separated_by_physical_phase():
     assert changes["active_event_transit"] == pytest.approx(0.4)
     assert changes["facilitated_source_window"] == pytest.approx(-0.6)
     assert sum(changes.values()) == pytest.approx(-1.7)
+
+
+def test_completed_transfers_are_counted_once_at_source_window_entry():
+    history = [
+        {"phase": "ACTIVE_ONE_B", "event_number": 1, "contact": "LEFT"},
+        {"phase": "SOURCE_WINDOW_OPEN", "event_number": 1, "contact": "LEFT"},
+        {"phase": "SOURCE_WINDOW_OPEN", "event_number": 1, "contact": "LEFT"},
+        {"phase": "ACTIVE_ONE_B", "event_number": 2, "contact": "RIGHT"},
+        {"phase": "SOURCE_WINDOW_OPEN", "event_number": 2, "contact": "RIGHT"},
+    ]
+
+    assert completed_event_contacts(history) == ["LEFT", "RIGHT"]
