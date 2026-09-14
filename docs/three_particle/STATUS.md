@@ -1,5 +1,27 @@
 # Three-particle ripening development
 
+## Sharp-interface loading design — 2026-09-14
+
+New long PF and stochastic simulations are stopped pending geometry review. A
+14,400-member sharp-interface particle-plus-neck screen now maps the unchanged
+bicrystal production stress and root law through 0–20% no-sink center-volume
+loss. It varies outer size, center size ratio, fixed GB separation, initial TJ
+radius, contact angle, and local meridional curvature. No PF field was evolved,
+no stochastic threshold was drawn, and no barrier or rate parameter changed.
+
+The screen finds useful stress-loading reserve, but it does not find a resolved
+geometry that moves from the requested 10–30 s initial characteristic clock
+into the proposed 0.5–3 s band. The shrinking TJ also reduces the unchanged
+site count. At the conservative `rTJ=6W=24 nm` limit, even the favorable
+zero-curvature, 180-degree bound gives 125 MPa and a 6.43 s two-contact clock.
+Five geometries spanning the Pareto tradeoffs are retained for discussion; none
+is automatically promoted to a diffuse-field initial condition.
+
+See the [analytical design report](sharp_interface_loading_design/REPORT.md),
+[loading curves](sharp_interface_loading_design/candidate_loading_curves.pdf),
+[Pareto map](sharp_interface_loading_design/pareto_loading_map.pdf), and
+[resolved kinetic bound](sharp_interface_loading_design/resolved_kinetic_bound.pdf).
+
 ## Refined shared-physics objective
 
 The PF stationary-null study is preserved validation and **no longer gates Phase B**.
