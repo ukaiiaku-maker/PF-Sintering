@@ -11,6 +11,12 @@ state edit was applied.
 
 The current result is documented under
 [`campaign_seed20260910`](campaign_seed20260910/MANUSCRIPT_INTERPRETATION.md).
+The subsequent immutable-field forensic audit is in
+[`forensic_seed20260910`](forensic_seed20260910/REPORT.md). It concludes that
+the unusual two-lobe/center-slab morphology is already present at the production
+source and that accepted one-b quota does not represent measured axial
+densification in this realization. Its recommendation is to revise both the
+starting geometry and three-particle event kinematics before another seed.
 The sections below preserve the qualification record that preceded the campaign;
 their contemporaneous `DISABLED` and `NOT QUALIFIED` labels describe those
 earlier checkpoints rather than the final campaign status.

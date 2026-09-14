@@ -1,0 +1,240 @@
+{
+  "label": "IMMUTABLE_THREE_PARTICLE_FORENSIC_AUDIT",
+  "records": 5511,
+  "retained_frames": 616,
+  "completed_events": 13,
+  "completed_avalanches": 2,
+  "stress_decomposition_max_abs_residual_Pa": 7.450580596923828e-09,
+  "event9_metrology": {
+    "legacy_change_MPa": 1.0962394099565482,
+    "corrected_change_MPa": 0.047448098666071886,
+    "unchanged_limit_MPa": 0.1,
+    "physical_change": false
+  },
+  "avalanche_time_decomposition": {
+    "1": {
+      "accepted_transfer_clock_s": 252.52099608255543,
+      "fixed_q_recovery_s": 0.07789971584816158,
+      "source_window_s": 0.01380158478082194,
+      "other_s": 0.0,
+      "duration_s": 252.6126973831844
+    },
+    "2": {
+      "accepted_transfer_clock_s": 6400.396182670686,
+      "fixed_q_recovery_s": 0.4818097425305723,
+      "source_window_s": 0.026901167851519858,
+      "other_s": 0.0,
+      "duration_s": 6400.904893581068
+    }
+  },
+  "pause_plateaus": 1333,
+  "phase_changes": {
+    "POST_TRANSIENT_NEW_TRAJECTORY": {
+      "duration_s": 0.0,
+      "delta_V_left_m3": 0.0,
+      "delta_V_center_m3": 0.0,
+      "delta_V_right_m3": 0.0,
+      "delta_centroid_strain": 0.0,
+      "delta_energy_J": 0.0
+    },
+    "RELOAD": {
+      "duration_s": 20.00000000000449,
+      "delta_V_left_m3": 2.3195592176429757e-24,
+      "delta_V_center_m3": -1.430520071552482e-23,
+      "delta_V_right_m3": 1.1985641497862283e-23,
+      "delta_centroid_strain": -0.0006338259336589047,
+      "delta_energy_J": -3.3893145039874637e-15
+    },
+    "ROOT_CROSSING": {
+      "duration_s": 0.039944458007767025,
+      "delta_V_left_m3": 7.794912605554662e-28,
+      "delta_V_center_m3": -2.756316199416582e-27,
+      "delta_V_right_m3": 1.976824940741907e-27,
+      "delta_centroid_strain": -6.716249190130696e-07,
+      "delta_energy_J": -6.2984660777682e-20
+    },
+    "ACTIVE_ONE_B": {
+      "duration_s": 853.1570645431915,
+      "delta_V_left_m3": -4.242173236614875e-24,
+      "delta_V_center_m3": 1.1039459999478835e-23,
+      "delta_V_right_m3": -6.797286760427207e-24,
+      "delta_centroid_strain": 0.0005198251957226896,
+      "delta_energy_J": 1.1757087187166974e-14
+    },
+    "ONE_B_COMPLETE": {
+      "duration_s": 0.0,
+      "delta_V_left_m3": 0.0,
+      "delta_V_center_m3": 0.0,
+      "delta_V_right_m3": 0.0,
+      "delta_centroid_strain": 0.0,
+      "delta_energy_J": 0.0
+    },
+    "SOURCE_WINDOW_OPEN": {
+      "duration_s": 0.0,
+      "delta_V_left_m3": 0.0,
+      "delta_V_center_m3": 0.0,
+      "delta_V_right_m3": 0.0,
+      "delta_centroid_strain": 0.0,
+      "delta_energy_J": 0.0
+    },
+    "CHILD_CROSSING": {
+      "duration_s": 0.0012803307702142774,
+      "delta_V_left_m3": 8.668361873612258e-28,
+      "delta_V_center_m3": 3.2847287924610437e-26,
+      "delta_V_right_m3": -3.371412411422861e-26,
+      "delta_centroid_strain": -3.400074152226651e-06,
+      "delta_energy_J": -2.507786881981872e-17
+    },
+    "FACILITATED_WINDOW": {
+      "duration_s": 0.03942242186212752,
+      "delta_V_left_m3": 3.2156771665616055e-26,
+      "delta_V_center_m3": 6.457964304228366e-25,
+      "delta_V_right_m3": -6.779532020899573e-25,
+      "delta_centroid_strain": -8.059665573445507e-05,
+      "delta_energy_J": -6.274376166578143e-16
+    },
+    "EVENT_TRANSPORT_PAUSED": {
+      "duration_s": 5799.760114210049,
+      "delta_V_left_m3": -1.2320370478963276e-24,
+      "delta_V_center_m3": 1.2912536588506583e-24,
+      "delta_V_right_m3": -5.921661092875187e-26,
+      "delta_centroid_strain": 0.0002585978360452046,
+      "delta_energy_J": 5.116553064674089e-15
+    },
+    "EVENT_TRANSPORT_RECOVERY": {
+      "duration_s": 0.5597094583787339,
+      "delta_V_left_m3": 5.3830677920041435e-25,
+      "delta_V_center_m3": 6.013413124160823e-24,
+      "delta_V_right_m3": -6.551719903474837e-24,
+      "delta_centroid_strain": -0.000898476665936232,
+      "delta_energy_J": -6.900820500550626e-15
+    },
+    "AVALANCHE_EXTINCT_REPINNED": {
+      "duration_s": 0.0,
+      "delta_V_left_m3": 0.0,
+      "delta_V_center_m3": 0.0,
+      "delta_V_right_m3": 0.0,
+      "delta_centroid_strain": 0.0,
+      "delta_energy_J": 0.0
+    }
+  },
+  "initial": {
+    "center_equivalent_radius_nm": 77.49364989594162,
+    "center_span_nm": 32.79998848058578,
+    "left_TJ_radius_nm": 136.86070706822665,
+    "right_TJ_radius_nm": 136.86070923187862,
+    "TJ_to_center_equivalent_radius_ratio": 1.7660893290460449,
+    "center_envelope_aspect_ratio": 8.397641914710366
+  },
+  "final": {
+    "center_volume_change_fraction": 0.0024186752314958593,
+    "centroid_strain": -0.0008385479226329373,
+    "quota_strain": 0.020202698062375162,
+    "extent_strain": -0.00011440233237469677,
+    "mirror_error": 0.33459037748805726
+  },
+  "event_mass_flow": {
+    "delta_V_left_m3": -4.935903505310788e-24,
+    "delta_V_center_m3": 1.8344126782490316e-23,
+    "delta_V_right_m3": -1.3408223274830796e-23
+  },
+  "first_strong_morphology_departure": null,
+  "maximum_morphology_departure": {
+    "frame": 615,
+    "time_s": 6979.3265356231905,
+    "phase": "FACILITATED_WINDOW",
+    "avalanche_id": 2,
+    "event_number": 13,
+    "q_over_b": 0.0,
+    "active_contact": "LEFT",
+    "V_left_m3": 7.267956556111964e-21,
+    "V_center_m3": 1.9540519579180234e-21,
+    "V_right_m3": 7.268406798259939e-21,
+    "R_left_m": 1.2016405381464796e-07,
+    "R_center_m": 7.755607691659806e-08,
+    "R_right_m": 1.2016653510835198e-07,
+    "V_center_over_source": 1.0024186752314894,
+    "centroid_left_m": -8.046050622074559e-08,
+    "centroid_center_m": -1.5964077490251368e-10,
+    "centroid_right_m": 8.05439928172481e-08,
+    "outer_centroid_separation_m": 1.610044990379937e-07,
+    "GB_LEFT_m": -1.639999424029289e-08,
+    "GB_RIGHT_m": 1.6048908261992615e-08,
+    "center_span_m": 3.2448902502285505e-08,
+    "near_axis_low_m": -1.8082112699769995e-07,
+    "near_axis_high_m": 1.8081927299589214e-07,
+    "near_axis_extent_m": 3.6164039999359206e-07,
+    "near_axis_extent_strain": -0.00011440233237469677,
+    "center_max_radius_m": 1.39705992465881e-07,
+    "center_envelope_aspect_ratio": 8.610830055410407,
+    "center_second_moment_aspect_ratio": 7.291912262623993,
+    "surface_area_proxy_m2": 3.1860138539121316e-13,
+    "LEFT_stress_Pa": -126582.26507556997,
+    "RIGHT_stress_Pa": 25061427.767223664,
+    "quota_strain": 0.020202698062375162,
+    "centroid_strain": -0.0008385479226329373,
+    "mirror_error": 0.33459037748805726,
+    "left_outer_curvature_rms": 7070181.354400335,
+    "left_outer_curvature_p95": 8884344.383044112,
+    "left_outer_curvature_grad_max": 2958227581111667.5,
+    "left_outer_curvature_grad_z": -3.4042412286668574e-08,
+    "left_outer_curvature_kappa_max": 9342055.37407583,
+    "left_outer_curvature_kappa_z": -7.926663882808231e-08,
+    "center_curvature_rms": 6225701.26023446,
+    "center_curvature_p95": 9854151.347574178,
+    "center_curvature_grad_max": 4696053067989785.0,
+    "center_curvature_grad_z": -1.2424238060827948e-09,
+    "center_curvature_kappa_max": 9889308.392345827,
+    "center_curvature_kappa_z": -2.7333323733821485e-09,
+    "right_outer_curvature_rms": 7652779.343708247,
+    "right_outer_curvature_p95": 8953024.119638687,
+    "right_outer_curvature_grad_max": 1777230890673738.0,
+    "right_outer_curvature_grad_z": 1.79157512837139e-07,
+    "right_outer_curvature_kappa_max": 9987319.008977383,
+    "right_outer_curvature_kappa_z": 3.20545341969361e-08,
+    "LEFT_TJ_radius_m": 1.3942869550724746e-07,
+    "LEFT_TJ_z_m": -1.639999424029289e-08,
+    "RIGHT_TJ_radius_m": 1.3581977809857094e-07,
+    "RIGHT_TJ_z_m": 1.6048908261992615e-08,
+    "morphology_departure_max_fraction": 0.025386667217447423
+  },
+  "movie_frames": 133,
+  "montage_states": [
+    "production source",
+    "pre avalanche 1",
+    "after avalanche 1",
+    "pre avalanche 2",
+    "avalanche 2 pause early",
+    "avalanche 2 pause middle",
+    "avalanche 2 pause late",
+    "after avalanche 2",
+    "final"
+  ],
+  "source_fast_relaxation_separation": "Retained event checkpoints store the pre-event and accepted post-relaxation fields. They do not store the intermediate field immediately after source application, so direct source and fast-PF-relaxation volume changes are not separately identifiable post hoc.",
+  "all_left_semantics": "Two root choices were competitions between independent LEFT and RIGHT clocks. Eleven descendants were serialized onto the root-selected LEFT source by construction; RIGHT was mechanically evaluated but not an eligible descendant site.",
+  "recommendation": 4,
+  "recommendation_text": "Both initial geometry and event mechanics need revision before another seed.",
+  "no_evolution": true,
+  "no_interpolation": true,
+  "no_symmetry_projection": true,
+  "source_hashes": {
+    "runs/three_particle_production_065/stochastic_seed20260910/history.json": "58b5f541d3207a1402ceee9da4517210c67009f5fb2770454cb9426b683f5f5c",
+    "runs/three_particle_production_065/stochastic_seed20260910/launch.json": "af2b451496eb15a4941cd705d1a45ef3bc6d15aeae0e78d7d9158150562c3b3f",
+    "runs/three_particle_production_065/stochastic_seed20260910/frames/index.json": "da1ac98b7c5c1e300fb0511cd6dee315fc8d00c1ad312ecfd50d043a20993c12",
+    "runs/three_particle_production_065/production_initial_2pct.npz": "4791a5ea82767a3111be7f110d9d768cecfadab135608d90626c5c7723a2759a",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_10_final.npz": "3a5f5d5e4eb9eafd6e8de0d0d0543449e4a2060efe85b1e705d2f28399cbd791",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_11_final.npz": "eb36dbf8d38d25dfc91dc9574b9c8467c9e1298ad25c56468f653d05d8b32f89",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_12_final.npz": "148fbebe24f56a0eb09e876f391c44b9f4211590865780a637e370a9111fa4aa",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_13_final.npz": "60565f53420afe6ba081af4052536291a2c7d99cd4d333b10e6d51e4c34f6359",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_1_final.npz": "277cebf6e9b6624b9f0c5c21d8700d9d8c312233014a0982959afcda27551d85",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_2_final.npz": "1f28488531665e1f49a16498f66c83e86fb36e3b7e749dd39c8dbee6b31d4d02",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_3_final.npz": "83deade8ea7999a3621926171ba18b672a56e221c31ca32a2adcac4773ccb1c8",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_4_final.npz": "6d846b07e95205a246ddd42820bc9e369ef8120f7343f82b16b8ea06292abf22",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_5_final.npz": "d80a82b0a5373bc886a809afa4f1551f3bf5cbccb227a68d986360718b6c3508",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_6_final.npz": "b878ac02a529f8e12153c67d7e2044a66d8b86c2175a6bdc20f6f7bdee7a30d0",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_7_final.npz": "e13859a459136e95c04e3ec644221e0182223a47b6c5d8f5dbc583100c310737",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_8_final.npz": "8a674fcd0e94705ce6ad27090aef4312b0a34402fccf0773a5c8e8b9c43deb9b",
+    "runs/three_particle_production_065/stochastic_seed20260910/event_9_final.npz": "fbd79445c862ad2154cd1e3da27874041782de724f41403505841ae049443004"
+  },
+  "git_head": "f3ec1bbd104f98e9db39549919253cc008f8de78"
+}
