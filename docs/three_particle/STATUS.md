@@ -1,5 +1,30 @@
 # Three-particle ripening development
 
+## Bicrystal–cluster regime comparison — 2026-09-14
+
+Deterministic postprocessing now compares all ten thermodynamic cluster paths
+with the two completed bicrystal renewal cycles using the shared root law. The
+bicrystal coordinate is fractional contact-area loss,
+`1-(r_neck/r_neck_post)^2`; cycle 3 remains right-censored.
+
+The cluster paths reach median nucleation with only 0.004–0.043 MPa additional
+stress and root-rate amplification 0.999395–1.000076. Delaying the median root
+to 1% center loss would require 2.82–29.54 times the surface mobility, or the
+equivalent 64.5–96.6% effective-site reduction / 0.163–0.534 eV barrier
+increase. At 10% loss those sensitivities rise to 33.9–374.6 times mobility,
+97.1–99.7% site reduction, or 0.556–0.935 eV.
+
+The bicrystal retains observable load/relax morphology cycles, but its two
+completed loading intervals change the root rate by factors 0.957 and 1.028.
+Thus the shared unchanged microscopic kinetics support a robust cluster regime
+of stochastic nucleation before appreciable additional loading, while they do
+not support the stronger description of bicrystal roots as strongly
+stress-loading-triggered. No production parameter changed and no PF was run.
+
+See the [regime comparison report](regime_comparison/REPORT.md),
+[common regime map](regime_comparison/bicrystal_cluster_regime_map.pdf), and
+[mobility/root sensitivity table](regime_comparison/mobility_and_root_sensitivity.csv).
+
 ## Ripening-versus-nucleation analytical design — 2026-09-14
 
 The sharp-interface family now includes signed meridional curvature, full
