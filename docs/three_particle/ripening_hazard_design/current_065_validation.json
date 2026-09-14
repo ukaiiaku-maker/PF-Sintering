@@ -1,0 +1,13 @@
+{
+  "source_start_time_s": 0.40326698939761035,
+  "source_end_time_s": 30.0,
+  "observed_loss_relative_to_post_transient": 0.008701353599120831,
+  "observed_elapsed_s": 29.59673301060239,
+  "predicted_elapsed_s": 31.671622907359982,
+  "predicted_over_observed": 1.0701053692653952,
+  "observed_mean_xdot_per_s": 0.00029399709745003816,
+  "predicted_initial_xdot_per_s": 0.0002766384749533954,
+  "baseline_center_loss_at_post_transient": 0.0011651923182397494,
+  "read_only_existing_fields": true,
+  "mobility_fit_performed": false
+}

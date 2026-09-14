@@ -1,5 +1,26 @@
 # Three-particle ripening development
 
+## Ripening-versus-nucleation analytical design — 2026-09-14
+
+The sharp-interface family now includes signed meridional curvature, full
+surface-plus-GB energy, an Onsager surface-diffusion projection using the
+unchanged PF mobility, and the integrated two-contact root survival law. The
+reduced clock predicts the existing 0.65 post-transient loading interval within
+7.0% without fitting mobility, stress, or nucleation parameters.
+
+Only 10 of 14,400 signed-curvature designs are geometrically resolved and
+thermodynamically driven to shrink through the complete 0–20% interval. Median
+first-root loss is only 0.034–0.358%; stress and root rate consequently change
+negligibly before nucleation. Seven accepted paths are concave, but concavity
+raises initial stress rather than producing substantial pre-root amplification.
+The two requested balanced convex examples fail because their prescribed center
+shrinkage raises sharp-interface energy. No candidate is promoted to PF.
+
+See the [ripening-hazard report](ripening_hazard_design/REPORT.md),
+[first-root distributions](ripening_hazard_design/nucleation_distribution_and_stress.pdf),
+[hazard decomposition](ripening_hazard_design/hazard_amplification_decomposition.pdf),
+and [mobility validation](ripening_hazard_design/current_065_mobility_validation.pdf).
+
 ## Sharp-interface loading design — 2026-09-14
 
 New long PF and stochastic simulations are stopped pending geometry review. A

@@ -1,0 +1,3 @@
+requested_balance,matched_design_id,sigma0_MPa,sigma20_MPa,rTJ20_over_W,thermodynamically_favorable_through_20pct,maximum_dF_dx_fJ,disposition
+"approximately 18 to 45 MPa, r20/W>12",Ro150_q0.85_L10W_r1.00_th170_k0.75,17.998698778629304,45.255929140308226,12.345134416036135,False,399.0481513221542,reject: prescribed center shrink raises sharp-interface free energy
+"approximately 24 to 55 MPa, r20/W>10",Ro150_q0.65_L8W_r1.00_th170_k0.75,24.305990710515246,54.950313492428776,10.554684608622841,False,210.50986671821,reject: prescribed center shrink raises sharp-interface free energy

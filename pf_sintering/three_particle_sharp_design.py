@@ -259,3 +259,111 @@ def inverse_target_radius(target_stress_pa: float, mean_curvature_per_m: float,
     if denominator <= 0.0:
         raise ValueError("target and curvature give a non-positive denominator")
     return 1.5*gamma_s*sine_sum/denominator
+
+
+def half_chain_profile(design: SharpDesign, x: float,
+                       points_per_branch: int = 801) -> dict[str, np.ndarray]:
+    """Return center-midplane -> right TJ -> outer-tip meridional profiles."""
+    if points_per_branch < 21:
+        raise ValueError("at least 21 points per branch are required")
+    u=np.linspace(0.0,1.0,points_per_branch)
+    center_coeff=center_squared_radius_coefficients(design).copy()
+    center_coeff[0]-=x*design.Vc0_m3/(math.pi*design.Lc_m)
+    center_r=np.sqrt(np.maximum(0.0,evaluate_even_squared_radius(center_coeff,u)))
+    center_z=0.5*design.Lc_m*u
+    outer_coeff,length=outer_squared_radius_coefficients(design,x)
+    outer_r=np.sqrt(np.maximum(0.0,evaluate_polynomial(outer_coeff,u)))
+    outer_z=0.5*design.Lc_m+length*u
+    return {"center_parameter":u,"center_z_m":center_z,"center_r_m":center_r,
+            "outer_parameter":u,"outer_z_m":outer_z,"outer_r_m":outer_r}
+
+
+def _surface_area(z: np.ndarray, r: np.ndarray) -> float:
+    ds=np.hypot(np.diff(z),np.diff(r))
+    return float(2.0*math.pi*np.sum(0.5*(r[:-1]+r[1:])*ds))
+
+
+def sharp_free_energy(design: SharpDesign, x: float, gamma_gb: float,
+                      points_per_branch: int = 801) -> dict[str, float]:
+    """Surface plus two fixed-plane GB disks for the full symmetric chain."""
+    p=half_chain_profile(design,x,points_per_branch)
+    area_center=2.0*_surface_area(p["center_z_m"],p["center_r_m"])
+    area_outer=2.0*_surface_area(p["outer_z_m"],p["outer_r_m"])
+    r=contact_state(design,x)["r_TJ_m"]
+    area_gb=2.0*math.pi*r*r
+    return {"surface_area_m2":area_center+area_outer,"GB_area_m2":area_gb,
+            "surface_energy_J":design.gamma_s*(area_center+area_outer),
+            "GB_energy_J":gamma_gb*area_gb,
+            "free_energy_J":design.gamma_s*(area_center+area_outer)+gamma_gb*area_gb}
+
+
+def _branch_kinetic_terms(z: np.ndarray, r: np.ndarray,
+                          zm: np.ndarray, rm: np.ndarray,
+                          zp: np.ndarray, rp: np.ndarray, dx: float,
+                          Q_start_m3: float, mobility_m6_per_J_s: float
+                          ) -> tuple[float,float,float]:
+    """Return friction, terminal r*j, and absolute-volume velocity scale."""
+    dzdu=np.gradient(z);drdu=np.gradient(r)
+    norm=np.hypot(dzdu,drdu)
+    # Either normal orientation is valid because the friction is quadratic;
+    # use the outward meridional normal for a z-increasing upper profile.
+    nz=-drdu/norm;nr=dzdu/norm
+    dzdx=(zp-zm)/(2.0*dx);drdx=(rp-rm)/(2.0*dx)
+    un=dzdx*nz+drdx*nr
+    ds=np.hypot(np.diff(z),np.diff(r))
+    integrand=r*un
+    increments=-0.5*(integrand[:-1]+integrand[1:])*ds
+    Q=np.r_[Q_start_m3,Q_start_m3+np.cumsum(increments)]
+    rmid=0.5*(r[:-1]+r[1:]);Qmid=0.5*(Q[:-1]+Q[1:])
+    flux=Qmid/rmid
+    friction=float(np.sum(2.0*math.pi*rmid*flux*flux*ds/mobility_m6_per_J_s))
+    volume_scale=float(np.sum(2.0*math.pi*0.5*(integrand[:-1]+integrand[1:])*ds))
+    return friction,float(Q[-1]),volume_scale
+
+
+def surface_diffusion_projection(
+        design: SharpDesign, x: float, *, gamma_gb: float,
+        mobility_m6_per_J_s: float, derivative_step: float = 1e-5,
+        points_per_branch: int = 801) -> dict[str, float]:
+    """Onsager projection for the single no-sink loading coordinate ``x``.
+
+    ``mobility_m6_per_J_s`` is the PF sharp-surface volume mobility.  In the
+    atomic-flux notation it equals ``Omega**2*M_atom``; the explicit atomic
+    volume therefore cancels from the generalized friction.
+    """
+    if mobility_m6_per_J_s <= 0.0:
+        raise ValueError("surface mobility must be positive")
+    h=min(derivative_step,0.49*x if x>0 else derivative_step,
+          0.49*(1.0-x))
+    if x-h < 0.0:
+        x0,x1,x_eval=x,x+2*h,x+h
+        # Evaluate the kinetic metric at the midpoint and report it at x=0;
+        # this is a second-order one-sided estimate.
+    else:
+        x0,x1,x_eval=x-h,x+h,x
+    base=half_chain_profile(design,x_eval,points_per_branch)
+    minus=half_chain_profile(design,x0,points_per_branch)
+    plus=half_chain_profile(design,x1,points_per_branch)
+    span=x1-x0
+    fc,Q,vc=_branch_kinetic_terms(
+        base["center_z_m"],base["center_r_m"],
+        minus["center_z_m"],minus["center_r_m"],plus["center_z_m"],plus["center_r_m"],
+        0.5*span,0.0,mobility_m6_per_J_s)
+    fo,Qend,vo=_branch_kinetic_terms(
+        base["outer_z_m"],base["outer_r_m"],
+        minus["outer_z_m"],minus["outer_r_m"],plus["outer_z_m"],plus["outer_r_m"],
+        0.5*span,Q,mobility_m6_per_J_s)
+    em=sharp_free_energy(design,x0,gamma_gb,points_per_branch)["free_energy_J"]
+    ep=sharp_free_energy(design,x1,gamma_gb,points_per_branch)["free_energy_J"]
+    dFdx=(ep-em)/span
+    friction=2.0*(fc+fo)
+    xdot=-dFdx/friction
+    volume_rate_residual=vc+vo
+    scale=max(abs(vc),abs(vo),design.Vc0_m3)
+    return {"x":x,"evaluation_x":x_eval,"free_energy_J":sharp_free_energy(
+        design,x,gamma_gb,points_per_branch)["free_energy_J"],
+        "dF_dx_J":dFdx,"minus_dF_dx_J":-dFdx,
+        "zeta_J_s":friction,"xdot_per_s":xdot,
+        "terminal_r_times_volume_flux_m3":Qend,
+        "half_chain_volume_rate_residual_m3":volume_rate_residual,
+        "relative_half_chain_closure":abs(volume_rate_residual)/scale}

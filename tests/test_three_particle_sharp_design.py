@@ -6,6 +6,7 @@ from pf_sintering.three_particle_sharp_design import (
     SharpDesign, admissibility, center_squared_radius_coefficients,
     contact_state, evaluate_even_squared_radius, evaluate_polynomial,
     inverse_target_radius, outer_squared_radius_coefficients,
+    sharp_free_energy, surface_diffusion_projection,
 )
 
 
@@ -65,3 +66,33 @@ def test_resolution_gate_rejects_contact_that_collapses_before_20_percent():
     a=admissibility(d)
     assert not a["admissible"]
     assert "topology" in a["reason"]
+
+
+def test_sharp_energy_is_exact_sum_of_surface_and_two_gb_terms():
+    d=example();gamma_gb=.34729635533386083
+    e=sharp_free_energy(d,.1,gamma_gb,801)
+    np.testing.assert_allclose(e["surface_energy_J"],d.gamma_s*e["surface_area_m2"])
+    np.testing.assert_allclose(e["GB_energy_J"],gamma_gb*e["GB_area_m2"])
+    np.testing.assert_allclose(e["free_energy_J"],e["surface_energy_J"]+e["GB_energy_J"])
+
+
+def test_surface_projection_obeys_mobility_scaling_and_flux_closure():
+    # A geometry on the thermodynamically favorable signed-curvature branch.
+    d=SharpDesign(100e-9,.65,8*4e-9,1.6,160.,160.,
+                  -10e6*(100e-9*.65),-10e6*100e-9)
+    kwargs=dict(gamma_gb=.34729635533386083,points_per_branch=801)
+    p=surface_diffusion_projection(d,.1,mobility_m6_per_J_s=4e-32,**kwargs)
+    q=surface_diffusion_projection(d,.1,mobility_m6_per_J_s=8e-32,**kwargs)
+    assert p["dF_dx_J"] < 0 and p["xdot_per_s"] > 0
+    assert p["relative_half_chain_closure"] < 3e-6
+    np.testing.assert_allclose(q["zeta_J_s"],.5*p["zeta_J_s"],rtol=1e-14)
+    np.testing.assert_allclose(q["xdot_per_s"],2*p["xdot_per_s"],rtol=1e-14)
+
+
+def test_projection_rejects_assumed_shrinkage_thermodynamically_by_sign():
+    # A resolved geometry from the old stress-only screen whose energy rises
+    # along the prescribed center-shrink path.
+    d=SharpDesign(120e-9,.65,48e-9,1.2,160.,160.,-3.,-3.)
+    p=surface_diffusion_projection(d,.1,gamma_gb=.34729635533386083,
+        mobility_m6_per_J_s=6e-34/.01557994316955921,points_per_branch=801)
+    assert p["dF_dx_J"] > 0 and p["xdot_per_s"] < 0
