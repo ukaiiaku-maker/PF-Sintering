@@ -1,0 +1,6 @@
+{
+  "process_exit_code": 0,
+  "runner_terminal_line": "TARGET_RENEWAL_CYCLES_COMPLETE 19.0491372167423 avalanches 2 wall 20313.362535124994",
+  "observed_wall_seconds": 20313.362535124994,
+  "terminal_status": "TARGET_RENEWAL_CYCLES_COMPLETE"
+}
