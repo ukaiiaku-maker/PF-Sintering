@@ -1,0 +1,32 @@
+{
+  "label": "C2_SAME_LINEAGE_CONTINUATION_FROM_POST_AVALANCHE_2",
+  "created_unix_time": 1789480537.3789551,
+  "seed": 20260915,
+  "resume_checkpoint": "runs/three_particle_c2_campaign/stochastic_seed20260915/restart_boundaries/post_avalanche_2_trajectory.npz",
+  "resume_checkpoint_sha256": "f124fe2f9f4113bbb72ef699fabee746992d9ecbed96573af6966e2e8a6ab6da",
+  "resume_time_s": 19.0491372167423,
+  "resume_event_number": 12,
+  "resume_completed_avalanches": 2,
+  "target_completed_avalanches": 6,
+  "continuation_maximum_wall_seconds": 22800.0,
+  "maximum_production_seconds_from_original_source": 1000000.0,
+  "branch": "exp/three-particle-ripening-v1",
+  "branch_head": "7e178f3e8be7cf872ee0316910cc115f1adb7d68",
+  "rng_reseeded": false,
+  "thresholds_redrawn": false,
+  "root_hazards_reset": false,
+  "controller_reconstructed_fresh": false,
+  "physics_changed": false,
+  "immutable_event_checkpoints": [
+    "start",
+    "first accepted q>=0.25b",
+    "first accepted q>=0.50b",
+    "first accepted q>=0.75b",
+    "q=1.00b"
+  ],
+  "immutable_lineage_checkpoints": [
+    "root crossing",
+    "child crossing",
+    "avalanche extinction and post-extinction reload source"
+  ]
+}

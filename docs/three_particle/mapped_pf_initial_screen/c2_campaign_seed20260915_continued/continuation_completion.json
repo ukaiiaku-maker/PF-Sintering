@@ -1,0 +1,13 @@
+{
+  "terminal_status": "MAXIMUM_WALL_TIME_REACHED",
+  "runner_terminal_line": "MAXIMUM_WALL_TIME_REACHED 296.1930162533673 avalanches 3 wall 22808.410661375034",
+  "continuation_wall_seconds": 22808.410661375034,
+  "final_physical_time_s": 296.1930162533673,
+  "completed_avalanches": 3,
+  "completed_one_b_events": 24,
+  "active_partial_event": 25,
+  "active_partial_event_q_over_b": 0.39000000000000007,
+  "restart_audit_passed": true,
+  "restart_checkpoint_sha256": "f3d38d4450b44449618ed27eb0e34194684f96d343bd862fd72bcb72f582594a",
+  "target_six_feasible_within_wall_time": false
+}

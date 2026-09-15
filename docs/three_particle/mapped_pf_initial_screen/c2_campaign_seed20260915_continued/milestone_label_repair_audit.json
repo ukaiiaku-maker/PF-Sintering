@@ -1,0 +1,117 @@
+{
+  "label": "IMMUTABLE_EVENT_MILESTONE_PREMATURE_Q1_LABEL_REPAIR",
+  "cause": "q_1.00b milestone was written before checking a partial event return",
+  "code_fix": "write q_1.00b only after completed=True",
+  "repairs": [
+    {
+      "event_number": 17,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_17/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_17/partial_attempt_q_0.04500000b.npz",
+      "preserved_partial_actual_q_over_b": 0.045,
+      "preserved_partial_sha256_before": "8d0f010a7e09d49004b618902f1c0a84778595ff333037a5651945579b10e744",
+      "preserved_partial_sha256_after": "8d0f010a7e09d49004b618902f1c0a84778595ff333037a5651945579b10e744",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_17/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "0932f254c67c9129bde25eb3673662604df81324a64763362b5c4b32ae1dd14c"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 18,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_18/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_18/partial_attempt_q_0.01500000b.npz",
+      "preserved_partial_actual_q_over_b": 0.015,
+      "preserved_partial_sha256_before": "78bd564e37243abb4c1797e1d2875b0474c1ef717c4935cc7c6cb47a8dd634c7",
+      "preserved_partial_sha256_after": "78bd564e37243abb4c1797e1d2875b0474c1ef717c4935cc7c6cb47a8dd634c7",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_18/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "430d3dfc33b6e8a2d64cebbad699ebbf7173546646fcec51fbd51db5e930d6b2"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 19,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_19/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_19/partial_attempt_q_0.26000000b.npz",
+      "preserved_partial_actual_q_over_b": 0.2600000000000001,
+      "preserved_partial_sha256_before": "9c94d6f2de7ea0544667b0327053eca6035c905f1c25f092a0e665c2465e5e66",
+      "preserved_partial_sha256_after": "9c94d6f2de7ea0544667b0327053eca6035c905f1c25f092a0e665c2465e5e66",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_19/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "03af5a055a33701af5c54af83e6017eb8196375465a89974c559552edb1a2dc9"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 20,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_20/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_20/partial_attempt_q_0.74500000b.npz",
+      "preserved_partial_actual_q_over_b": 0.7450000000000006,
+      "preserved_partial_sha256_before": "6c4b5c38fd6daba3d4230c32585b794041fcb1947ac3e04c1b91a1710dc2e497",
+      "preserved_partial_sha256_after": "6c4b5c38fd6daba3d4230c32585b794041fcb1947ac3e04c1b91a1710dc2e497",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_20/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "fcbc91936b155b65a088a5b57fced8202a4a8094a1d539ccd8c90c614924aa83"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 23,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_23/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_23/partial_attempt_q_0.38500000b.npz",
+      "preserved_partial_actual_q_over_b": 0.38500000000000023,
+      "preserved_partial_sha256_before": "76f48e6662e5e7211801a9f050483f95347ef97ee4e8d38570c6320915f22d83",
+      "preserved_partial_sha256_after": "76f48e6662e5e7211801a9f050483f95347ef97ee4e8d38570c6320915f22d83",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_23/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "3c52088ce477cfd03559cded861183efd09be2e96bfd8a31a3e4cfb6e1e89eec"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 24,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_24/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_24/partial_attempt_q_0.10375000b.npz",
+      "preserved_partial_actual_q_over_b": 0.10375000000000002,
+      "preserved_partial_sha256_before": "b71edfdfa46b886911c6f97c369d13c1245dd59caa24cecb7fae213d8ea1c6b1",
+      "preserved_partial_sha256_after": "b71edfdfa46b886911c6f97c369d13c1245dd59caa24cecb7fae213d8ea1c6b1",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 1.0,
+      "correct_q1_replacement": {
+        "path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_24/q_1.00b.npz",
+        "actual_q_over_b": 1.0,
+        "sha256": "5db5f06a106bf2395fc33505dc666fe5356959b5ec719c81b18dd2fa5aef163e"
+      },
+      "trajectory_or_stochastic_state_modified": false
+    },
+    {
+      "event_number": 25,
+      "incorrect_name": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_25/q_1.00b.npz",
+      "preserved_partial_path": "runs/three_particle_c2_campaign/stochastic_seed20260915/milestones/event_25/partial_attempt_q_0.35000000b.npz",
+      "preserved_partial_actual_q_over_b": 0.3500000000000002,
+      "preserved_partial_sha256_before": "29a019b8cdbdbdc7fa632f4d5f470fdef9ece75c4fdd8258e60d4cc58ba2060b",
+      "preserved_partial_sha256_after": "29a019b8cdbdbdc7fa632f4d5f470fdef9ece75c4fdd8258e60d4cc58ba2060b",
+      "original_bytes_preserved_exactly": true,
+      "final_event_checkpoint_q_over_b": 0.39000000000000007,
+      "correct_q1_replacement": null,
+      "trajectory_or_stochastic_state_modified": false
+    }
+  ],
+  "all_original_bytes_preserved": true,
+  "physics_or_stochastic_state_modified": false
+}

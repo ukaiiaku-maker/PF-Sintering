@@ -1,0 +1,95 @@
+{
+  "label": "C2_EXACT_POST_AVALANCHE_2_RESTART_BOUNDARY_AUDIT",
+  "checkpoint": "runs/three_particle_c2_campaign/stochastic_seed20260915/trajectory.npz",
+  "immutable_copy": "runs/three_particle_c2_campaign/stochastic_seed20260915/restart_boundaries/post_avalanche_2_trajectory.npz",
+  "checkpoint_sha256": "f124fe2f9f4113bbb72ef699fabee746992d9ecbed96573af6966e2e8a6ab6da",
+  "immutable_copy_sha256": "f124fe2f9f4113bbb72ef699fabee746992d9ecbed96573af6966e2e8a6ab6da",
+  "time_s": 19.0491372167423,
+  "phase": "AVALANCHE_EXTINCT_REPINNED",
+  "event_number": 12,
+  "completed_avalanches": 2,
+  "root": {
+    "hazard": {
+      "LEFT": 0.0,
+      "RIGHT": 0.4254552107193726
+    },
+    "threshold": {
+      "LEFT": 0.10881188049003523,
+      "RIGHT": 1.7330091303185444
+    },
+    "active": null,
+    "avalanche_id": 2,
+    "multiplier": 1.25,
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 22723664477940983925324511708193600520,
+        "inc": 60911795267443719179671677694683379797
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    }
+  },
+  "avalanche": {
+    "avalanche_active": false,
+    "avalanche_id": 2,
+    "root_cycle": 2,
+    "child_number": 5,
+    "S_completed": 6,
+    "q_avalanche_over_b": 6.0,
+    "descendant_threshold": 1.5834630691655258,
+    "descendant_hazard": 1.0145823227065909,
+    "pending_children": 0,
+    "delta_G_step_eV": 1.5,
+    "source_amplitude": 0.16806999999999994,
+    "facilitation_decay_alpha": 0.7,
+    "avalanche_start_time_s": 9.160351719632551,
+    "last_child_completion_time_s": 19.0401372167423,
+    "window_start_time_s": 19.0401372167423,
+    "window_deadline_s": 19.0491372167423,
+    "window_triggered": false,
+    "descendant_total_hazard": 6.300933243381886,
+    "thresholds_drawn": [
+      2.0718641019623023,
+      0.16790125432267067,
+      1.091164647890998,
+      0.1196771866913143,
+      1.835743729808006,
+      1.5834630691655258
+    ]
+  },
+  "gb_positions_m": [
+    -9.075000000000002e-08,
+    9.075000000000002e-08
+  ],
+  "next_rng_exponential_diagnostic": 1.8408528216751445,
+  "checks": {
+    "boundary_byte_exact": true,
+    "all_pf_fields_finite": true,
+    "field_bounds_unchanged": true,
+    "ownership_closure": true,
+    "ownership_partition_matches_pf_fields": true,
+    "time_matches_requested": true,
+    "time_matches_history": true,
+    "phase_matches_history": true,
+    "root_hazards_match_history": true,
+    "root_thresholds_match_history": true,
+    "root_inactive": true,
+    "rng_roundtrip_next_draw_exact": true,
+    "descendant_hazard_matches_history": true,
+    "descendant_threshold_matches_history": true,
+    "source_amplitude_matches_history": true,
+    "controller_inactive": true,
+    "gb_positions_match_history_contacts": true,
+    "completed_avalanches_exact": true,
+    "event_number_exact": true,
+    "snapshot_f_exact": true,
+    "snapshot_ownership_exact": true,
+    "snapshot_gb_exact": true,
+    "snapshot_time_exact": true,
+    "snapshot_phase_exact": true,
+    "snapshot_event_number_exact": true,
+    "snapshot_completed_avalanches_exact": true
+  },
+  "passed": true
+}

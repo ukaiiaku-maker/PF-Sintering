@@ -833,9 +833,6 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     out/f"event_{event_number}_final.npz", state,
                     info["event_restart"], contact=contact,
                     label="GENUINE_STOCHASTIC_EVENT")
-                save_immutable_event_checkpoint(
-                    out/"milestones"/f"event_{event_number:02d}"/"q_1.00b.npz",
-                    state, info["event_restart"], contact=contact)
                 interrupted_phase = incomplete_event_phase(result[4], info)
                 if interrupted_phase is not None:
                     save_event_checkpoint(
@@ -845,6 +842,9 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                            event_progress_over_b(info["event_restart"]))
                     save()
                     continue
+                save_immutable_event_checkpoint(
+                    out/"milestones"/f"event_{event_number:02d}"/"q_1.00b.npz",
+                    state, info["event_restart"], contact=contact)
                 reference.bind(state)
                 record("ONE_B_COMPLETE", info["event_progress_over_b"])
                 snapshot(force=True)

@@ -1,0 +1,1495 @@
+{
+  "campaign_status": "MAXIMUM_WALL_TIME_REACHED",
+  "seed": 20260915,
+  "full_lineage_start_time_s": 0.0,
+  "full_lineage_end_time_s": 296.1930162533673,
+  "completed_avalanches": 3,
+  "completed_events": 24,
+  "baseline_cycles_1_2": {
+    "cycles": [
+      1,
+      2
+    ],
+    "root_stress_MPa": [
+      53.795958676605494,
+      55.799299954314066
+    ],
+    "mean_root_stress_MPa": 54.79762931545978,
+    "avalanche_sizes": [
+      6,
+      6
+    ],
+    "mean_avalanche_size": 6.0,
+    "center_loss_at_root_fraction": [
+      0.008401550352926668,
+      0.019443389947971568
+    ],
+    "minimum_transport_affinity_MPa": [
+      0.7069613951919973,
+      0.0010364849673360585
+    ],
+    "transport_pause_count": 5,
+    "barrier_minus_site_delta_ln_Gamma": [
+      0.22266920659296632,
+      0.2525811025659378
+    ]
+  },
+  "later_cycles": {
+    "cycles": [
+      3
+    ],
+    "root_stress_MPa": [
+      55.20941185974503
+    ],
+    "mean_root_stress_MPa": 55.20941185974503,
+    "avalanche_sizes": [
+      8
+    ],
+    "mean_avalanche_size": 8.0,
+    "center_loss_at_root_fraction": [
+      0.02189959162933075
+    ],
+    "minimum_transport_affinity_MPa": [
+      1.8657939180731772e-05
+    ],
+    "transport_pause_count": 72,
+    "barrier_minus_site_delta_ln_Gamma": [
+      0.2406232954219449
+    ]
+  },
+  "incomplete_wall_limited_avalanche": {
+    "avalanche_id": 4,
+    "root_contact": "LEFT",
+    "root_time_s": 224.00349237419744,
+    "root_selected_stress_MPa": 57.54659761660532,
+    "root_opposite_stress_MPa": 57.536692521200735,
+    "root_center_loss_fraction": 0.03455393268933482,
+    "root_hazard": 0.6297125436816097,
+    "root_threshold": 0.6297125436816097,
+    "opposite_root_hazard": 1.186691916501752,
+    "opposite_root_threshold": 1.7330091303185444,
+    "delta_ln_Gamma_barrier": 0.32012680992708814,
+    "delta_ln_Gamma_sites": -0.045625159601760445,
+    "root_curvature_contribution_MPa": 7.548856236398885,
+    "root_TJ_contribution_MPa": 49.997741380206435,
+    "complete_events": 4,
+    "active_event_number": 25,
+    "active_event_q_over_b": 0.39000000000000007,
+    "terminal_phase": "EVENT_TRANSPORT_PAUSED",
+    "terminal_selected_stress_MPa": 40.67516089223665,
+    "terminal_opposite_stress_MPa": 57.53940424526896,
+    "selected_stress_change_to_terminal_MPa": -16.871436724368667,
+    "opposite_stress_change_to_terminal_MPa": 0.0027117240682318806,
+    "quota_strain_increment_to_terminal": 0.0021105847894838277,
+    "geometric_strain_increment_to_terminal": 5.213433126871614e-06,
+    "center_volume_change_to_terminal_m3": 4.956026321026241e-25,
+    "transport_pause_count": 51,
+    "transport_recovery_count": 50,
+    "transport_recovery_durations_s": [
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415,
+      0.00038949857923853415
+    ],
+    "transport_recovery_duration_s": 0.019474928961926707
+  },
+  "cycle3_to_cycle4_LEFT_reload_change_MPa": {
+    "curvature_term_Pa": 23.89895657961219,
+    "TJ_term_Pa": 2.707942143111788,
+    "total_Pa": 26.606898722723976
+  },
+  "avalanches": [
+    {
+      "avalanche_id": 1,
+      "root_contact": "RIGHT",
+      "root_time_s": 2.772296142578125,
+      "root_center_loss_fraction": 0.008401550352926668,
+      "root_selected_stress_MPa": 53.795958676605494,
+      "root_opposite_stress_MPa": 53.79595864588849,
+      "event_count": 6,
+      "extinction_time_s": 3.801948704495834,
+      "avalanche_duration_s": 1.0296525619177088,
+      "extinction_selected_stress_MPa": 29.153440083290505,
+      "extinction_opposite_stress_MPa": 53.80919913322609,
+      "selected_stress_change_MPa": -24.642518593314986,
+      "opposite_stress_change_MPa": 0.013240487337596715,
+      "production_strain_increment": 0.0028846261359687844,
+      "geometric_strain_increment": 1.3665502331505763e-05,
+      "root_hazard": 0.21427822656948292,
+      "root_threshold": 0.21427822656948292,
+      "opposite_root_hazard": 0.21427827948260178,
+      "opposite_root_threshold": 0.6499375422597082,
+      "delta_ln_Gamma_barrier": 0.24206030594928438,
+      "delta_ln_Gamma_sites": -0.01939109935631806,
+      "root_curvature_contribution_MPa": 4.884988209389615,
+      "root_TJ_contribution_MPa": 48.91097046721588,
+      "minimum_transport_affinity_MPa": 0.7069613951919973,
+      "minimum_all_recorded_transport_affinity_MPa": 0.7069613951919973,
+      "quota_strain_increment": 0.0028846261359687844,
+      "center_volume_change_m3": 4.32789282529591e-25,
+      "stress_after_repinning_selected_MPa": 29.153440083290505,
+      "stress_after_repinning_opposite_MPa": 53.80919913322609,
+      "maximum_reload_stress_before_next_root_selected_MPa": 55.817434294482815,
+      "maximum_reload_stress_before_next_root_opposite_MPa": 55.799299954314066,
+      "transport_pause_count": 0,
+      "transport_recovery_count": 0,
+      "transport_recovery_durations_s": [],
+      "transport_recovery_duration_s": 0.0
+    },
+    {
+      "avalanche_id": 2,
+      "root_contact": "LEFT",
+      "root_time_s": 9.160351719632551,
+      "root_center_loss_fraction": 0.019443389947971568,
+      "root_selected_stress_MPa": 55.799299954314066,
+      "root_opposite_stress_MPa": 55.817434294482815,
+      "event_count": 6,
+      "extinction_time_s": 19.0491372167423,
+      "avalanche_duration_s": 9.888785497109748,
+      "extinction_selected_stress_MPa": 32.4137219011367,
+      "extinction_opposite_stress_MPa": 55.824625255959255,
+      "selected_stress_change_MPa": -23.385578053177372,
+      "opposite_stress_change_MPa": 0.0071909614764451985,
+      "production_strain_increment": 0.0028846261359687844,
+      "geometric_strain_increment": 1.0069201940132722e-05,
+      "root_hazard": 0.6499375422597082,
+      "root_threshold": 0.6499375422597082,
+      "opposite_root_hazard": 0.4254552107193726,
+      "opposite_root_threshold": 1.7330091303185444,
+      "delta_ln_Gamma_barrier": 0.2841709408202708,
+      "delta_ln_Gamma_sites": -0.031589838254332994,
+      "root_curvature_contribution_MPa": 6.367411161826859,
+      "root_TJ_contribution_MPa": 49.431888792487214,
+      "minimum_transport_affinity_MPa": 0.0010364849673360585,
+      "minimum_all_recorded_transport_affinity_MPa": 0.0010364849673360585,
+      "quota_strain_increment": 0.0028846261359687844,
+      "center_volume_change_m3": 5.6901840512121355e-25,
+      "stress_after_repinning_selected_MPa": 32.4137219011367,
+      "stress_after_repinning_opposite_MPa": 55.824625255959255,
+      "maximum_reload_stress_before_next_root_selected_MPa": 55.20941185974503,
+      "maximum_reload_stress_before_next_root_opposite_MPa": 56.20156250242961,
+      "transport_pause_count": 5,
+      "transport_recovery_count": 5,
+      "transport_recovery_durations_s": [
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415
+      ],
+      "transport_recovery_duration_s": 0.0019474928961926707
+    },
+    {
+      "avalanche_id": 3,
+      "root_contact": "LEFT",
+      "root_time_s": 20.47034693353917,
+      "root_center_loss_fraction": 0.02189959162933075,
+      "root_selected_stress_MPa": 55.20941185974503,
+      "root_opposite_stress_MPa": 56.20156250242961,
+      "event_count": 8,
+      "extinction_time_s": 216.29299737908067,
+      "avalanche_duration_s": 195.8226504455415,
+      "extinction_selected_stress_MPa": 30.939698893881342,
+      "extinction_opposite_stress_MPa": 56.21172969096649,
+      "selected_stress_change_MPa": -24.26971296586369,
+      "opposite_stress_change_MPa": 0.0101671885368824,
+      "production_strain_increment": 0.0038461681812917113,
+      "geometric_strain_increment": 9.744433647096429e-06,
+      "root_hazard": 0.10881188049003523,
+      "root_threshold": 0.10881188049003523,
+      "opposite_root_hazard": 0.542680770949617,
+      "opposite_root_threshold": 1.7330091303185444,
+      "delta_ln_Gamma_barrier": 0.27187184291535327,
+      "delta_ln_Gamma_sites": -0.03124854749340836,
+      "root_curvature_contribution_MPa": 5.836473283272717,
+      "root_TJ_contribution_MPa": 49.372938576472315,
+      "minimum_transport_affinity_MPa": 1.8657939180731772e-05,
+      "minimum_all_recorded_transport_affinity_MPa": -4.714820576912761,
+      "quota_strain_increment": 0.0038461681812917113,
+      "center_volume_change_m3": 8.516354107517408e-25,
+      "stress_after_repinning_selected_MPa": 30.939698893881342,
+      "stress_after_repinning_opposite_MPa": 56.21172969096649,
+      "maximum_reload_stress_before_next_root_selected_MPa": 57.54659761660532,
+      "maximum_reload_stress_before_next_root_opposite_MPa": 57.536692521200735,
+      "transport_pause_count": 72,
+      "transport_recovery_count": 72,
+      "transport_recovery_durations_s": [
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857924208686,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415,
+        0.00038949857923853415
+      ],
+      "transport_recovery_duration_s": 0.02804389770517801
+    }
+  ],
+  "events": [
+    {
+      "event_number": 1,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 2.772296142578125,
+      "end_time_s": 2.795217027252081,
+      "duration_s": 0.02292088467395592,
+      "selected_stress_start_MPa": 53.795958676605494,
+      "selected_stress_end_MPa": 52.19771266668844,
+      "selected_stress_change_MPa": -1.5982460099170506,
+      "opposite_stress_start_MPa": 53.79595864588849,
+      "opposite_stress_end_MPa": 53.79607817580287,
+      "opposite_stress_change_MPa": 0.00011952991437911988,
+      "center_volume_change_m3": 7.869789690385566e-26,
+      "quota_strain_change": 0.000480771022661464,
+      "geometric_strain_change": 2.4475364862608373e-06,
+      "minimum_selected_transport_affinity_MPa": 104.295617329943
+    },
+    {
+      "event_number": 2,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 2.795218281075239,
+      "end_time_s": 2.827121288748217,
+      "duration_s": 0.031903007672978045,
+      "selected_stress_start_MPa": 52.16763990608351,
+      "selected_stress_end_MPa": 44.61052823328772,
+      "selected_stress_change_MPa": -7.557111672795795,
+      "opposite_stress_start_MPa": 53.796078957039896,
+      "opposite_stress_end_MPa": 53.7964848285078,
+      "opposite_stress_change_MPa": 0.000405871467910707,
+      "center_volume_change_m3": 8.155024633978606e-26,
+      "quota_strain_change": 0.000480771022661464,
+      "geometric_strain_change": 2.4365953139593444e-06,
+      "minimum_selected_transport_affinity_MPa": 66.76698709090499
+    },
+    {
+      "event_number": 3,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 2.8271285481682824,
+      "end_time_s": 2.8824084780242507,
+      "duration_s": 0.0552799298559683,
+      "selected_stress_start_MPa": 44.54216616146851,
+      "selected_stress_end_MPa": 37.42050802168315,
+      "selected_stress_change_MPa": -7.121658139785357,
+      "opposite_stress_start_MPa": 53.796489390808915,
+      "opposite_stress_end_MPa": 53.79729705776961,
+      "opposite_stress_change_MPa": 0.0008076669606938958,
+      "center_volume_change_m3": 8.280743207112722e-26,
+      "quota_strain_change": 0.00048077102266146413,
+      "geometric_strain_change": 2.3941828636298013e-06,
+      "minimum_selected_transport_affinity_MPa": 37.10762996904667
+    },
+    {
+      "event_number": 4,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 2.8824649296724503,
+      "end_time_s": 2.996697219191428,
+      "duration_s": 0.11423228951897757,
+      "selected_stress_start_MPa": 37.1760357268638,
+      "selected_stress_end_MPa": 31.36729026406345,
+      "selected_stress_change_MPa": -5.808745462800354,
+      "opposite_stress_start_MPa": 53.79733258277916,
+      "opposite_stress_end_MPa": 53.798518546175345,
+      "opposite_stress_change_MPa": 0.0011859633961841464,
+      "center_volume_change_m3": 8.484781610727481e-26,
+      "quota_strain_change": 0.0004807710226614639,
+      "geometric_strain_change": 2.2934082976044934e-06,
+      "minimum_selected_transport_affinity_MPa": 15.944613812839284
+    },
+    {
+      "event_number": 5,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 2.9976844730866135,
+      "end_time_s": 3.4717844350330873,
+      "duration_s": 0.47409996194647386,
+      "selected_stress_start_MPa": 31.014261355562805,
+      "selected_stress_end_MPa": 26.611632815421597,
+      "selected_stress_change_MPa": -4.40262854014121,
+      "opposite_stress_start_MPa": 53.79913824419349,
+      "opposite_stress_end_MPa": 53.80027933745216,
+      "opposite_stress_change_MPa": 0.001141093258664012,
+      "center_volume_change_m3": 9.221842853875214e-26,
+      "quota_strain_change": 0.0004807710226614639,
+      "geometric_strain_change": 2.1571492168082074e-06,
+      "minimum_selected_transport_affinity_MPa": 1.2039746902979613
+    },
+    {
+      "event_number": 6,
+      "avalanche_id": 1,
+      "contact": "RIGHT",
+      "start_time_s": 3.4769800528150685,
+      "end_time_s": 3.792948704495834,
+      "duration_s": 0.3159686516807656,
+      "selected_stress_start_MPa": 29.599572454495377,
+      "selected_stress_end_MPa": 25.17499817035248,
+      "selected_stress_change_MPa": -4.4245742841428966,
+      "opposite_stress_start_MPa": 53.80349538910485,
+      "opposite_stress_end_MPa": 53.80385242309837,
+      "opposite_stress_change_MPa": 0.0003570339935198426,
+      "center_volume_change_m3": 1.0467989253215743e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 2.1229256195187673e-06,
+      "minimum_selected_transport_affinity_MPa": 0.7069613951919973
+    },
+    {
+      "event_number": 7,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 9.160351719632551,
+      "end_time_s": 9.183507722991603,
+      "duration_s": 0.02315600335905188,
+      "selected_stress_start_MPa": 55.799299954314066,
+      "selected_stress_end_MPa": 54.30478111889904,
+      "selected_stress_change_MPa": -1.494518835415028,
+      "opposite_stress_start_MPa": 55.817434294482815,
+      "opposite_stress_end_MPa": 55.81749323365529,
+      "opposite_stress_change_MPa": 5.8939172476530073e-05,
+      "center_volume_change_m3": 1.0071067776371246e-25,
+      "quota_strain_change": 0.0004807710226614639,
+      "geometric_strain_change": 1.8713209853915558e-06,
+      "minimum_selected_transport_affinity_MPa": 100.6401765195346
+    },
+    {
+      "event_number": 8,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 9.18351151850868,
+      "end_time_s": 9.216061873175049,
+      "duration_s": 0.03255035466636791,
+      "selected_stress_start_MPa": 54.217382098858195,
+      "selected_stress_end_MPa": 46.88525309493294,
+      "selected_stress_change_MPa": -7.332129003925249,
+      "opposite_stress_start_MPa": 55.817494396315354,
+      "opposite_stress_end_MPa": 55.817681566589656,
+      "opposite_stress_change_MPa": 0.0001871702743023634,
+      "center_volume_change_m3": 1.0370401178098952e-25,
+      "quota_strain_change": 0.0004807710226614639,
+      "geometric_strain_change": 1.8690644855157146e-06,
+      "minimum_selected_transport_affinity_MPa": 63.210899207116874
+    },
+    {
+      "event_number": 9,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 9.216068092199578,
+      "end_time_s": 9.274814925262481,
+      "duration_s": 0.05874683306290329,
+      "selected_stress_start_MPa": 46.82469144169026,
+      "selected_stress_end_MPa": 39.59948665919799,
+      "selected_stress_change_MPa": -7.2252047824922725,
+      "opposite_stress_start_MPa": 55.81768347627407,
+      "opposite_stress_end_MPa": 55.81806272667,
+      "opposite_stress_change_MPa": 0.0003792503959238529,
+      "center_volume_change_m3": 1.0534062289616197e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.8304124297374713e-06,
+      "minimum_selected_transport_affinity_MPa": 33.037992686038535
+    },
+    {
+      "event_number": 10,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 9.275171693784753,
+      "end_time_s": 9.413286997616188,
+      "duration_s": 0.13811530383143555,
+      "selected_stress_start_MPa": 38.683276191808915,
+      "selected_stress_end_MPa": 33.56012692393781,
+      "selected_stress_change_MPa": -5.123149267871112,
+      "opposite_stress_start_MPa": 55.81817230713238,
+      "opposite_stress_end_MPa": 55.81864636402337,
+      "opposite_stress_change_MPa": 0.0004740568909943104,
+      "center_volume_change_m3": 1.10604990080866e-25,
+      "quota_strain_change": 0.0004807710226614635,
+      "geometric_strain_change": 1.7131217500132578e-06,
+      "minimum_selected_transport_affinity_MPa": 10.95280332235922
+    },
+    {
+      "event_number": 11,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 9.413470658127828,
+      "end_time_s": 18.89902622139157,
+      "duration_s": 9.485555563263741,
+      "selected_stress_start_MPa": 33.2445886785462,
+      "selected_stress_end_MPa": 29.21706102539598,
+      "selected_stress_change_MPa": -4.027527653150216,
+      "opposite_stress_start_MPa": 55.818702672425374,
+      "opposite_stress_end_MPa": 55.81973825334226,
+      "opposite_stress_change_MPa": 0.0010355809168815613,
+      "center_volume_change_m3": 1.059000151241002e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.5397565210628628e-06,
+      "minimum_selected_transport_affinity_MPa": 0.008405362308457493
+    },
+    {
+      "event_number": 12,
+      "avalanche_id": 2,
+      "contact": "LEFT",
+      "start_time_s": 18.906961915015987,
+      "end_time_s": 19.0401372167423,
+      "duration_s": 0.1331753017263111,
+      "selected_stress_start_MPa": 33.78062604377085,
+      "selected_stress_end_MPa": 30.85059429662102,
+      "selected_stress_change_MPa": -2.9300317471498327,
+      "opposite_stress_start_MPa": 55.822091593110514,
+      "opposite_stress_end_MPa": 55.822172656060324,
+      "opposite_stress_change_MPa": 8.10629498064518e-05,
+      "center_volume_change_m3": 1.318607660885147e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.5060993668880585e-06,
+      "minimum_selected_transport_affinity_MPa": 9.329720395174279
+    },
+    {
+      "event_number": 13,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 20.47034693353917,
+      "end_time_s": 20.495643174609413,
+      "duration_s": 0.025296241070243752,
+      "selected_stress_start_MPa": 55.20941185974503,
+      "selected_stress_end_MPa": 53.768725363049256,
+      "selected_stress_change_MPa": -1.4406864966957793,
+      "opposite_stress_start_MPa": 56.20156250242961,
+      "opposite_stress_end_MPa": 56.20161065097508,
+      "opposite_stress_change_MPa": 4.814854546636343e-05,
+      "center_volume_change_m3": 1.123124945832518e-25,
+      "quota_strain_change": 0.0004807710226614635,
+      "geometric_strain_change": 1.6300063538920995e-06,
+      "minimum_selected_transport_affinity_MPa": 91.83276924101767
+    },
+    {
+      "event_number": 14,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 20.49564658389476,
+      "end_time_s": 20.531556851045526,
+      "duration_s": 0.03591026715076495,
+      "selected_stress_start_MPa": 53.69111980563162,
+      "selected_stress_end_MPa": 46.72941368244025,
+      "selected_stress_change_MPa": -6.961706123191371,
+      "opposite_stress_start_MPa": 56.20161150391768,
+      "opposite_stress_end_MPa": 56.201745098919154,
+      "opposite_stress_change_MPa": 0.00013359500147402286,
+      "center_volume_change_m3": 1.1658844541788926e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.6060209966362038e-06,
+      "minimum_selected_transport_affinity_MPa": 56.08047423691694
+    },
+    {
+      "event_number": 15,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 20.531576211079894,
+      "end_time_s": 20.602826301276906,
+      "duration_s": 0.07125009019701167,
+      "selected_stress_start_MPa": 46.525603623386175,
+      "selected_stress_end_MPa": 39.31874526383604,
+      "selected_stress_change_MPa": -7.206858359550133,
+      "opposite_stress_start_MPa": 56.201749951105285,
+      "opposite_stress_end_MPa": 56.20202474067481,
+      "opposite_stress_change_MPa": 0.00027478956952691077,
+      "center_volume_change_m3": 1.1920800375027592e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.5559223376371278e-06,
+      "minimum_selected_transport_affinity_MPa": 24.925911476535127
+    },
+    {
+      "event_number": 16,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 20.603216837237238,
+      "end_time_s": 20.987443217263383,
+      "duration_s": 0.3842263800261456,
+      "selected_stress_start_MPa": 38.17094575837825,
+      "selected_stress_end_MPa": 33.07006719281089,
+      "selected_stress_change_MPa": -5.100878565567367,
+      "opposite_stress_start_MPa": 56.20212262657581,
+      "opposite_stress_end_MPa": 56.20244790560527,
+      "opposite_stress_change_MPa": 0.0003252790294662118,
+      "center_volume_change_m3": 1.259239096906474e-25,
+      "quota_strain_change": 0.0004807710226614635,
+      "geometric_strain_change": 1.4284443047296591e-06,
+      "minimum_selected_transport_affinity_MPa": 0.9371475116924047
+    },
+    {
+      "event_number": 17,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 20.987502992697035,
+      "end_time_s": 40.23420426894233,
+      "duration_s": 19.246701276245293,
+      "selected_stress_start_MPa": 32.89036820461741,
+      "selected_stress_end_MPa": 29.665108223603493,
+      "selected_stress_change_MPa": -3.2252599810139166,
+      "opposite_stress_start_MPa": 56.20246286087335,
+      "opposite_stress_end_MPa": 56.20378749789752,
+      "opposite_stress_change_MPa": 0.0013246370241716504,
+      "center_volume_change_m3": 1.0725571149538819e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.2861677420872297e-06,
+      "minimum_selected_transport_affinity_MPa": 0.0024140058469325305
+    },
+    {
+      "event_number": 18,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 40.23423110259559,
+      "end_time_s": 68.63612510674326,
+      "duration_s": 28.401894004147678,
+      "selected_stress_start_MPa": 29.610542745926093,
+      "selected_stress_end_MPa": 28.247871642557197,
+      "selected_stress_change_MPa": -1.362671103368897,
+      "opposite_stress_start_MPa": 56.203794071069254,
+      "opposite_stress_end_MPa": 56.20571227297269,
+      "opposite_stress_change_MPa": 0.0019182019034326076,
+      "center_volume_change_m3": 1.0667468598851572e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 9.83368653617589e-07,
+      "minimum_selected_transport_affinity_MPa": 0.008278398420140148
+    },
+    {
+      "event_number": 19,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 68.63746804334468,
+      "end_time_s": 197.13978284009374,
+      "duration_s": 128.50231479674906,
+      "selected_stress_start_MPa": 28.92510941483546,
+      "selected_stress_end_MPa": 27.70846538746725,
+      "selected_stress_change_MPa": -1.2166440273682102,
+      "opposite_stress_start_MPa": 56.206017133543625,
+      "opposite_stress_end_MPa": 56.20790079831732,
+      "opposite_stress_change_MPa": 0.0018836647736951708,
+      "center_volume_change_m3": 1.1364455157506564e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 7.926118279488747e-07,
+      "minimum_selected_transport_affinity_MPa": 0.006828937146320939
+    },
+    {
+      "event_number": 20,
+      "avalanche_id": 3,
+      "contact": "LEFT",
+      "start_time_s": 197.14672648339123,
+      "end_time_s": 216.2839973790807,
+      "duration_s": 19.137270895689454,
+      "selected_stress_start_MPa": 30.65018253570552,
+      "selected_stress_end_MPa": 27.48823009036168,
+      "selected_stress_change_MPa": -3.161952445343845,
+      "opposite_stress_start_MPa": 56.20921694176223,
+      "opposite_stress_end_MPa": 56.21038258792679,
+      "opposite_stress_change_MPa": 0.001165646164558828,
+      "center_volume_change_m3": 1.2607155350203442e-25,
+      "quota_strain_change": 0.0004807710226614626,
+      "geometric_strain_change": 7.999781225231928e-07,
+      "minimum_selected_transport_affinity_MPa": 0.0025143656558096407
+    },
+    {
+      "event_number": 21,
+      "avalanche_id": 4,
+      "contact": "LEFT",
+      "start_time_s": 224.00349237419744,
+      "end_time_s": 224.041470092389,
+      "duration_s": 0.03797771819156992,
+      "selected_stress_start_MPa": 57.54659761660532,
+      "selected_stress_end_MPa": 56.142835638602456,
+      "selected_stress_change_MPa": -1.4037619780028612,
+      "opposite_stress_start_MPa": 57.536692521200735,
+      "opposite_stress_end_MPa": 57.53671450731812,
+      "opposite_stress_change_MPa": 2.1986117392778396e-05,
+      "center_volume_change_m3": 1.3070234555728692e-25,
+      "quota_strain_change": 0.0004807710226614661,
+      "geometric_strain_change": 1.0802118443065112e-06,
+      "minimum_selected_transport_affinity_MPa": 53.82540579730958
+    },
+    {
+      "event_number": 22,
+      "avalanche_id": 4,
+      "contact": "LEFT",
+      "start_time_s": 224.04147109733674,
+      "end_time_s": 224.1245782735341,
+      "duration_s": 0.08310717619735897,
+      "selected_stress_start_MPa": 56.11997204334963,
+      "selected_stress_end_MPa": 49.40430242993641,
+      "selected_stress_change_MPa": -6.715669613413215,
+      "opposite_stress_start_MPa": 57.53671462204201,
+      "opposite_stress_end_MPa": 57.53677349950032,
+      "opposite_stress_change_MPa": 5.887745830416679e-05,
+      "center_volume_change_m3": 1.3465519328857274e-25,
+      "quota_strain_change": 0.0004807710226614626,
+      "geometric_strain_change": 1.0591368629908615e-06,
+      "minimum_selected_transport_affinity_MPa": 14.517248431544006
+    },
+    {
+      "event_number": 23,
+      "avalanche_id": 4,
+      "contact": "LEFT",
+      "start_time_s": 224.1246266479472,
+      "end_time_s": 242.8454859915311,
+      "duration_s": 18.720859343583896,
+      "selected_stress_start_MPa": 48.924051978367466,
+      "selected_stress_end_MPa": 42.00012345683185,
+      "selected_stress_change_MPa": -6.923928521535613,
+      "opposite_stress_start_MPa": 57.53677902375039,
+      "opposite_stress_end_MPa": 57.53741111955231,
+      "opposite_stress_change_MPa": 0.0006320958019122481,
+      "center_volume_change_m3": 1.0911885059142986e-25,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.261472718283585e-06,
+      "minimum_selected_transport_affinity_MPa": 0.00043637098958343267
+    },
+    {
+      "event_number": 24,
+      "avalanche_id": 4,
+      "contact": "LEFT",
+      "start_time_s": 242.84610181389007,
+      "end_time_s": 291.7609502364398,
+      "duration_s": 48.91484842254971,
+      "selected_stress_start_MPa": 42.01811250905253,
+      "selected_stress_end_MPa": 40.803721005300744,
+      "selected_stress_change_MPa": -1.2143915037517845,
+      "opposite_stress_start_MPa": 57.53748073722217,
+      "opposite_stress_end_MPa": 57.53877302494563,
+      "opposite_stress_change_MPa": 0.0012922877234593034,
+      "center_volume_change_m3": 9.40790742927859e-26,
+      "quota_strain_change": 0.00048077102266146435,
+      "geometric_strain_change": 1.2518226055746595e-06,
+      "minimum_selected_transport_affinity_MPa": 0.009918077005073429
+    }
+  ],
+  "event_restart_audit": [
+    {
+      "event_number": 1,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 1.4711789654496294
+    },
+    {
+      "event_number": 2,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 2.0476973070936184
+    },
+    {
+      "event_number": 3,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 3.548147079507751
+    },
+    {
+      "event_number": 4,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 7.332009383844857
+    },
+    {
+      "event_number": 5,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 30.430147067082476
+    },
+    {
+      "event_number": 6,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 20.28047523935257
+    },
+    {
+      "event_number": 7,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 1.4862700785901926
+    },
+    {
+      "event_number": 8,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 2.0892473298597225
+    },
+    {
+      "event_number": 9,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 3.7706705617312584
+    },
+    {
+      "event_number": 10,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 8.864942723365738
+    },
+    {
+      "event_number": 11,
+      "accepted_steps": 226,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 15,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 15
+      },
+      "event_time_model": 608.7062043266657
+    },
+    {
+      "event_number": 12,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 8.547868260939197
+    },
+    {
+      "event_number": 13,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 1.623641421213232
+    },
+    {
+      "event_number": 14,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 2.3049036033024937
+    },
+    {
+      "event_number": 15,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 4.573193202413129
+    },
+    {
+      "event_number": 16,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 24.661603437479982
+    },
+    {
+      "event_number": 17,
+      "accepted_steps": 267,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 39,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 39
+      },
+      "event_time_model": 1235.0261862514594
+    },
+    {
+      "event_number": 18,
+      "accepted_steps": 294,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 60,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 60
+      },
+      "event_time_model": 1822.4780234141406
+    },
+    {
+      "event_number": 19,
+      "accepted_steps": 294,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 62,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 62
+      },
+      "event_time_model": 8247.382190652826
+    },
+    {
+      "event_number": 20,
+      "accepted_steps": 240,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 35,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 35
+      },
+      "event_time_model": 1227.9023878097785
+    },
+    {
+      "event_number": 21,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 2.4376031271902163
+    },
+    {
+      "event_number": 22,
+      "accepted_steps": 200,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 0,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {},
+      "event_time_model": 5.334241292980185
+    },
+    {
+      "event_number": 23,
+      "accepted_steps": 255,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 36,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 36
+      },
+      "event_time_model": 1201.2749763183697
+    },
+    {
+      "event_number": 24,
+      "accepted_steps": 336,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 90,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 90
+      },
+      "event_time_model": 3138.853777125564
+    },
+    {
+      "event_number": 25,
+      "accepted_steps": 87,
+      "active_minimum_step_over_b": 0.00125,
+      "quasistatic_trial_rejections": 13,
+      "slow_clock_quadrature_refinements": 0,
+      "rejection_reasons": {
+        "nonpositive_transport_affinity": 13
+      },
+      "event_time_model": 284.0500626864829
+    }
+  ],
+  "native_milestone_audit": {
+    "event_count": 12,
+    "all_completed_events_have_five_native_milestones": true,
+    "events": [
+      {
+        "event_number": 13,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "531b3a026e67c0a4d8a98eee7b6d50ba595be31176df91f850073fba056ab598",
+            "size_bytes": 12908481
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "ba0f88cee6bbdc19401e91829844688f70e8aa0ac561f62cfd165263906b135b",
+            "size_bytes": 12908845
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "a551b43fdca02e22a73bcd41e3375fb2008b38e855b505dc1b49b861aac9276b",
+            "size_bytes": 12908928
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "f57e6b3e3b028e81d14eed0344f01a94a084ee2f6146fef394d3ef7106164678",
+            "size_bytes": 12908819
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "5cf685099852e0e54ad52e53e714dbd3ee98cd27214cca2ae854322a4811d3b1",
+            "size_bytes": 12909035
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 14,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "2006081c1dfd59646dc527671ea263806f92c35de2d9dc67f0546776b3df2ebb",
+            "size_bytes": 12909239
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "6a97f347cb85aaed656d9abdadad1063287896eb8f4ccde8033ee023d5a951ee",
+            "size_bytes": 12909383
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "4257ae47c4df2cc9354796bd0402a2ac91c5fd8a89ddac9fa2ce35f2f6f2b865",
+            "size_bytes": 12909401
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "f6bb74648b74490032d6f115f0ccd837da7af5335d7d7159d91a7a18d5dfb795",
+            "size_bytes": 12909561
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "a792683a355733ca9125cb1153c6b2d7384e075329a81ab4f12cdfb18c0ebc9b",
+            "size_bytes": 12909845
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 15,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "6d8f8efb9ae386220f0239283851bf87615c6ae8fa3dab2aa5fe3fa750e75a93",
+            "size_bytes": 12910187
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "4f973d72f87471e077cc46b1c7314110d6223e5b03e18b59ab038b5485263982",
+            "size_bytes": 12910496
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "3dd0565b5242c80cb3d347e554c42c399ebfd64bb1cd181bbc8efcaaec6f42bb",
+            "size_bytes": 12910790
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "ef17fb1432e5c54a1b1cb30051331848362a33db7eace48144019b6897f86fed",
+            "size_bytes": 12910612
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "6d2d544198af997052a7b173be2e70a6ec08c71eb753b39cf9b76beb61f36dc5",
+            "size_bytes": 12911121
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 16,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "a6d954f03d0f39cc1ea527aae56394afdd42b8e487f08d8a76f36a88b783df1e",
+            "size_bytes": 12911255
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "45abd69c0658d135e35cf91e0ecc83f2dbf11ded4af5f35c0da473e28f3aa8dc",
+            "size_bytes": 12911062
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "dffa4d2b12d4831c78f9c015bc22b930f3897421d09cb32df4ea07846032d9ab",
+            "size_bytes": 12912265
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "ed13eb5da5c0ad31f06d9e488e7ca9d40b785e1f5bb50a2687c04cb5f88c4be0",
+            "size_bytes": 12912513
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "505a3259447f0992f4161f2230db201475bab9ba106fcfd701a910c7b522123e",
+            "size_bytes": 12911928
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 17,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "f1d183b23f620b4defd59f4c16bd5b81943035a113cbe687a5b3ae1284cf7a89",
+            "size_bytes": 12910844
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.25375000000000014,
+            "sha256": "4d4c5603060fe716404ac6820f640392be0f579b621f796c4abc51c50b678245",
+            "size_bytes": 12911903
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.50125,
+            "sha256": "a0e145dc8b86cf9b53e5c8b17051b37bf62969a202a80bc1bf77ccc9109dfa6d",
+            "size_bytes": 12912077
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7499999999999996,
+            "sha256": "8212fe259c65c84caedae099e14627718368f7bca2340dd1b104aa69eaa9b265",
+            "size_bytes": 12911958
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "0932f254c67c9129bde25eb3673662604df81324a64763362b5c4b32ae1dd14c",
+            "size_bytes": 12912720
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 18,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "3f9b5c05d6601ccadbbedc2b924dad9ff52e52b315f727d54fa25836460a63b0",
+            "size_bytes": 12913510
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.25375000000000014,
+            "sha256": "e9094c52936d156225fd853c555af3f31cddb7c938093880ef33ed3c28e8f449",
+            "size_bytes": 12913865
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5012499999999999,
+            "sha256": "bce3eca6805b9be98967c7dc239908ac10fa53ecbcacdf01522ede1df24fd753",
+            "size_bytes": 12914235
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7512499999999993,
+            "sha256": "2084ac2bd9d137331704ac70c03efa1a9eb3f3068f2f77ff2258935dc690cf4c",
+            "size_bytes": 12914047
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "430d3dfc33b6e8a2d64cebbad699ebbf7173546646fcec51fbd51db5e930d6b2",
+            "size_bytes": 12914231
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 19,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "6fcf434642cc6c40d4e5f06c0696a90a42bbc11afad29b695eb6cf37bee7a8c8",
+            "size_bytes": 12915940
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "16760dc0a518ac7a5a76e7e658030161fc33b1e1e7583c4c0827371f2dba8b20",
+            "size_bytes": 12915489
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.4999999999999998,
+            "sha256": "66e43fbe9b6459d0f9f38d4564b8ec993ac089a386534143d92acb13e67b7f51",
+            "size_bytes": 12915777
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7512499999999995,
+            "sha256": "eb4462c2c637a70f5e5c1ee7d1edee2db61566f8a1bb7aa19e77f6d628607285",
+            "size_bytes": 12915967
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "03af5a055a33701af5c54af83e6017eb8196375465a89974c559552edb1a2dc9",
+            "size_bytes": 12915734
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 20,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "3bd9779e0024cf10cd22e43a21e102f741fb20ad1ea0785155dcda9e8d2e55ff",
+            "size_bytes": 12915888
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "26b5f172da2286cae2fb11471747355dca715297d3fe7bc27218a2ebbf1d3618",
+            "size_bytes": 12916063
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "398e4ae1017379450d4393d021d697a7c00e17ce4f8792bd527e7f1f376df9c7",
+            "size_bytes": 12915998
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7512500000000004,
+            "sha256": "364636e0be7d6eb7e229ce1a5e94c8c8aac9e97d0b5591d9fed16975164de3e4",
+            "size_bytes": 12916144
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "fcbc91936b155b65a088a5b57fced8202a4a8094a1d539ccd8c90c614924aa83",
+            "size_bytes": 12916419
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 21,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "ae4e803ede6c3a30cd32768c497a363005060228e4599cbe124414b3e0c1c881",
+            "size_bytes": 12927177
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "0e8afb321fbc85f1844844f70e4e024bffdea13b5fe4704d873ef6a78f42a6d0",
+            "size_bytes": 12927048
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "1b425027576db7d7c8cfe2647df253b12cf977dec1bed9638ffd5c044516f2a5",
+            "size_bytes": 12926774
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "367d6e47c8e9739fef3237d46d2c15274116e8f7fc8598936c51492f5c44f5db",
+            "size_bytes": 12927398
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "6cc7f4c9b04687458534b4faa1625523378fb9841d083f3baf8d76beb45817ef",
+            "size_bytes": 12926925
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 22,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "9ff1ec45102bd546efcc00b2ba98630b98b9d5d5f0ffa2e7ac5bc2ab98fd45e3",
+            "size_bytes": 12926131
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "600304f15900c2f5e8bf188971ec786559c00d01c691b256986dc56eb316aa6a",
+            "size_bytes": 12926531
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5000000000000003,
+            "sha256": "1ed811783b3d065785b569a64e3700bdcc88431cd1c720f3541a94054a900262",
+            "size_bytes": 12926998
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7500000000000006,
+            "sha256": "ea4baf0548153b28bf938b55b8c8d04e75a5150805a300c75b5714ff4a380364",
+            "size_bytes": 12926904
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "12a120a04755a9c76a92052dfc47a3099228a3fb3fc20e8416edf12907478c67",
+            "size_bytes": 12926755
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 23,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "d434d18de30338449cfd0b97ea0a711235ca2b3a9346c299430662719bdb13a1",
+            "size_bytes": 12927113
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "63a18a6c1116d82e74bca7036eb9c4c722ea7b355975c8a3a6bfb3c1611f9297",
+            "size_bytes": 12927293
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5,
+            "sha256": "4b446c98f6d0414c7f1b7b73baafc0d96e345c0d7f0ec7607f0fe72ce71d1214",
+            "size_bytes": 12927309
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7512500000000001,
+            "sha256": "e4ee535c91d743ab7bcb3cdf9fca737a792f77f9f6b4e43ebee4cfae7ed61eab",
+            "size_bytes": 12927459
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "3c52088ce477cfd03559cded861183efd09be2e96bfd8a31a3e4cfb6e1e89eec",
+            "size_bytes": 12927555
+          }
+        ],
+        "complete": true
+      },
+      {
+        "event_number": 24,
+        "milestones": [
+          {
+            "name": "start.npz",
+            "actual_q_over_b": 0.0,
+            "sha256": "08126f356f8c9705a460ef93799546b899edab3be983183a918c587ed90d4bc0",
+            "size_bytes": 12928296
+          },
+          {
+            "name": "q_0.25b.npz",
+            "actual_q_over_b": 0.2500000000000001,
+            "sha256": "b7a638e1767379ecd25d8c1ecc989af9c6fecac0ea395f3660d19e5e56b5219f",
+            "size_bytes": 12928238
+          },
+          {
+            "name": "q_0.50b.npz",
+            "actual_q_over_b": 0.5024999999999998,
+            "sha256": "b5c27ba2b3a67af840882c80b27f333e8b4eb64d0133c9a61746da81bc1b7781",
+            "size_bytes": 12927866
+          },
+          {
+            "name": "q_0.75b.npz",
+            "actual_q_over_b": 0.7499999999999993,
+            "sha256": "ea2b8135796b53dbf8d0e7e69e9473b0cc8d64bd10c7fb82e810e513a395c9b5",
+            "size_bytes": 12928418
+          },
+          {
+            "name": "q_1.00b.npz",
+            "actual_q_over_b": 1.0,
+            "sha256": "5db5f06a106bf2395fc33505dc666fe5356959b5ec719c81b18dd2fa5aef163e",
+            "size_bytes": 12928073
+          }
+        ],
+        "complete": true
+      }
+    ]
+  },
+  "numerical_audit": {
+    "snapshot_count": 95,
+    "snapshot_times_monotone": true,
+    "field_min": -2.185127487078322e-36,
+    "field_max": 1.0,
+    "ownership_min": 0.0,
+    "ownership_max": 1.0,
+    "maximum_ownership_field_closure": 2.220446049250313e-16,
+    "history_total_volume_min_m3": 3.067866944178114e-20,
+    "history_total_volume_max_m3": 3.0678669441790083e-20,
+    "history_total_volume_relative_range": 2.915229813410831e-13,
+    "any_topology_stop": false
+  },
+  "physics": {
+    "shared_microscopic_kinetics_unchanged": true,
+    "local_bicrystal_activation_stress_unchanged": true,
+    "site_count_prefactor_unchanged": true,
+    "exp_floor_barrier_unchanged": true,
+    "root_formation_penalty_unchanged": true,
+    "attempt_frequency_unchanged": true,
+    "temperature_unchanged": true,
+    "root_threshold_law_unchanged": true,
+    "surface_mobility_unchanged": true,
+    "current_state_one_b_transfer_unchanged": true,
+    "descendant_lowering_eV": 1.5,
+    "retention": 0.7,
+    "source_lifetime_s": 0.009,
+    "event_transport_clock_unchanged": true,
+    "field_guard_unchanged": true,
+    "minimum_event_increment_over_b": 0.00125,
+    "no_clipping": true,
+    "no_symmetry_projection": true,
+    "no_fitted_correction": true
+  },
+  "continuation_wall_seconds": 22808.410661375034,
+  "runner_terminal_line": "MAXIMUM_WALL_TIME_REACHED 296.1930162533673 avalanches 3 wall 22808.410661375034",
+  "final_center_loss_fraction": 0.03434389627521517,
+  "final_quota_strain": 0.011726005242713108,
+  "final_geometric_strain": 0.0020966062428982024,
+  "morphology_snapshot_count": 95,
+  "morphology_movie": "docs/three_particle/mapped_pf_initial_screen/c2_campaign_seed20260915_continued/G_morphology_total_and_ownership.gif"
+}

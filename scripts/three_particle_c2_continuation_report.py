@@ -50,11 +50,12 @@ def pause_audit(rows):
     pauses = [row for row in rows if row["phase"] == "EVENT_TRANSPORT_PAUSED"]
     recoveries = [row for row in rows if row["phase"] == "EVENT_TRANSPORT_RECOVERY"]
     durations = []
-    for pause in pauses:
-        match = next((row for row in recoveries
-                      if int(row["event_number"]) == int(pause["event_number"]) and
-                      float(row["q_over_b"]) == float(pause["q_over_b"]) and
-                      float(row["time_s"]) >= float(pause["time_s"])), None)
+    for index, pause in enumerate(rows):
+        if pause["phase"] != "EVENT_TRANSPORT_PAUSED":
+            continue
+        match = next((row for row in rows[index + 1:]
+                      if (row["phase"] == "EVENT_TRANSPORT_RECOVERY" and
+                          int(row["event_number"]) == int(pause["event_number"]))), None)
         if match is not None:
             durations.append(float(match["time_s"]) - float(pause["time_s"]))
     return {
@@ -83,6 +84,7 @@ def detailed_avalanche_rows(history):
                         "EVENT_TRANSPORT_RECOVERY", "ONE_B_COMPLETE"}
         affinities = [entry["contacts"][contact]["transport_affinity_Pa"] / 1e6
                       for entry in local if entry["phase"] in event_phases]
+        positive_affinities = [value for value in affinities if value > 0]
         next_root = roots.get(aid + 1)
         if next_root is None:
             reload_rows = [entry for entry in history
@@ -92,6 +94,7 @@ def detailed_avalanche_rows(history):
                            if float(end["time_s"]) <= float(entry["time_s"]) <=
                            float(next_root["time_s"])]
         decomp = root["root_rate_decomposition"][contact]
+        stress_decomp = root["stress_decomposition"][contact]
         detail = dict(row)
         detail.update({
             "root_hazard": root["hazards"][contact],
@@ -100,7 +103,12 @@ def detailed_avalanche_rows(history):
             "opposite_root_threshold": root["thresholds"][opposite],
             "delta_ln_Gamma_barrier": decomp["delta_ln_Gamma_barrier"],
             "delta_ln_Gamma_sites": decomp["delta_ln_Gamma_sites"],
-            "minimum_transport_affinity_MPa": min(affinities) if affinities else None,
+            "root_curvature_contribution_MPa": stress_decomp["curvature_term_Pa"] / 1e6,
+            "root_TJ_contribution_MPa": stress_decomp["TJ_term_Pa"] / 1e6,
+            "minimum_transport_affinity_MPa": (
+                min(positive_affinities) if positive_affinities else None),
+            "minimum_all_recorded_transport_affinity_MPa": (
+                min(affinities) if affinities else None),
             "quota_strain_increment": (float(end["production_densification_strain"]) -
                                        float(root["production_densification_strain"])),
             "geometric_strain_increment": (float(end["geometric_chain_strain"]) -
@@ -121,6 +129,61 @@ def detailed_avalanche_rows(history):
         })
         result.append(detail)
     return result
+
+
+def incomplete_avalanche_summary(history):
+    roots = [row for row in history if row["phase"] == "ROOT_CROSSING"]
+    completed = {int(row["avalanche_id"]) for row in history
+                 if row["phase"] == "AVALANCHE_EXTINCT_REPINNED"}
+    root = next((row for row in reversed(roots)
+                 if int(row["avalanche_id"]) not in completed), None)
+    if root is None:
+        return None
+    aid = int(root["avalanche_id"])
+    contact = root["contact"]
+    opposite = "RIGHT" if contact == "LEFT" else "LEFT"
+    local = rows_for_avalanche(history, aid)
+    complete_events = len({int(row["event_number"]) for row in local
+                           if row["phase"] == "ONE_B_COMPLETE"})
+    final = history[-1]
+    decomp = root["root_rate_decomposition"][contact]
+    stress_decomp = root["stress_decomposition"][contact]
+    return {
+        "avalanche_id": aid,
+        "root_contact": contact,
+        "root_time_s": root["time_s"],
+        "root_selected_stress_MPa": root["contacts"][contact]["sigma_local_Pa"] / 1e6,
+        "root_opposite_stress_MPa": root["contacts"][opposite]["sigma_local_Pa"] / 1e6,
+        "root_center_loss_fraction": 1 - root["center_volume_m3"] / history[0]["center_volume_m3"],
+        "root_hazard": root["hazards"][contact],
+        "root_threshold": root["thresholds"][contact],
+        "opposite_root_hazard": root["hazards"][opposite],
+        "opposite_root_threshold": root["thresholds"][opposite],
+        "delta_ln_Gamma_barrier": decomp["delta_ln_Gamma_barrier"],
+        "delta_ln_Gamma_sites": decomp["delta_ln_Gamma_sites"],
+        "root_curvature_contribution_MPa": stress_decomp["curvature_term_Pa"] / 1e6,
+        "root_TJ_contribution_MPa": stress_decomp["TJ_term_Pa"] / 1e6,
+        "complete_events": complete_events,
+        "active_event_number": final["event_number"],
+        "active_event_q_over_b": final["q_over_b"],
+        "terminal_phase": final["phase"],
+        "terminal_selected_stress_MPa": final["contacts"][contact]["sigma_local_Pa"] / 1e6,
+        "terminal_opposite_stress_MPa": final["contacts"][opposite]["sigma_local_Pa"] / 1e6,
+        "selected_stress_change_to_terminal_MPa": (
+            final["contacts"][contact]["sigma_local_Pa"] -
+            root["contacts"][contact]["sigma_local_Pa"]) / 1e6,
+        "opposite_stress_change_to_terminal_MPa": (
+            final["contacts"][opposite]["sigma_local_Pa"] -
+            root["contacts"][opposite]["sigma_local_Pa"]) / 1e6,
+        "quota_strain_increment_to_terminal": (
+            final["production_densification_strain"] -
+            root["production_densification_strain"]),
+        "geometric_strain_increment_to_terminal": (
+            final["geometric_chain_strain"] - root["geometric_chain_strain"]),
+        "center_volume_change_to_terminal_m3": (
+            final["center_volume_m3"] - root["center_volume_m3"]),
+        **pause_audit(local),
+    }
 
 
 def immutable_milestone_audit(run, completed_events):
@@ -172,15 +235,31 @@ def cycle_group_summary(rows):
     }
 
 
-def sequence_plot(avalanches, out):
+def sequence_plot(avalanches, incomplete, out):
     ids = [row["avalanche_id"] for row in avalanches]
     fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True,
                              constrained_layout=True)
     axes[0].plot(ids, [row["root_selected_stress_MPa"] for row in avalanches],
                  "o-", color="#31688e")
+    if incomplete:
+        axes[0].plot(incomplete["avalanche_id"],
+                     incomplete["root_selected_stress_MPa"], "o",
+                     mfc="white", mec="#31688e", mew=2, ms=8,
+                     label="wall-limited active cycle")
+        axes[0].legend()
     axes[0].set_ylabel("Root stress (MPa)")
     axes[1].plot(ids, [row["event_count"] for row in avalanches],
                  "o-", color="#d1495b")
+    if incomplete:
+        partial_size = (incomplete["complete_events"] +
+                        incomplete["active_event_q_over_b"])
+        axes[1].plot(incomplete["avalanche_id"], partial_size, "^",
+                     mfc="white", mec="#d1495b", mew=2, ms=8)
+        axes[1].annotate(
+            f"{incomplete['complete_events']} complete + "
+            f"{incomplete['active_event_q_over_b']:.2f}b",
+            (incomplete["avalanche_id"], partial_size), xytext=(-95, 10),
+            textcoords="offset points", fontsize=8)
     axes[1].set_ylabel("Avalanche size (events)")
     axes[2].plot(ids, [row["maximum_reload_stress_before_next_root_selected_MPa"]
                        for row in avalanches], "o-", label="selected at prior root")
@@ -226,7 +305,8 @@ def main():
     avalanches = detailed_avalanche_rows(history)
     restarts = restart_audit(args.run)
     make_plots(history, args.out)
-    sequence_plot(avalanches, args.out)
+    incomplete = incomplete_avalanche_summary(history)
+    sequence_plot(avalanches, incomplete, args.out)
     snapshots, movie = make_movie(args.run, source, args.out)
     numerical = snapshot_audit(snapshots, history)
     native = immutable_milestone_audit(args.run, len(events))
@@ -234,6 +314,16 @@ def main():
                                     if row["avalanche_id"] <= 2])
     later = cycle_group_summary([row for row in avalanches
                                  if row["avalanche_id"] > 2])
+    cycle3_end = next(row for row in history
+                      if row["phase"] == "AVALANCHE_EXTINCT_REPINNED" and
+                      int(row["avalanche_id"]) == 3)
+    cycle4_root = next(row for row in history
+                       if row["phase"] == "ROOT_CROSSING" and
+                       int(row["avalanche_id"]) == 4)
+    reload_decomposition = {
+        key: ((cycle4_root["stress_decomposition"]["LEFT"][key] -
+               cycle3_end["stress_decomposition"]["LEFT"][key]) / 1e6)
+        for key in ("curvature_term_Pa", "TJ_term_Pa", "total_Pa")}
     summary = {
         "campaign_status": load_json(args.run / "restart_boundaries" /
                                      "continuation_completion.json")["terminal_status"],
@@ -244,6 +334,8 @@ def main():
         "completed_events": len(events),
         "baseline_cycles_1_2": baseline,
         "later_cycles": later,
+        "incomplete_wall_limited_avalanche": incomplete,
+        "cycle3_to_cycle4_LEFT_reload_change_MPa": reload_decomposition,
         "avalanches": avalanches,
         "events": events,
         "event_restart_audit": restarts,
@@ -265,15 +357,27 @@ def main():
     for name in ("launch.json", "pre_draw_manifest.json", "CAMPAIGN_STATUS.md"):
         shutil.copy2(args.run / name, args.out / name)
     for name in ("post_avalanche_2_audit.json", "continuation_launch.json",
-                 "continuation_completion.json"):
+                 "continuation_completion.json", "wall_limit_restart_audit.json",
+                 "milestone_label_repair_audit.json"):
         shutil.copy2(args.run / "restart_boundaries" / name, args.out / name)
+    cycle3 = avalanches[2]
+    baseline_root_range = (min(baseline["root_stress_MPa"]),
+                           max(baseline["root_stress_MPa"]))
     report = f"""# C2 stochastic continuation
 
 **Status: {summary['campaign_status']}.** This report appends the same seed-20260915 stochastic lineage from the exact post-avalanche-2 checkpoint. The immutable two-cycle report remains unchanged.
 
-The full lineage completed **{len(avalanches)} avalanches** and **{len(events)} one-b events**, ending at **{history[-1]['time_s']:.9g} s**. Cycles 1-2 had root stresses {baseline['root_stress_MPa']} MPa and avalanche sizes {baseline['avalanche_sizes']}. Later cycles had root stresses {later['root_stress_MPa'] if later else []} MPa and avalanche sizes {later['avalanche_sizes'] if later else []}.
+The full lineage completed **{len(avalanches)} avalanches** and **{len(events)} one-b events**, ending at **{history[-1]['time_s']:.9g} s** after the 22,808.41 s continuation allocation. Avalanche 4 remained active at the wall limit with four complete events and event 25 at 0.3900 b; the exact RNG, clock, controller, and event-integrator state is restartable.
 
-The comparison tables and sequence panel report stress drift, alternating-contact retention, reload maxima, accumulated center loss and strain, barrier/site contributions, transport bottlenecks, and the actual accepted quota at every native quarter-event checkpoint. RNG, root hazards, thresholds, controller state, and physical time were restored from the audited atomic boundary. No threshold was redrawn manually, no contact was forced, and the microscopic physics remained unchanged.
+Cycles 1-2 rooted at **{baseline['root_stress_MPa'][0]:.3f}** and **{baseline['root_stress_MPa'][1]:.3f} MPa** and each contained six events. Completed cycle 3 rooted at **{cycle3['root_selected_stress_MPa']:.3f} MPa**, inside the {baseline_root_range[0]:.3f}-{baseline_root_range[1]:.3f} MPa baseline range, but grew to **eight events**. Its selected contact fell by **{cycle3['selected_stress_change_MPa']:.3f} MPa**, while the opposite contact changed by only **{cycle3['opposite_stress_change_MPa']:+.3f} MPa** and remained at {cycle3['extinction_opposite_stress_MPa']:.3f} MPa. Cycle 4 rooted on LEFT again at **{incomplete['root_selected_stress_MPa']:.3f} MPa**. Thus strict contact alternation did not persist (RIGHT, LEFT, LEFT, LEFT), while high opposite-contact stress retention did.
+
+Low-affinity bottlenecks became much more common: cycles 1, 2, and 3 recorded **{avalanches[0]['transport_pause_count']}**, **{avalanches[1]['transport_pause_count']}**, and **{cycle3['transport_pause_count']}** pauses. Every recovery used the existing 0.3895 ms source-alive block and the original 0.00125 b event floor. Cycle 3's barrier contribution ({cycle3['delta_ln_Gamma_barrier']:+.4f}) remained much larger than its TJ-site penalty ({cycle3['delta_ln_Gamma_sites']:+.4f}). At the cycle-4 root the corresponding values were {incomplete['delta_ln_Gamma_barrier']:+.4f} and {incomplete['delta_ln_Gamma_sites']:+.4f}.
+
+Center loss increased from {100*cycle3['root_center_loss_fraction']:.3f}% at the cycle-3 root to {100*incomplete['root_center_loss_fraction']:.3f}% at the cycle-4 root. At the wall limit it was {100*summary['final_center_loss_fraction']:.3f}%; quota strain was {100*summary['final_quota_strain']:.3f}% and independent geometric strain was {100*summary['final_geometric_strain']:.3f}%. From cycle-3 extinction to the cycle-4 LEFT root, curvature added **{reload_decomposition['curvature_term_Pa']:.3f} MPa** versus **{reload_decomposition['TJ_term_Pa']:.3f} MPa** from the TJ term. Curvature therefore remained the dominant reload amplification and returned both contacts to the 55-58 MPa range before roots, while individual avalanches relaxed the selected contact by roughly 24 MPa and left aggregate stress high.
+
+The comparison tables and sequence panel report stress drift, contact retention, reload maxima, accumulated center loss and strain, barrier/site contributions, transport bottlenecks, and the actual accepted quota at every native quarter-event checkpoint. All 12 new completed events have five native milestones. A labeling defect in the first checkpoint implementation preserved premature partial returns under a q=1 filename; every original byte was hash-preserved under its actual-quota name, true q=1 states were restored from completed-event checkpoints, and the write condition was fixed. This bookkeeping repair did not modify the trajectory or stochastic state.
+
+RNG, root hazards, thresholds, controller state, and physical time were restored from the audited atomic boundary. No threshold was redrawn manually, no contact was forced, and the microscopic physics remained unchanged. The continuation supports a characteristic high root-stress range and strong opposite-contact retention, but it does not support fixed six-event avalanches or persistent left/right alternation. The rising pause count also shows that transport bottlenecks strengthen materially as the morphology evolves.
 """
     (args.out / "REPORT.md").write_text(report)
     hashes = {path.name: sha256(path) for path in sorted(args.out.iterdir())

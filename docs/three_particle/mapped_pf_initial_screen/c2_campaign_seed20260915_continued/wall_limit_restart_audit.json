@@ -1,0 +1,80 @@
+{
+  "label": "C2_WALL_LIMIT_ATOMIC_RESTART_AUDIT",
+  "checkpoint": "runs/three_particle_c2_campaign/stochastic_seed20260915/trajectory.npz",
+  "immutable_copy": "runs/three_particle_c2_campaign/stochastic_seed20260915/restart_boundaries/wall_limit_trajectory.npz",
+  "checkpoint_sha256": "f3d38d4450b44449618ed27eb0e34194684f96d343bd862fd72bcb72f582594a",
+  "immutable_copy_sha256": "f3d38d4450b44449618ed27eb0e34194684f96d343bd862fd72bcb72f582594a",
+  "time_s": 296.1930162533673,
+  "phase": "EVENT_TRANSPORT_PAUSED",
+  "event_number": 25,
+  "event_q_over_b": 0.39000000000000007,
+  "completed_avalanches": 3,
+  "root": {
+    "hazard": {
+      "LEFT": 0.6297125436816097,
+      "RIGHT": 1.186691916501752
+    },
+    "threshold": {
+      "LEFT": 0.6297125436816097,
+      "RIGHT": 1.7330091303185444
+    },
+    "active": "LEFT",
+    "avalanche_id": 4,
+    "multiplier": 1.25,
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 320647995954810500362908648209452898353,
+        "inc": 60911795267443719179671677694683379797
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    }
+  },
+  "avalanche": {
+    "avalanche_active": true,
+    "avalanche_id": 4,
+    "root_cycle": 4,
+    "child_number": 4,
+    "S_completed": 4,
+    "q_avalanche_over_b": 4.0,
+    "descendant_threshold": 3.0245526819623008,
+    "descendant_hazard": 3.0245526819623008,
+    "pending_children": 0,
+    "delta_G_step_eV": 1.5,
+    "source_amplitude": 0.3429999999999999,
+    "facilitation_decay_alpha": 0.7,
+    "avalanche_start_time_s": 224.00349237419744,
+    "last_child_completion_time_s": 291.7609502364398,
+    "window_start_time_s": 291.7609502364398,
+    "window_deadline_s": 291.7699502364398,
+    "window_triggered": true,
+    "descendant_total_hazard": 6.929595790810469,
+    "thresholds_drawn": [
+      0.5625155708878176,
+      1.3578558421988398,
+      1.9846716957615098,
+      3.0245526819623008
+    ]
+  },
+  "checks": {
+    "immutable_copy_byte_exact": true,
+    "time_matches_history": true,
+    "phase_matches_history": true,
+    "event_number_matches_history": true,
+    "completed_avalanches_matches_history": true,
+    "terminal_status_saved": true,
+    "active_contact_preserved": true,
+    "root_hazards_match_history": true,
+    "root_thresholds_match_history": true,
+    "descendant_hazard_matches_history": true,
+    "descendant_threshold_matches_history": true,
+    "event_checkpoint_contact": true,
+    "event_checkpoint_label": true,
+    "event_progress_matches_history": true,
+    "event_fields_match_trajectory": true,
+    "ownership_partition_matches_pf_fields": true,
+    "all_fields_finite": true
+  },
+  "passed": true
+}
