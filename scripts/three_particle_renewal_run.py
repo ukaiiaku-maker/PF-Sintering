@@ -30,8 +30,9 @@ from pf_sintering.exp_barrier_nucleation import CompleteExpFloorParams
 from pf_sintering.pr_avalanche import (
     AvalancheController, AvalancheState, DescendantBarrier)
 from pf_sintering.three_particle_cmc import compatible_chain, map_to_pf
+from pf_sintering.three_particle_sharp_initial import load_mapped_sharp_state
 from pf_sintering.three_particle_contacts import evaluate_contacts
-from pf_sintering.three_particle_diagnostics import diagnostics, curvature_watch
+from pf_sintering.three_particle_diagnostics import diagnostics, curvature_watch, radius_profile
 from pf_sintering.three_particle_event import (
     load_event_checkpoint, save_event_checkpoint, update_ownership)
 from pf_sintering.three_particle_full_jacobian import FullJacobianSurfaceDiffusion
@@ -136,6 +137,28 @@ def require_campaign(source):
         production_initial=initial)
 
 
+def require_earlier_stage_campaign(source):
+    authorization=json.loads(Path(
+        'docs/three_particle/initial_state_design/campaign_authorization.json').read_text())
+    qualification=json.loads(Path(
+        'docs/three_particle/initial_state_design/qualification.json').read_text())
+    if qualification.get('status')!='SHORT_NUMERICAL_QUALIFICATION_PASS':
+        raise RuntimeError('earlier-stage source lacks short numerical qualification')
+    if str(source)!=authorization['source'] or sha256(source)!=authorization['source_sha256']:
+        raise RuntimeError('earlier-stage production source identity mismatch')
+    if authorization.get('physical_parameters_changed') or authorization.get('stress_history_prescribed'):
+        raise RuntimeError('earlier-stage authorization violates physical-model isolation')
+    old=json.loads((D/'qualification.json').read_text())
+    existing=json.loads((D/'campaign_authorization.json').read_text())
+    return dict(authorization={**existing,
+        'phase_b_enabled_for_campaign':True,
+        'source_selection_precedes_random_draw':True,
+        'source':str(source),'source_sha256':sha256(source),
+        'production_seed':authorization['production_seed'],
+        'earlier_stage_initial_state':True},numerical=old,
+        earlier_stage_authorization=authorization,short_qualification=qualification)
+
+
 def build_controller(clocks):
     p = MANIFEST["root_barrier_slice"]
     barrier = DescendantBarrier(CompleteExpFloorParams(
@@ -156,10 +179,14 @@ def main():
     parser.add_argument("--minimum-avalanches", type=int, default=2)
     parser.add_argument("--maximum-production-seconds", type=float, default=3600.)
     parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--earlier-stage", action="store_true")
     args = parser.parse_args()
     if args.minimum_avalanches < 2:
         raise ValueError("production requires at least two complete avalanches")
-    gate = require_campaign(args.source)
+    gate = (require_earlier_stage_campaign(args.source) if args.earlier_stage
+            else require_campaign(args.source))
+    production_seed=(int(gate['earlier_stage_authorization']['production_seed'])
+                     if args.earlier_stage else PRODUCTION_SEED)
     if args.validate_only:
         print("CAMPAIGN_READY_NO_THRESHOLDS_DRAWN", sha256(args.source))
         return
@@ -173,9 +200,14 @@ def main():
                    if gate["authorization"].get("native_dt_factor") == 2
                    else BufferedContactEvent if old.get("event_engine") ==
                    "buffered_native" else ContactEvent)
-    out = Path("runs/three_particle_production_065")/args.out_name
-    c, offsets = compatible_chain(.65, 119.999*1e-9)
-    g = map_to_pf(c, offsets, 4e-9, .5e-9)
+    out = (Path("runs/three_particle_earlier_stage_campaign") if args.earlier_stage
+           else Path("runs/three_particle_production_065"))/args.out_name
+    if args.earlier_stage:
+        g, source_fields, source_metadata = load_mapped_sharp_state(args.source)
+    else:
+        c, offsets = compatible_chain(.65, 119.999*1e-9)
+        g = map_to_pf(c, offsets, 4e-9, .5e-9)
+        source_fields=source_metadata=None
     rule = json.loads(Path(
         "docs/three_particle/cmc/angle_calibration.json").read_text())["rule"]
 
@@ -201,7 +233,7 @@ def main():
         start_t = float(launch["start_time_s"])
         mass0 = float(launch["material_volume_m3"])
         reference_span = float(launch["densification_reference_length_m"])
-        if int(launch["seed"]) != PRODUCTION_SEED:
+        if int(launch["seed"]) != production_seed:
             raise RuntimeError("production seed changed on restart")
         promoted_increment = gate["authorization"].get(
             "event_max_increment_over_b", old["event_max_increment_over_b"])
@@ -311,7 +343,7 @@ def main():
             if bool(data["symmetry_enforcement_enabled"]):
                 raise ValueError("production requires a symmetry-released source")
         start_t = t
-        clocks = RootClocks(np.random.default_rng(PRODUCTION_SEED))
+        clocks = RootClocks(np.random.default_rng(production_seed))
         avalanche = build_controller(clocks)
         records = []
         event_number = 0
@@ -325,7 +357,7 @@ def main():
         reference_span = reference_probe.metrics(state, 0.)["chain_span_m"]
         launch = dict(
             label="GENUINE_STOCHASTIC_THREE_PARTICLE_RENEWAL",
-            seed=PRODUCTION_SEED, source=str(args.source),
+            seed=production_seed, source=str(args.source),
             source_sha256=sha256(args.source), start_time_s=start_t,
             source_selected_before_random_draw=True,
             first_root_thresholds=clocks.threshold.copy(),
@@ -366,6 +398,10 @@ def main():
                     "sum of accepted event quota times b / initial outer-grain centroid separation"),
                 geometric_chain_strain=(
                     "1 - current outer-grain centroid separation / initial separation")),
+            initial_geometry_kind=('earlier_stage_sharp_mapped' if args.earlier_stage else 'selected_065_cmc'),
+            initial_geometry_metadata=source_metadata,
+            all_physical_parameters_unchanged=True,
+            no_prescribed_stress_or_geometry_trajectory=True,
             campaign_gate=gate)
         atomic_text(out/"launch.json", json.dumps(launch, indent=2)+"\n")
 
@@ -432,6 +468,15 @@ def main():
         areas = {key: np.pi*value["r_n_m"]**2
                  for key, value in contacts.items()}
         area_sum = sum(areas.values())
+        radius=radius_profile(state[0],g);valid=np.flatnonzero(np.isfinite(radius))
+        surface_area=float(2*np.pi*np.sum(.5*(radius[valid][:-1]+radius[valid][1:])
+            *np.hypot(np.diff(g['z'][valid]),np.diff(radius[valid]))))
+        interfacial_energy=float(scalar['energy_J'])
+        energy_balance_stress=None
+        if records:
+            prior=records[-1];delta_strain=chain-prior['geometric_chain_strain']
+            if abs(delta_strain)>1e-12:
+                energy_balance_stress=-(interfacial_energy-prior['total_interfacial_energy_J'])/(mass0*delta_strain)
         row = dict(
             time_s=t, phase=phase, event_number=event_number,
             completed_avalanches=completed_avalanches,
@@ -462,6 +507,10 @@ def main():
             cluster_area_weighted_integral_Pa=sum(
                 areas[key]*contacts[key]["sigma_integral_continuous_Pa"]
                 for key in areas)/area_sum,
+            surface_area_m2=surface_area,GB_area_m2=area_sum,
+            total_interfacial_energy_J=interfacial_energy,
+            energy_balance_sintering_stress_Pa=energy_balance_stress,
+            energy_balance_definition="-Delta E/(Vsolid Delta geometric_strain), backward record interval; diagnostic only",
             hazards=clocks.hazard.copy(), thresholds=clocks.threshold.copy(),
             H_over_Hstar={key: clocks.hazard[key]/clocks.threshold[key]
                           for key in clocks.hazard}, diagnostics=scalar)
@@ -518,7 +567,8 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
         os.replace(temporary, out/"trajectory.npz")
         atomic_text(out/"history.json",
                     json.dumps(records, indent=2, default=float)+"\n")
-        atomic_text(STATUS_PATH, campaign_status())
+        atomic_text((out/'CAMPAIGN_STATUS.md') if args.earlier_stage else STATUS_PATH,
+                    campaign_status())
 
     if not args.resume:
         record(phase)

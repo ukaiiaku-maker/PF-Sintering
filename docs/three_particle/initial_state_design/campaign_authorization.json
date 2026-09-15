@@ -1,0 +1,15 @@
+{
+  "label": "EARLIER_STAGE_UNCONSTRAINED_THREE_PARTICLE_CAMPAIGN",
+  "source_selected_before_stochastic_draw": true,
+  "source": "runs/three_particle_earlier_stage_qualification/qualified_state.npz",
+  "source_sha256": "55b39e90db79b675956a9465d00cfe533f585aa50ff9df1542e195f4e0d9ef6d",
+  "production_seed": 20260914,
+  "seed_basis": "calendar campaign identifier fixed before any threshold draw; no seed screening",
+  "short_numerical_qualification": "SHORT_NUMERICAL_QUALIFICATION_PASS",
+  "complete_existing_physics_required": true,
+  "physical_parameters_changed": false,
+  "stress_history_prescribed": false,
+  "root_event_forced": false,
+  "symmetry_enforcement_enabled": false,
+  "minimum_completed_avalanches": 2
+}

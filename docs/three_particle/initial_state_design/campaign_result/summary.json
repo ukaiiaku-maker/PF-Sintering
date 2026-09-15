@@ -1,0 +1,121 @@
+{
+  "status": "STOPPED: current-state transfer failed at minimum step",
+  "phase": "ACTIVE_ONE_B",
+  "source": "runs/three_particle_earlier_stage_qualification/qualified_state.npz",
+  "source_sha256": "55b39e90db79b675956a9465d00cfe533f585aa50ff9df1542e195f4e0d9ef6d",
+  "seed": 20260914,
+  "physical_time_s": 10.60742648104794,
+  "last_recorded_time_s": 10.607203643020751,
+  "completed_avalanches": 0,
+  "event_number": 2,
+  "center_volume_change": -0.008080826404353814,
+  "initial_local_stress_MPa": {
+    "LEFT": 58.32455851509088,
+    "RIGHT": 58.324558515090594
+  },
+  "final_local_stress_MPa": {
+    "LEFT": 48.53861336117972,
+    "RIGHT": 51.70129568031141
+  },
+  "maximum_LEFT_RIGHT_difference_MPa": 3.16268231913169,
+  "final_cluster_area_weighted_stress_MPa": 50.09739793786279,
+  "final_surface_area_relative": -0.010328228101299408,
+  "final_GB_area_relative": 0.13410776359063004,
+  "final_interfacial_energy_relative": -0.008460647397030008,
+  "final_geometric_strain": 0.0008645371465733076,
+  "final_production_strain": 0.000511043327183408,
+  "maximum_mirror_error": 0.13807125702925532,
+  "pre_root": {
+    "time_s": 10.540964660644528,
+    "center_volume_change": -0.008013724036703751,
+    "LEFT_stress_MPa": 51.703043627041474,
+    "RIGHT_stress_MPa": 51.70148366951932,
+    "peak_LEFT_stress_MPa": 59.60417918840404,
+    "peak_stress_time_s": 1.01,
+    "aggregate_stress_MPa": 51.70226364496948,
+    "energy_balance_stress_MPa": 54.30529045373269,
+    "energy_balance_relative_difference": 0.05034647663858105,
+    "surface_area_relative": -0.010182425962820596,
+    "GB_area_relative": 0.11792313908305396,
+    "interfacial_energy_relative": -0.008650924742855004
+  },
+  "completed_one_b_events": 1,
+  "terminal_event": {
+    "event_number": 2,
+    "progress_over_b": 0.10250000000000002,
+    "accepted_steps_total": 21,
+    "active_minimum_step_over_b": 0.00125,
+    "rejection_reason_counts": {
+      "transport_affinity_MPa": 3
+    },
+    "last_rejection_reasons": [
+      "transport_affinity_MPa"
+    ]
+  },
+  "events": [
+    {
+      "time_s": 10.540964660644528,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 1,
+      "completed_avalanches": 0,
+      "active_contact": "LEFT",
+      "LEFT_sigma_MPa": 51.703043627041474,
+      "RIGHT_sigma_MPa": 51.70148366951932,
+      "center_volume_m3": 4.040249896985435e-21,
+      "geometric_strain": 0.0008566680156630868,
+      "production_strain": 0.0
+    },
+    {
+      "time_s": 10.59882191844193,
+      "phase": "ONE_B_COMPLETE",
+      "event_number": 1,
+      "completed_avalanches": 0,
+      "active_contact": "LEFT",
+      "LEFT_sigma_MPa": 49.682469829308985,
+      "RIGHT_sigma_MPa": 51.70134050964447,
+      "center_volume_m3": 4.040000091724069e-21,
+      "geometric_strain": 0.0008638445109628856,
+      "production_strain": 0.00046458484289400723
+    },
+    {
+      "time_s": 10.59882191844193,
+      "phase": "SOURCE_WINDOW_OPEN",
+      "event_number": 1,
+      "completed_avalanches": 0,
+      "active_contact": "LEFT",
+      "LEFT_sigma_MPa": 49.682469829308985,
+      "RIGHT_sigma_MPa": 51.70134050964447,
+      "center_volume_m3": 4.040000091724069e-21,
+      "geometric_strain": 0.0008638445109628856,
+      "production_strain": 0.00046458484289400723
+    },
+    {
+      "time_s": 10.59882384164621,
+      "phase": "CHILD_CROSSING",
+      "event_number": 1,
+      "completed_avalanches": 0,
+      "active_contact": "LEFT",
+      "LEFT_sigma_MPa": 49.642574943985295,
+      "RIGHT_sigma_MPa": 51.70133940059909,
+      "center_volume_m3": 4.040000107495548e-21,
+      "geometric_strain": 0.0008638441404862363,
+      "production_strain": 0.00046458484289400723
+    },
+    {
+      "time_s": 10.59882384164621,
+      "phase": "ACTIVE_ONE_B",
+      "event_number": 2,
+      "completed_avalanches": 0,
+      "active_contact": "LEFT",
+      "LEFT_sigma_MPa": 49.642574943985295,
+      "RIGHT_sigma_MPa": 51.70133940059909,
+      "center_volume_m3": 4.040000107495548e-21,
+      "geometric_strain": 0.0008638441404862363,
+      "production_strain": 0.00046458484289400723
+    }
+  ],
+  "no_clipping": true,
+  "no_fitted_correction": true,
+  "symmetry_enforcement_enabled": false,
+  "energy_balance_stress_is_interval_diagnostic": true
+}
