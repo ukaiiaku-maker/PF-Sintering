@@ -51,3 +51,40 @@ def test_counted_strain_quota_survives_windows_failure_and_resume():
     assert cumulative_event_quota(1,'FORCED_ROOT_COMPLETE',1)==1
     with pytest.raises(ValueError):cumulative_event_quota(0,'ACTIVE_ONE_B',.5)
     with pytest.raises(ValueError):cumulative_event_quota(1,'UNKNOWN',0)
+
+
+def test_two_cycle_boundary_restart_preserves_next_draw_and_hazard_lineage():
+    """Stopping after extinction 2 is transparent to the next root process."""
+    uninterrupted = RootClocks(np.random.default_rng(20260915))
+    uninterrupted.threshold = {'LEFT': .31, 'RIGHT': .47}
+    for contact in ('RIGHT', 'LEFT'):
+        increment = {key: uninterrupted.threshold[key]-uninterrupted.hazard[key]
+                     for key in ('LEFT', 'RIGHT')}
+        # Keep the unselected clock below its crossing on each synthetic cycle.
+        increment[contact] = uninterrupted.threshold[contact]-uninterrupted.hazard[contact]
+        other = 'LEFT' if contact == 'RIGHT' else 'RIGHT'
+        increment[other] = min(increment[other], .01)
+        uninterrupted.commit(increment, contact)
+        uninterrupted.extinct()
+
+    saved = uninterrupted.snapshot()
+    restarted = RootClocks.restore(saved)
+    rates0 = {'LEFT': .7, 'RIGHT': 1.1}
+    rates1 = {'LEFT': .9, 'RIGHT': 1.3}
+    increment_a = uninterrupted.increments(rates0, rates1, .2)
+    increment_b = restarted.increments(rates0, rates1, .2)
+    assert increment_a == increment_b
+    uninterrupted.commit(increment_a)
+    restarted.commit(increment_b)
+    assert uninterrupted.snapshot() == restarted.snapshot()
+
+    # Force the same next crossing; extinction must consume the same next RNG draw.
+    contact = min(('LEFT', 'RIGHT'),
+                  key=lambda key: uninterrupted.threshold[key]-uninterrupted.hazard[key])
+    crossing = {key: 0. for key in ('LEFT', 'RIGHT')}
+    crossing[contact] = uninterrupted.threshold[contact]-uninterrupted.hazard[contact]
+    uninterrupted.commit(crossing, contact)
+    restarted.commit(crossing, contact)
+    uninterrupted.extinct()
+    restarted.extinct()
+    assert uninterrupted.snapshot() == restarted.snapshot()

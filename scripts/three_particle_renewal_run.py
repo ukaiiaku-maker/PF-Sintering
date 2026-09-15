@@ -83,6 +83,28 @@ def event_checkpoint_due(q_now, last_saved_q):
                 q_now-last_saved_q >= cadence-1e-12)
 
 
+EVENT_MILESTONE_TARGETS = (0.25, 0.50, 0.75)
+
+
+def pending_event_milestones(q_now, existing_names):
+    """Return nominal quota milestones first reached by this accepted state."""
+    return [target for target in EVENT_MILESTONE_TARGETS
+            if f"q_{target:.2f}b.npz" not in existing_names and
+            q_now >= target-1e-12]
+
+
+def save_immutable_event_checkpoint(path, state, restart, *, contact):
+    """Write an accepted event state once; an existing milestone is immutable."""
+    path = Path(path)
+    if path.exists():
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    save_event_checkpoint(
+        path, state, restart, contact=contact,
+        label="GENUINE_STOCHASTIC_EVENT_IMMUTABLE_MILESTONE")
+    return True
+
+
 def accepted_reload_step_hint(proposed_h, accepted_h, error):
     """Retain the incoming hint when only the interval remainder clipped it."""
     grown = accepted_h*min(2., max(1., .8/max(error, 1e-12)**.5))
@@ -651,6 +673,27 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
         atomic_text((out/'CAMPAIGN_STATUS.md') if (args.earlier_stage or args.c2) else STATUS_PATH,
                     campaign_status())
 
+    def save_immutable_lineage_checkpoint(relative_path):
+        """Preserve a full stochastic/controller state without overwriting it."""
+        path = out/"lineage_milestones"/relative_path
+        if path.exists():
+            return False
+        path.parent.mkdir(parents=True, exist_ok=True)
+        metadata = dict(
+            status=status, phase=phase, root=clocks.snapshot(),
+            avalanche=asdict(avalanche.state),
+            avalanche_crossings=avalanche.crossings,
+            event_number=event_number,
+            completed_avalanches=completed_avalanches,
+            event_start_t=event_start_t,
+            event_pause_time_s=event_pause_time_s)
+        temporary = path.with_suffix(".writing.npz")
+        np.savez_compressed(
+            temporary, fields=np.array(state), ownership=g["ownership"],
+            gb=g["gb"], time_s=t, metadata=json.dumps(metadata))
+        os.replace(temporary, path)
+        return True
+
     if not args.resume:
         record(phase)
         snapshot(force=True)
@@ -674,6 +717,10 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 clocks.commit(increment, contact)
                 record("ROOT_CROSSING" if contact else "RELOAD")
                 snapshot(force=bool(contact))
+                if contact:
+                    save_immutable_lineage_checkpoint(
+                        Path("root_crossings")/
+                        f"avalanche_{clocks.avalanche_id:03d}.npz")
                 save()
                 if topology_status(fn, g)["stop"]:
                     status = "PHYSICAL_TOPOLOGY_TERMINAL"
@@ -700,6 +747,9 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 save_event_checkpoint(
                     checkpoint, state, zero[5]["event_restart"],
                     contact=contact, label="GENUINE_STOCHASTIC_EVENT")
+                save_immutable_event_checkpoint(
+                    out/"milestones"/f"event_{event_number:02d}"/"start.npz",
+                    state, zero[5]["event_restart"], contact=contact)
                 record("ACTIVE_ONE_B", 0.)
                 save()
                 pending_restart = zero[5]["event_restart"]
@@ -740,6 +790,14 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 def progress(packet, fields, restart):
                     nonlocal state, t
                     q_now = float(packet["q_end_over_b"])
+                    milestone_dir = out/"milestones"/f"event_{event_number:02d}"
+                    existing = ({path.name for path in milestone_dir.glob("*.npz")}
+                                if milestone_dir.exists() else set())
+                    for target in pending_event_milestones(q_now, existing):
+                        save_immutable_event_checkpoint(
+                            milestone_dir/f"q_{target:.2f}b.npz", fields, restart,
+                            contact=contact)
+                        existing.add(f"q_{target:.2f}b.npz")
                     last_saved_q = (float(records[-1]["q_over_b"])
                                     if (records and records[-1]["phase"] ==
                                         "ACTIVE_ONE_B" and
@@ -775,6 +833,9 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     out/f"event_{event_number}_final.npz", state,
                     info["event_restart"], contact=contact,
                     label="GENUINE_STOCHASTIC_EVENT")
+                save_immutable_event_checkpoint(
+                    out/"milestones"/f"event_{event_number:02d}"/"q_1.00b.npz",
+                    state, info["event_restart"], contact=contact)
                 interrupted_phase = incomplete_event_phase(result[4], info)
                 if interrupted_phase is not None:
                     save_event_checkpoint(
@@ -834,6 +895,10 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                         avalanche.state.descendant_total_hazard += increment["LEFT"]
                     record("CHILD_CROSSING" if child else "FACILITATED_WINDOW")
                     snapshot(force=bool(child))
+                    if child:
+                        save_immutable_lineage_checkpoint(
+                            Path("child_crossings")/
+                            f"event_{event_number:03d}.npz")
                     save()
                     if child:
                         break
@@ -847,6 +912,9 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 completed_avalanches += 1
                 record("AVALANCHE_EXTINCT_REPINNED")
                 snapshot(force=True)
+                save_immutable_lineage_checkpoint(
+                    Path("extinction_and_reload_sources")/
+                    f"avalanche_{completed_avalanches:03d}.npz")
                 save()
 
         if status == "RUNNING":
