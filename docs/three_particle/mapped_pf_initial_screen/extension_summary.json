@@ -1,0 +1,23 @@
+{
+  "status": "BEST_CANDIDATE_EVENTS_OFF_EXTENSION_COMPLETE",
+  "events_enabled": false,
+  "stochastic_draws": false,
+  "design_id": "Ro150_q0.55_L45W_r0.75_th160_kc+10_ko+10",
+  "sigma0_MPa": 43.154254748672116,
+  "sigma_max_MPa": 53.18348959806635,
+  "delta_sigma_MPa": 10.029234849394236,
+  "t_sigma_max_s": 2.0,
+  "end_time_s": 2.0,
+  "maximum_is_endpoint_censored": true,
+  "survival_to_max": 0.7820514464899354,
+  "delta_ln_Gamma_sites": -0.016468926033442167,
+  "delta_ln_Gamma_barrier": 0.22898924622850164,
+  "delta_ln_Gamma": 0.21252032019505948,
+  "center_volume_change_at_max": -0.006495060171730627,
+  "rTJ_change_at_max": -0.016334054681543475,
+  "curvature_term_change_at_max_MPa": 9.079031842323609,
+  "TJ_term_change_at_max_MPa": 0.9502030852094094,
+  "accepted_steps": 137,
+  "rejected_steps": 24,
+  "wall_s": 1007.311187083018
+}

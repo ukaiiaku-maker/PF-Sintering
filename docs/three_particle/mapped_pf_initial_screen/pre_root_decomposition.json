@@ -1,0 +1,82 @@
+{
+  "status": "PRE_ROOT_DECOMPOSITION_COMPLETE",
+  "anchors": {
+    "start": {
+      "time_s": 0.01,
+      "contact": "LEFT",
+      "curvature_term_MPa": 18.298104914728373,
+      "TJ_term_MPa": 40.02645360036251,
+      "total_MPa": 58.32455851509088,
+      "rTJ_nm": 74.3557219218542,
+      "kappa_negative_per_um": -10.224468115295753,
+      "kappa_positive_per_um": -26.37174171416099,
+      "theta_negative_deg": 166.13522716040367,
+      "theta_positive_deg": 164.99686750955695,
+      "neck_radius_nm": 74.3557219218542,
+      "center_volume_change": 0.0,
+      "gb_position_nm": -69.30000000000001,
+      "surface_area_relative": 0.0,
+      "GB_area_relative": 0.0,
+      "interfacial_energy_relative": 0.0
+    },
+    "maximum": {
+      "time_s": 1.01,
+      "contact": "LEFT",
+      "curvature_term_MPa": 20.085966085855922,
+      "TJ_term_MPa": 39.5182131025481,
+      "total_MPa": 59.604179188404025,
+      "rTJ_nm": 74.65553956281592,
+      "kappa_negative_per_um": -17.880342309708517,
+      "kappa_positive_per_um": -22.291589862003324,
+      "theta_negative_deg": 178.8390368770632,
+      "theta_positive_deg": 150.42855029572306,
+      "neck_radius_nm": 74.65553956281592,
+      "center_volume_change": 0.0024136934582943415,
+      "gb_position_nm": -69.30000000000001,
+      "surface_area_relative": -0.002124408270426037,
+      "GB_area_relative": 0.008080672113678578,
+      "interfacial_energy_relative": -0.002096910074036562
+    },
+    "root": {
+      "time_s": 10.540964660644528,
+      "contact": "LEFT",
+      "curvature_term_MPa": 14.921096316925789,
+      "TJ_term_MPa": 36.78194731011568,
+      "total_MPa": 51.703043627041474,
+      "rTJ_nm": 78.61753912832313,
+      "kappa_negative_per_um": -15.879049068245616,
+      "kappa_positive_per_um": -13.963143565605966,
+      "theta_negative_deg": 169.06642581293568,
+      "theta_positive_deg": 137.6091047523134,
+      "neck_radius_nm": 78.61753912832313,
+      "center_volume_change": -0.008013724036703751,
+      "gb_position_nm": -69.30000000000001,
+      "surface_area_relative": -0.010182425962820596,
+      "GB_area_relative": 0.11792313908305396,
+      "interfacial_energy_relative": -0.008650924742855004
+    }
+  },
+  "interval_changes": {
+    "initial_rise": {
+      "curvature_term_MPa": 1.787861171127549,
+      "TJ_term_MPa": -0.5082404978144055,
+      "total_MPa": 1.279620673313147,
+      "rTJ_nm": 0.29981764096172014,
+      "kappa_negative_per_um": -7.655874194412764,
+      "kappa_positive_per_um": 4.080151852157666,
+      "theta_negative_deg": 12.70380971665952,
+      "theta_positive_deg": -14.568317213833893
+    },
+    "post_peak_relaxation": {
+      "curvature_term_MPa": -5.164869768930133,
+      "TJ_term_MPa": -2.7362657924324196,
+      "total_MPa": -7.901135561362551,
+      "rTJ_nm": 3.961999565507213,
+      "kappa_negative_per_um": 2.0012932414629017,
+      "kappa_positive_per_um": 8.328446296397358,
+      "theta_negative_deg": -9.772611064127517,
+      "theta_positive_deg": -12.819445543409643
+    }
+  },
+  "interpretation": "The initial rise is produced by a more negative fitted mean meridional curvature; its gain exceeds the simultaneous TJ-term loss. The fitted curvature term reverses at the stress maximum, after which both curvature and TJ terms decrease."
+}
