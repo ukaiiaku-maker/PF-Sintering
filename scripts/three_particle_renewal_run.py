@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import os
+import subprocess
 import sys
 import time
 
@@ -159,6 +160,31 @@ def require_earlier_stage_campaign(source):
         earlier_stage_authorization=authorization,short_qualification=qualification)
 
 
+def require_c2_campaign(source):
+    authorization=json.loads(Path(
+        'docs/three_particle/mapped_pf_initial_screen/c2_campaign_authorization.json').read_text())
+    source_report=json.loads(Path(
+        'docs/three_particle/mapped_pf_initial_screen/c2_source_report.json').read_text())
+    if source_report.get('status')!='C2_SOURCE_FROZEN_BEFORE_STOCHASTIC_DRAW':
+        raise RuntimeError('C2 source was not frozen before stochastic sampling')
+    if str(source)!=authorization['source'] or sha256(source)!=authorization['source_sha256']:
+        raise RuntimeError('C2 production source identity mismatch')
+    if source_report['source_sha256']!=authorization['source_sha256']:
+        raise RuntimeError('C2 source report identity mismatch')
+    if authorization.get('physical_parameters_changed') or authorization.get('stress_history_prescribed'):
+        raise RuntimeError('C2 authorization violates physical-model isolation')
+    old=json.loads((D/'qualification.json').read_text())
+    existing=json.loads((D/'campaign_authorization.json').read_text())
+    return dict(authorization={**existing,
+        'phase_b_enabled_for_campaign':True,
+        'source_selection_precedes_random_draw':True,
+        'source':str(source),'source_sha256':sha256(source),
+        'production_seed':authorization['production_seed'],
+        'c2_initial_state':True,
+        'event_minimum_increment_over_b':authorization['event_minimum_increment_over_b']},
+        numerical=old,c2_authorization=authorization,c2_source_report=source_report)
+
+
 def build_controller(clocks):
     p = MANIFEST["root_barrier_slice"]
     barrier = DescendantBarrier(CompleteExpFloorParams(
@@ -178,14 +204,20 @@ def main():
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--minimum-avalanches", type=int, default=2)
     parser.add_argument("--maximum-production-seconds", type=float, default=3600.)
+    parser.add_argument("--maximum-wall-seconds", type=float)
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--earlier-stage", action="store_true")
+    parser.add_argument("--c2", action="store_true")
     args = parser.parse_args()
+    if args.earlier_stage and args.c2:
+        raise ValueError("choose only one mapped-source campaign mode")
     if args.minimum_avalanches < 2:
         raise ValueError("production requires at least two complete avalanches")
-    gate = (require_earlier_stage_campaign(args.source) if args.earlier_stage
+    gate = (require_c2_campaign(args.source) if args.c2 else
+            require_earlier_stage_campaign(args.source) if args.earlier_stage
             else require_campaign(args.source))
-    production_seed=(int(gate['earlier_stage_authorization']['production_seed'])
+    production_seed=(int(gate['c2_authorization']['production_seed']) if args.c2 else
+                     int(gate['earlier_stage_authorization']['production_seed'])
                      if args.earlier_stage else PRODUCTION_SEED)
     if args.validate_only:
         print("CAMPAIGN_READY_NO_THRESHOLDS_DRAWN", sha256(args.source))
@@ -200,9 +232,10 @@ def main():
                    if gate["authorization"].get("native_dt_factor") == 2
                    else BufferedContactEvent if old.get("event_engine") ==
                    "buffered_native" else ContactEvent)
-    out = (Path("runs/three_particle_earlier_stage_campaign") if args.earlier_stage
+    out = (Path("runs/three_particle_c2_campaign") if args.c2 else
+           Path("runs/three_particle_earlier_stage_campaign") if args.earlier_stage
            else Path("runs/three_particle_production_065"))/args.out_name
-    if args.earlier_stage:
+    if args.earlier_stage or args.c2:
         g, source_fields, source_metadata = load_mapped_sharp_state(args.source)
     else:
         c, offsets = compatible_chain(.65, 119.999*1e-9)
@@ -343,6 +376,19 @@ def main():
             if bool(data["symmetry_enforcement_enabled"]):
                 raise ValueError("production requires a symmetry-released source")
         start_t = t
+        pre_draw_provenance=dict(
+            status="SOURCE_AND_SEED_FROZEN_BEFORE_THRESHOLD_DRAW",
+            source=str(args.source),source_sha256=sha256(args.source),
+            seed=production_seed,branch=subprocess.check_output(
+                ["git","branch","--show-current"],text=True).strip(),
+            branch_head=subprocess.check_output(
+                ["git","rev-parse","HEAD"],text=True).strip(),
+            working_tree_porcelain=subprocess.check_output(
+                ["git","status","--porcelain=v1"],text=True),
+            physical_manifest=MANIFEST,campaign_gate=gate,
+            threshold_drawn=False)
+        atomic_text(out/"pre_draw_manifest.json",
+                    json.dumps(pre_draw_provenance,indent=2,default=float)+"\n")
         clocks = RootClocks(np.random.default_rng(production_seed))
         avalanche = build_controller(clocks)
         records = []
@@ -359,11 +405,14 @@ def main():
             label="GENUINE_STOCHASTIC_THREE_PARTICLE_RENEWAL",
             seed=production_seed, source=str(args.source),
             source_sha256=sha256(args.source), start_time_s=start_t,
+            pre_draw_manifest=str(out/"pre_draw_manifest.json"),
+            pre_draw_branch_head=pre_draw_provenance["branch_head"],
             source_selected_before_random_draw=True,
             first_root_thresholds=clocks.threshold.copy(),
             first_root_hazards=clocks.hazard.copy(), stochastic_result=True,
             minimum_completed_avalanches=args.minimum_avalanches,
             maximum_production_seconds=args.maximum_production_seconds,
+            maximum_wall_seconds=args.maximum_wall_seconds,
             symmetry_enforcement_enabled=False, reflection_guard_enabled=False,
             no_symmetry_projection=True,
             contact_selected_only_by_localized_root_crossing=True,
@@ -372,8 +421,8 @@ def main():
             numba_threads=required_threads,
             accepted_event_increment_over_b=gate["authorization"].get(
                 "event_max_increment_over_b", old["event_max_increment_over_b"]),
-            event_minimum_increment_over_b=(
-                MANIFEST["event_minimum_increment_fraction_b"]),
+            event_minimum_increment_over_b=gate["authorization"].get(
+                "event_minimum_increment_over_b",MANIFEST["event_minimum_increment_fraction_b"]),
             event_accepted_state_cap=event_accepted_state_cap(
                 MANIFEST["event_minimum_increment_fraction_b"]),
             event_checkpoint_cadence_over_b=.01,
@@ -398,7 +447,8 @@ def main():
                     "sum of accepted event quota times b / initial outer-grain centroid separation"),
                 geometric_chain_strain=(
                     "1 - current outer-grain centroid separation / initial separation")),
-            initial_geometry_kind=('earlier_stage_sharp_mapped' if args.earlier_stage else 'selected_065_cmc'),
+            initial_geometry_kind=('c2_minimally_cleaned_post_mapping' if args.c2 else
+                'earlier_stage_sharp_mapped' if args.earlier_stage else 'selected_065_cmc'),
             initial_geometry_metadata=source_metadata,
             all_physical_parameters_unchanged=True,
             no_prescribed_stress_or_geometry_trajectory=True,
@@ -412,6 +462,7 @@ def main():
     passive = FullJacobianSurfaceDiffusion(op, reuse_preconditioner=True)
     wall = time.perf_counter()
     reload_h_hint = .1
+    snapshot_last_time = -float("inf")
 
     def field_advance(field, seconds):
         nonlocal reload_h_hint
@@ -499,6 +550,7 @@ def main():
             source_amplitude=avalanche.state.source_amplitude,
             source_window_deadline_s=avalanche.state.window_deadline_s,
             center_volume_m3=float(volumes[1]),
+            grain_volumes_m3=volumes.tolist(),
             center_particle_mean_local_Pa=.5*(
                 contacts["LEFT"]["sigma_local_positive_Pa"]+
                 contacts["RIGHT"]["sigma_local_negative_Pa"]),
@@ -514,12 +566,41 @@ def main():
             hazards=clocks.hazard.copy(), thresholds=clocks.threshold.copy(),
             H_over_Hstar={key: clocks.hazard[key]/clocks.threshold[key]
                           for key in clocks.hazard}, diagnostics=scalar)
+        baseline_contacts=(records[0]["contacts"] if records else contacts)
+        row["stress_decomposition"]={}
+        row["root_rate_decomposition"]={}
+        kBT_eV=8.617333262145e-5*MANIFEST["temperature_K"]
+        for key in ("LEFT","RIGHT"):
+            c=contacts[key];base=baseline_contacts[key]
+            curvature=-.5*(c["kappa1_negative_per_m"]+c["kappa1_positive_per_m"])
+            tj=1.5*(math.sin(c["theta_negative_rad"]/2)+math.sin(c["theta_positive_rad"]/2))/c["r_n_m"]
+            row["stress_decomposition"][key]=dict(
+                curvature_term_Pa=curvature,TJ_term_Pa=tj,total_Pa=curvature+tj)
+            sites=math.log(c["r_n_m"]/base["r_n_m"])
+            barrier=(base["G_root_eV"]-c["G_root_eV"])/kBT_eV
+            row["root_rate_decomposition"][key]=dict(
+                delta_ln_Gamma_sites=sites,delta_ln_Gamma_barrier=barrier,
+                delta_ln_Gamma=sites+barrier)
         if phase in ("POST_TRANSIENT_NEW_TRAJECTORY", "ONE_B_COMPLETE"):
             row["curvature_watch"] = curvature_watch(
                 state[0], op, two_contact_center=True,
                 gb_positions=[contacts[key]["z_TJ_m"]
                               for key in ("LEFT", "RIGHT")])
         records.append(row)
+
+    def snapshot(force=False):
+        nonlocal snapshot_last_time
+        cadence=float(gate.get("c2_authorization",{}).get(
+            "snapshot_cadence_physical_s",float("inf")))
+        if not args.c2 or (not force and t-snapshot_last_time<cadence-1e-12):
+            return
+        folder=out/"snapshots";folder.mkdir(exist_ok=True)
+        path=folder/f"t_{t:014.9f}_{phase}.npz"
+        temporary=path.with_name(path.stem+".writing.npz")
+        np.savez_compressed(temporary,f=state[0],ownership=g["ownership"],gb=g["gb"],
+            time_s=t,phase=phase,event_number=event_number,
+            completed_avalanches=completed_avalanches)
+        os.replace(temporary,path);snapshot_last_time=t
 
     def campaign_status():
         row = records[-1]
@@ -567,16 +648,19 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
         os.replace(temporary, out/"trajectory.npz")
         atomic_text(out/"history.json",
                     json.dumps(records, indent=2, default=float)+"\n")
-        atomic_text((out/'CAMPAIGN_STATUS.md') if args.earlier_stage else STATUS_PATH,
+        atomic_text((out/'CAMPAIGN_STATUS.md') if (args.earlier_stage or args.c2) else STATUS_PATH,
                     campaign_status())
 
     if not args.resume:
         record(phase)
+        snapshot(force=True)
         save()
 
     try:
         while (completed_avalanches < args.minimum_avalanches and
-               t < start_t+args.maximum_production_seconds):
+               t < start_t+args.maximum_production_seconds and
+               (args.maximum_wall_seconds is None or
+                time.perf_counter()-wall < args.maximum_wall_seconds)):
             if clocks.active is None:
                 update_ownership(op, g["ownership"])
                 step = min(old["root_macro_step_s"],
@@ -589,6 +673,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 state = (fn, *(g["ownership"]*fn[None]))
                 clocks.commit(increment, contact)
                 record("ROOT_CROSSING" if contact else "RELOAD")
+                snapshot(force=bool(contact))
                 save()
                 if topology_status(fn, g)["stop"]:
                     status = "PHYSICAL_TOPOLOGY_TERMINAL"
@@ -680,6 +765,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 result = event.run(
                     state, restart=pending_restart, callback=progress,
                     maximum_step_over_b=dq, initial_step_over_b=dq,
+                    minimum_step_over_b=launch["event_minimum_increment_over_b"],
                     maximum_accepted_states=launch["event_accepted_state_cap"])
                 state = result[:4]
                 info = result[5]
@@ -700,6 +786,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                     continue
                 reference.bind(state)
                 record("ONE_B_COMPLETE", info["event_progress_over_b"])
+                snapshot(force=True)
                 if reference.metrics(state, info["event_progress_over_b"])["topology_stop"]:
                     raise RuntimeError("post-event topology terminal")
                 avalanche.complete_transit(t)
@@ -746,6 +833,7 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                         avalanche.state.descendant_hazard += increment["LEFT"]
                         avalanche.state.descendant_total_hazard += increment["LEFT"]
                     record("CHILD_CROSSING" if child else "FACILITATED_WINDOW")
+                    snapshot(force=bool(child))
                     save()
                     if child:
                         break
@@ -758,11 +846,15 @@ Updated automatically: {time.strftime('%Y-%m-%d %H:%M:%S')}
                 clocks.extinct()
                 completed_avalanches += 1
                 record("AVALANCHE_EXTINCT_REPINNED")
+                snapshot(force=True)
                 save()
 
         if status == "RUNNING":
             status = ("TARGET_RENEWAL_CYCLES_COMPLETE" if
                       completed_avalanches >= args.minimum_avalanches else
+                      "MAXIMUM_WALL_TIME_REACHED" if
+                      args.maximum_wall_seconds is not None and
+                      time.perf_counter()-wall >= args.maximum_wall_seconds else
                       "MAXIMUM_PRODUCTION_TIME_REACHED")
     except (RuntimeError, ValueError, FloatingPointError) as error:
         status = "STOPPED: " + str(error)
