@@ -1,5 +1,11 @@
 # C2 rigid-frame kinematics and instantaneous virtual work
 
+> **Subsequent interpretation:** the literal signed result in this directory is
+> retained as the contact-cusp audit. The physical densifying diagnostic is
+> the positive unilateral derivative, decomposed in
+> [`../c2_one_sided_force_decomposition/REPORT.md`](../c2_one_sided_force_decomposition/REPORT.md).
+> No projected simplex-tangent force is used as the event force.
+
 ## Scope
 
 This audit corrects the mechanical coordinate for the preserved first RIGHT

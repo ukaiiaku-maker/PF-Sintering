@@ -19,6 +19,59 @@ from .gb_obstacle_energy import gb_obstacle_coefficients
 from .three_particle_phase_a import FrozenPhysics
 
 
+def multigrain_variational_derivatives(
+        f, ownership, g, physics=FrozenPhysics()):
+    """Exact discrete derivatives of ``multigrain_energy`` in ``(f, phi)``.
+
+    The ownership fields are differentiated before enforcing their local
+    partition constraint.  Contracting these derivatives with any admissible
+    direction satisfying ``sum(phi_i,u)=0`` gives the constrained directional
+    derivative without an arbitrary ownership gauge.
+    """
+    field = np.asarray(f, dtype=float)
+    phi = np.asarray(ownership, dtype=float)
+    mu_f = fixed_ownership_mu(field, phi, g, physics)
+    width = float(g["config"].width)
+    coeff = gb_obstacle_coefficients(physics.gamma_gb, width)
+    g_phi = []
+    for i in range(len(phi)):
+        others = sum(phi[j] for j in range(len(phi)) if j != i)
+        g_phi.append(
+            field*coeff["Wc"]*others
+            - coeff["k_eta"]*_axisym_divergence_f_grad_phi(
+                field, phi[i], g["dr"], g["dz"],
+                g["r_c"], g["r_f"]))
+    return mu_f, np.asarray(g_phi)
+
+
+def dynamic_axial_configurational_balance(
+        f, ownership, g, physics=FrozenPhysics()):
+    """Axial canonical resultant and Euler--Lagrange bulk-force density.
+
+    No stationarity or volume multiplier is assumed.  With the canonical
+    convention used by :func:`axial_configurational_resultant`, continuum
+    balance is ``dP_z/dz = integral_A sum_a EL_a a_,z dA`` when radial-boundary
+    flux is negligible.
+    """
+    field = np.asarray(f, dtype=float)
+    phi = np.asarray(ownership, dtype=float)
+    result = axial_configurational_resultant(
+        field, phi, g, np.zeros(len(phi)), physics)
+    mu_f, g_phi = multigrain_variational_derivatives(field, phi, g, physics)
+    f_z = np.gradient(field, float(g["dz"]), axis=0, edge_order=2)
+    phi_z = np.gradient(phi, float(g["dz"]), axis=1, edge_order=2)
+    local = mu_f*f_z+np.sum(g_phi*phi_z, axis=0)
+    radial_weight = (
+        2.0*math.pi*float(g["dr"])*np.asarray(g["r_c"])[None, :])
+    bulk_force_per_length = np.sum(radial_weight*local, axis=1)
+    return dict(
+        z_m=np.asarray(g["z"], dtype=float).copy(),
+        resultant_N=np.asarray(result["resultant_N"], dtype=float),
+        components_N=result["components_N"],
+        bulk_force_per_length_N_per_m=bulk_force_per_length,
+        mu_f=mu_f, g_phi=g_phi)
+
+
 def recover_volume_multipliers_for_configurational_stress(
         f, ownership, g, active_mask, physics=FrozenPhysics(),
         box_minimum_step=1e-2):

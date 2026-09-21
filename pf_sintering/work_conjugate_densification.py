@@ -199,6 +199,16 @@ class RigidFrameState:
     source_max_increment: float
 
 
+@dataclass(frozen=True)
+class OneSidedDirectionalComponents:
+    """Literal positive event direction split before energy contraction."""
+    state: RigidFrameState
+    f_swept_u: np.ndarray
+    f_deposit_u: np.ndarray
+    ownership_u: np.ndarray
+    swept_volume_rate_m2: float
+
+
 def conservative_signed_shift_toward_minus_z(field, displacement_m, dz):
     """Conservative subcell translation; signed positive direction is ``-z``."""
     signed = float(displacement_m)/float(dz)
@@ -309,3 +319,43 @@ def signed_one_contact_frame_state(
         partition_residual=float(np.max(np.abs(phi1.sum(axis=0)-1.0))),
         f_bounds=(float(np.min(f1)), float(np.max(f1))),
         source_max_increment=float(np.max(added)))
+
+
+def positive_one_contact_direction_components(
+        f, ownership, z, r_c, *, dr, dz, delta_u_m, gb_z_m, tj_r_m,
+        width_m, moving_grain, neighbor_grain, source_support=None):
+    """Return the literal ``0+`` event direction and its material split.
+
+    The total-solid increment is decomposed exactly into the translated-body
+    union (``swept``) and the conservative source addition (``deposit``).
+    This routine calls the same positive rigid-frame constructor used for the
+    discarded event state.  It introduces no negative/contact-opening path.
+    """
+    du = float(delta_u_m)
+    if du <= 0.0:
+        raise ValueError("one-sided directional step must be positive")
+    f0 = np.asarray(f, dtype=float)
+    phi0 = np.asarray(ownership, dtype=float)
+    state = signed_one_contact_frame_state(
+        f0, phi0, z, r_c, dr=dr, dz=dz, approach_m=du,
+        gb_z_m=gb_z_m, tj_r_m=tj_r_m, width_m=width_m,
+        moving_grain=moving_grain, neighbor_grain=neighbor_grain,
+        source_support=source_support)
+    moving_side = np.asarray(z)[:, None] >= float(gb_z_m)
+    body_moving = np.where(moving_side, f0, 0.0)
+    body_stationary = f0-body_moving
+    moved = conservative_signed_shift_toward_minus_z(body_moving, du, dz)
+    overlap = np.minimum(np.maximum(moved, 0.0),
+                         np.maximum(body_stationary, 0.0))
+    f_union = moved+body_stationary-overlap
+    f_swept_u = (f_union-f0)/du
+    f_deposit_u = (state.f-f_union)/du
+    if not np.allclose(
+            f_swept_u+f_deposit_u, (state.f-f0)/du,
+            rtol=2e-13, atol=1e-18/max(du, 1e-300)):
+        raise RuntimeError("directional sweep/deposit decomposition failed")
+    return OneSidedDirectionalComponents(
+        state=state, f_swept_u=f_swept_u,
+        f_deposit_u=f_deposit_u,
+        ownership_u=(state.ownership-phi0)/du,
+        swept_volume_rate_m2=state.swept_volume_m3/du)

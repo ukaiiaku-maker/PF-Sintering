@@ -84,3 +84,28 @@ def test_signed_frame_coordinate_keeps_fixed_frames_and_moves_midplane():
         assert state.partition_residual < 3e-15
         assert state.f_bounds[0] >= -2e-12
         assert state.f_bounds[1] <= 1.0+2e-12
+
+
+def test_positive_direction_splits_exactly_into_sweep_and_deposit():
+    from pf_sintering.work_conjugate_densification import (
+        positive_one_contact_direction_components,
+    )
+    f, ownership, z, r, dr, dz = _state()
+    axial = 0.5*(1.0+np.tanh((9.0e-9-np.abs(z[:, None]))/1.0e-9))
+    f = f*axial
+    support = triple_junction_support(
+        f, z, r, z_tj=0.0, r_tj=4.0e-9, width=1.0e-9)
+    du = 0.01e-9
+    direction = positive_one_contact_direction_components(
+        f, ownership, z, r, dr=dr, dz=dz, delta_u_m=du,
+        gb_z_m=0.0, tj_r_m=4.0e-9, width_m=1.0e-9,
+        moving_grain=1, neighbor_grain=0, source_support=support)
+    np.testing.assert_allclose(
+        direction.f_swept_u+direction.f_deposit_u,
+        (direction.state.f-f)/du, rtol=2e-13, atol=1e-6)
+    volume_factor = 2.0*np.pi*dr*dz
+    swept_rate = -volume_factor*np.sum(r[None, :]*direction.f_swept_u)
+    deposit_rate = volume_factor*np.sum(r[None, :]*direction.f_deposit_u)
+    np.testing.assert_allclose(swept_rate, deposit_rate, rtol=2e-13, atol=1e-28)
+    np.testing.assert_allclose(
+        swept_rate, direction.swept_volume_rate_m2, rtol=2e-13, atol=1e-28)

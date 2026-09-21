@@ -1,0 +1,5 @@
+particle_window,maximum_within_window_relative_std,window_mean_relative_range,adequate_CMC_plateau
+center_from_left,0.023998102285773495,0.03517819369692245,True
+center_from_right,0.023998101899707757,0.0351781894636051,True
+left,0.15858104402860485,0.7918723534698039,False
+right,0.15858103338173613,0.791872434533443,False
