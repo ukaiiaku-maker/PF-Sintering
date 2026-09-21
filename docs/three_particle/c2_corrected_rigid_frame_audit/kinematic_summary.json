@@ -1,0 +1,12 @@
+{
+  "pass_all_kinematic_gates": true,
+  "energy_evaluated": false,
+  "coordinate_definition": "U_L=U_C=0; U_R=-u; q_L=0; q_R=u",
+  "ownership_definition": "Delta z_GB,L=0; Delta z_GB,R=-u/2",
+  "centroids_used_as_constraints": false,
+  "max_fixed_frame_tracer_error_m": 0.0,
+  "max_moving_frame_tracer_error_m": 7.170621935069059e-23,
+  "max_left_ownership_plane_error_m": 0.0,
+  "max_right_ownership_plane_error_m": 2.4050071603462616e-12,
+  "max_mass_relative_error": 0.0
+}
