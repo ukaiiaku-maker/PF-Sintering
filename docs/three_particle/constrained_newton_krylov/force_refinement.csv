@@ -1,0 +1,4 @@
+step,half_width_over_b,virtual_work_force_N
+delta_0.10b,0.1,1.7755296841911893e-08
+delta_0.05b,0.05,1.692737326324515e-08
+delta_0.025b_branch_sensitive,0.025,2.739282116569672e-08

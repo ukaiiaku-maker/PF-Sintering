@@ -1,0 +1,4 @@
+term,force_N,sharp_limit_interpretation
+F_G=-G_u,1.6491231048060255e-07,parameterization-dependent remainder; not line force alone
+F_C=-lambda^T C_u,1.4767918658792665e-07,Delta-p times midpoint reassignment area A/2
+F_env,3.125914970685292e-07,F_line - Delta-p A

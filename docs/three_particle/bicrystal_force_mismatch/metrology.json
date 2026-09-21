@@ -1,0 +1,14 @@
+{
+  "neck_radius_m": 1.0348096047179666e-07,
+  "contact_area_m2": 3.364114545277621e-14,
+  "z_neck_m": 2.0698300178803003e-07,
+  "left_surface_slope": -0.08816844602425744,
+  "right_surface_slope": 0.14213239258342858,
+  "measured_dihedral_angle_deg": 166.86259568794964,
+  "prescribed_dihedral_angle_deg": 160.0,
+  "local_left_meridional_curvature_per_m": -3976779.7701340965,
+  "local_right_meridional_curvature_per_m": -1008879.8002241827,
+  "measured_angle_azimuthal_curvature_per_m": 9600175.697339559,
+  "reference_angle_azimuthal_curvature_per_m": 9516801.434024315,
+  "local_reference_definition": "quadratic meridional fits over 15 nm on each TJ side plus sin(160deg/2)/r_neck; s_local_cap times area is algebraically the CC line force minus its local total-curvature pressure force"
+}

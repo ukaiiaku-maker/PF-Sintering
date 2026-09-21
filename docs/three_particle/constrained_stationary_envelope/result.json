@@ -1,0 +1,23 @@
+{
+  "classification": "ACTIVE_DOMAIN_CONTAMINATES_STATIONARY_FORCE",
+  "full_domain_conjugacy": "FAILED_5_PERCENT_CANNON_CARTER_GATE",
+  "bicrystal_hard_gate_passed": false,
+  "c2_started": false,
+  "full_domain_cells": 76590,
+  "full_domain_KKT_Linf": 6.565357073967659e-08,
+  "full_domain_envelope_force_N": 3.125914970685292e-07,
+  "full_domain_cannon_carter_force_N": 4.0401775067942554e-07,
+  "full_domain_relative_CC_difference": 0.22629266525331454,
+  "h16_to_full_relative_force_change": 0.028074122807897953,
+  "maximum_fixed_field_step_relative_spread": 5.296850281172438e-10,
+  "small_benchmark_maximum_relative_difference": 5.7725010831044265e-06,
+  "full_domain_state_sha256": "6a627a4b50f485edc6cd02701bda10d0345c27f7eab3232ef8bc73ebfb3edf9d",
+  "reference_state_sha256": "a70509d72f65270059ab70150182c3206c20fc6ef7a7ce3278521c55a3bacce4",
+  "c2_history_sha256": "33a1f582ca22856b61f49b651715e691597c4fa4ad7cc6c79de6eb570d0f2d90",
+  "c2_trajectory_sha256": "ff56a2b6dc62c7b5842e7d5ad1107b3120e025169b910845c211f6004e63b5a7",
+  "first_moment_constraints": false,
+  "clipping_used": false,
+  "root_law_changed": false,
+  "barrier_changed": false,
+  "stochastic_campaign_launched": false
+}

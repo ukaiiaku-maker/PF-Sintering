@@ -1,0 +1,40 @@
+{
+  "classification": "ACTIVE_DOMAIN_CONTROLS_FORCE",
+  "bicrystal_hard_gate_passed": false,
+  "c2_started": false,
+  "manifold": "fixed grain volumes; prescribed direct ownership/GB frame; no first moments",
+  "direct_absolute_ownership_frame": true,
+  "four_guess_energy_spread_J": 1.1087131041841964e-20,
+  "cannon_carter_force_N": 3.3699996102696146e-07,
+  "derivative_estimates": [
+    {
+      "half_width_over_b": 0.1,
+      "lower_energy_J": 2.8430347122774545e-13,
+      "upper_energy_J": 2.842849939398615e-13,
+      "virtual_work_force_N": 3.695457576788894e-07
+    },
+    {
+      "half_width_over_b": 0.05,
+      "lower_energy_J": 2.842969897386426e-13,
+      "upper_energy_J": 2.84291371371558e-13,
+      "virtual_work_force_N": 2.247346833842613e-07
+    },
+    {
+      "half_width_over_b": 0.025,
+      "lower_energy_J": 2.842937709039356e-13,
+      "upper_energy_J": 2.842945820961748e-13,
+      "virtual_work_force_N": -6.489537913433635e-08
+    }
+  ],
+  "q0_active_domain_energy_range_J": 6.167901900193469e-15,
+  "q05_active_domain_energy_range_J": 6.918536978679717e-15,
+  "all_reported_hessian_minima_positive": true,
+  "old_moment_target_force_N_at_q05": 1.1231343716681396e-07,
+  "old_moment_branch_force_N": 1.692737319660218e-08,
+  "clipping_used": false,
+  "root_law_changed": false,
+  "barrier_changed": false,
+  "stochastic_campaign_launched": false,
+  "c2_history_sha256": "33a1f582ca22856b61f49b651715e691597c4fa4ad7cc6c79de6eb570d0f2d90",
+  "c2_trajectory_sha256": "ff56a2b6dc62c7b5842e7d5ad1107b3120e025169b910845c211f6004e63b5a7"
+}
