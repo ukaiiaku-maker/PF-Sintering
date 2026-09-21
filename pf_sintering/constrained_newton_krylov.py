@@ -201,7 +201,9 @@ def solve_constrained_stationary(
         kkt_tolerance=1e-7, constraint_tolerance=2e-12,
         history_size=10, energy_relative_tolerance=1e-13, callback=None,
         active_mask=None, active_threshold=1e-2, tail_threshold=1e-3,
-        include_moments=True):
+        include_moments=True, lbfgs_box_active_step=1e-5,
+        newton_box_active_step=1e-2, gmres_maxiter=8,
+        newton_minimum_damping=1e-3):
     """Solve the exact active-band KKT stationarity problem."""
     field, _ = restore_constraints(f, ownership, g, targets,
                                    include_moments=include_moments)
@@ -243,7 +245,12 @@ def solve_constrained_stationary(
 
     lbfgs_done=0
     for iteration in range(1,lbfgs_max_iterations+1):
-        x=field.ravel()[ids].copy();grad,free=gradient(field);residual=float(np.max(np.abs(grad)))
+        x=field.ravel()[ids].copy()
+        audit_grad,audit_free=gradient(field,minimum_step=1e-2)
+        residual=float(np.max(np.abs(audit_grad)))
+        grad,free=gradient(field,minimum_step=lbfgs_box_active_step)
+        if np.max(np.abs(grad))<=kkt_tolerance and residual>kkt_tolerance:
+            grad,free=audit_grad,audit_free
         cerr=constraint_error(field)
         if residual<=kkt_tolerance and cerr<=constraint_tolerance:
             return SolverResult(field,True,"lbfgs_stationary",tuple(history),residual,cerr,
@@ -262,7 +269,7 @@ def solve_constrained_stationary(
         if not np.isfinite(slope) or slope>=0:
             pairs=[];direction=-grad;slope=-float(np.dot(grad,grad))
         max_step=maximum_bound_step(x,direction)
-        if max_step < 1e-4:
+        if max_step < lbfgs_box_active_step:
             pairs=[];direction=-grad;slope=-float(np.dot(grad,grad))
             max_step=maximum_bound_step(x,direction)
         step=min(1.0,0.995*max_step);accepted=False
@@ -284,13 +291,21 @@ def solve_constrained_stationary(
 
     # Damped reduced-space Newton--Krylov polish.
     newton_done=0
-    accepted_damping=1e-3
+    accepted_damping=newton_minimum_damping
     for iteration in range(1,newton_max_iterations+1):
-        x=field.ravel()[ids].copy();grad,free=gradient(field,minimum_step=1e-2);residual=float(np.max(np.abs(grad)));cerr=constraint_error(field)
+        x=field.ravel()[ids].copy()
+        audit_grad,audit_free=gradient(field,minimum_step=1e-2)
+        residual=float(np.max(np.abs(audit_grad)));cerr=constraint_error(field)
         if residual<=kkt_tolerance and cerr<=constraint_tolerance:
             return SolverResult(field,True,"newton_stationary",tuple(history),residual,cerr,
                                 len(ids),projector.gram_condition,lbfgs_done,iteration-1)
-        damping=max(1e-3,0.5*accepted_damping)
+        grad,free=gradient(field,minimum_step=newton_box_active_step)
+        # A larger box-active threshold is only a globalization device.  Once
+        # it has solved that reduced problem, return to the audit free set so
+        # convergence always means the established 1e-2 box-KKT condition.
+        if np.max(np.abs(grad))<=kkt_tolerance and residual>kkt_tolerance:
+            grad,free=audit_grad,audit_free
+        damping=max(newton_minimum_damping,0.5*accepted_damping)
         accepted=False
         for _ in range(64):
             Af=projector.A[:,free]
@@ -319,7 +334,8 @@ def solve_constrained_stationary(
                 result[~free]=v[~free]
                 return result
             pre=LinearOperator(operator.shape,matvec=precondition,dtype=float)
-            direction,info=gmres(operator,-grad,M=pre,rtol=1e-6,atol=0.,restart=40,maxiter=8)
+            direction,info=gmres(operator,-grad,M=pre,rtol=1e-6,atol=0.,
+                                 restart=40,maxiter=gmres_maxiter)
             direction[~free]=0.0
             df=direction[free]
             direction[free]=df-Af.T@(af_gram_inverse@(Af@df))
@@ -334,11 +350,11 @@ def solve_constrained_stationary(
             if slope>=0 or not np.all(np.isfinite(direction)):
                 damping*=2.;continue
             step=min(1.0,0.995*maximum_bound_step(x,direction))
-            if step < 1e-2:
+            if step < newton_box_active_step:
                 distance=np.where(direction < 0.0,x+2e-14,
                                   np.where(direction > 0.0,1.0+2e-14-x,np.inf))
                 fraction=distance/np.maximum(np.abs(direction),1e-300)
-                limiting=free & (fraction < 1e-2)
+                limiting=free & (fraction < newton_box_active_step)
                 if np.any(limiting):
                     free[limiting]=False;grad[limiting]=0.0
                     continue
